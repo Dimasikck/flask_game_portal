@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+        {% for cat, msg in get_flashed_messages(True) %}
+            <div class="flash {{cat}}">{{msg}}</div>
+        {% endfor %}
+
+<div class="wnd_dlg_back login_wnd">
+    <div class="login">
+        <p class="title">Вход</p>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.login(class="login_input", placeholder="Введите логин") }}
+                {% if form.login.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.login.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.psw(class="login_input", placeholder="Введите пароль") }}
+                {% if form.psw.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.psw.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.remember() }} {{ form.remember.label }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="login_button") }}
+            </div>
+        </form>
+        <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрируйтесь</a></p>
+    </div>
+</div>
+{% endblock %}

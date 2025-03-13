@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+
+ <div class="profile-container">
+  <h1>{{game.title}}</h1>
+</div>
+
+<iframe
+    id="game-frame"
+    src="{% if game.link.startswith('http') %}{{ game.link }}{% else %}{{ url_for('pygame')}}{% endif %}"
+    allowtransparency="true"
+    class="game-frame"
+    style="width:100%; height: 600px; border: none;">
+</iframe>
+
+<!-- Кнопка для перехода в полноэкранный режим -->
+<a id="fullscreen-btn" class="btn fullscreen-btn">Развернуть на весь экран</a>
+
+<!-- Контейнер для информации об игре -->
+<div class="game-info-container">
+    <div id="game-info" class="game-info">
+        <h2 style="text-align: center">О игре</h2>
+        <hr>
+        <p>{{ game.description | safe }}</p>
+
+    </div>
+</div>
+
+<!-- Блок комментариев -->
+<div id="comments-section">
+    <h3>Комментарии</h3>
+    <form id="comment-form">
+        <textarea id="comment-text" placeholder="Оставьте комментарий..." required></textarea>
+        <button type="submit">Отправить</button>
+    </form>
+    <div id="comments-container"></div>
+</div>
+
+<script src="{{url_for('static', filename='js/fullscreen.js')}}" rel="javascript"></script>
+<script src="{{url_for('static', filename='js/coments.js')}}" rel="javascript"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.cookie = game_path={{ game.link }}; path=/; SameSite=Lax;
+        if (!document.referrer.includes("/game/{{ game.id }}")) {
+            window.location.replace(window.location.href);
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+<div class="profile-container">
+    <h1 class="profile-title">Редактирование профиля</h1>
+
+    {% for cat, msg in get_flashed_messages(True) %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+
+    <div class="profile-grid">
+        <!-- Текущий аватар -->
+        <div class="profile-avatar">
+            <img src="{{ url_for('userava') }}" alt="Аватар" class="avatar-image">
+        </div>
+
+        <!-- Форма редактирования -->
+        <div class="profile-details">
+            <form action="{{ url_for('edit_profile') }}" method="POST" enctype="multipart/form-data" class="edit-form">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    <label class="label">{{ form.name.label }}</label>
+                    {{ form.name(class="form_input") }}
+                    {% for error in form.name.errors %}
+                        <span class="text_error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label class="label">{{ form.email.label }}</label>
+                    {{ form.email(class="form_input") }}
+                    {% for error in form.email.errors %}
+                        <span class="text_error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label class="label">{{ form.password.label }}</label>
+                    {{ form.password(class="form_input") }}
+                    {% for error in form.password.errors %}
+                        <span class="text_error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label class="label">{{ form.password_confirm.label }}</label>
+                    {{ form.password_confirm(class="form_input") }}
+                    {% for error in form.password_confirm.errors %}
+                        <span class="text_error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label class="label">{{ form.avatar.label }}</label>
+                    {{ form.avatar(class="file-input") }}
+                    {% for error in form.avatar.errors %}
+                        <span class="text_error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions"  style="display:flex; flex-direction: column">
+                    {{ form.submit(class="btn btn-success") }}
+                    <a href="{{ url_for('profile') }}" class="btn btn-logout">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

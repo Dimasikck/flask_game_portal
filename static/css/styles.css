@@ -1,0 +1,1105 @@
+
+/* Основные стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0A0C1BCC, rgba(18, 19, 33, 0.71));
+    color: #fff;
+    font-family: 'Monocraft', sans-serif;
+    scroll-behavior: smooth;
+}
+@font-face {
+    font-family: 'Monocraft';
+    src: url('/static/fonts/Monocraft.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+a {
+    color: #129fe6;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #22dcf1;
+}
+h1 {
+    text-align: center;
+    color: #fff;
+}
+.clear { clear: both; }
+
+.text_error { color: #FF4040; }
+
+.invalid-feedback {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+.invalid { border-color: red; }
+
+/* Контейнеры */
+.content {
+    padding: 1rem;
+}
+
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+
+/* Окно диалога */
+.wnd_dlg_back {
+
+    margin: 2rem auto;
+    left: 0;
+    top: 0;
+    background: rgba(64, 65, 69, 0.7);
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.wnd_dlg_back.login_wnd {
+    /*position: absolute;*/
+    /*left: 50%;*/
+    top: 40%;
+    max-width: 375px;
+    /*height: 220px;*/
+    margin: 2rem auto;
+    background: rgba(18, 19, 33, 0.9);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+/* Кнопки */
+.btn {
+    color: #fff;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(93, 231, 252, 0.5);
+}
+.edit-link {
+    color: #1196d7; /* Цвет текста */
+
+    text-decoration: none; /* Убираем подчеркивание */
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Расстояние между смайликом и текстом */
+    transition: color 0.3s ease;
+    float: right; /* Перемещаем в правый угол */
+
+}
+
+.edit-link:hover {
+    color: #29abee; /* Цвет при наведении */
+    text-decoration: none; /* Убираем подчеркивание при наведении */
+}
+
+.edit-icon {
+    font-size: 18px; /* Размер смайлика */
+
+}
+
+/* Стили для profile-actions, чтобы поддерживать расположение */
+.profile-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between; /* Разделяем "Изменить" и "Выйти" */
+    align-items: center;
+}
+
+/* Существующие стили для btn-logout остаются без изменений */
+.btn.btn-logout {
+    color: #fff;
+    background: #dc3545;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+
+}
+
+.btn.btn-logout:hover {
+    background: #c82333;
+}
+.btn.btn-success {
+    color: #fff;
+    background: #2db949;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.btn.btn-success:hover {
+    background: #41c35b;
+}
+
+/* Стиль для профиля */
+
+/* Контейнер профиля */
+.profile-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(20, 20, 30, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.profile-title {
+    font-size: 2rem;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+/* Сетка профиля */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Аватар */
+.profile-avatar {
+    text-align: center;
+}
+
+.avatar-image {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.avatar-image:hover {
+    transform: scale(1.05);
+}
+
+/* Информация */
+.profile-details {
+    background: rgba(30, 30, 40, 0.8);
+    padding: 1.5rem;
+    border-radius: 15px;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    padding: 0.75rem 0;
+    color: #fff;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-list li:last-child {
+    border-bottom: none;
+}
+
+.label {
+    color: #00cee7;
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+/* Форма загрузки */
+.profile-upload {
+    background: rgba(30, 30, 40, 0.8);
+    padding: 1.5rem;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.file-input {
+    padding: 0.5rem;
+    background: #333;
+    border-radius: 10px;
+    color: #fff;
+    border: none;
+}
+
+
+.btn-upload {
+    width: 100%;
+}
+
+
+
+
+/* Стили для кнопок */
+.login_button {
+    color: #fff;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.login_button:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    box-shadow: 0 0 10px rgba(93, 231, 252, 0.5);
+    transform: scale(1.05); /* Легкое увеличение кнопки при наведении */
+
+}
+.add-btn{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+}
+/* Форма загрузки аватара */
+.profile-load {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+        max-width: 30%;
+}
+
+.profile-load input[type="file"],
+.profile-load input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    background: #333;
+    border-radius: 10px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.profile-load input[type="file"]:hover,
+.profile-load input[type="submit"]:hover {
+    background: #0381c2;
+}
+.header {
+    display: flex;
+    align-items: center;
+    background: rgba(42, 44, 63, 0.5);
+    padding: 0 1rem;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mainmenu {
+    list-style: none;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    gap: 1rem;
+}
+footer {
+    background: #1B1D2B;
+    color: #888;
+    padding: 1rem 0;
+    text-align: center;
+}
+/* Ошибки и уведомления */
+.flash {
+    padding: 10px;
+    margin: 20px 0;
+    color: #fff;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.flash.success {
+    background: #21DB56;
+}
+
+.flash.error {
+    background: #FF4343;
+}
+
+/* Адаптивные стили для мобильных устройств */
+/* Медиа-запросы */
+@media (max-width: 768px) {
+   .profile-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .profile-upload {
+        margin: 0 auto;
+        max-width: 300px;
+    }
+
+    .info-list li {
+        font-size: 1rem;
+    }
+
+
+    .btn {
+        width: 100%;
+    }
+
+    .header {
+        flex-wrap: wrap;
+    }
+
+    .mainmenu {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: #1B1D2B;
+    }
+
+    .menu-button {
+        display: block;
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .avatar-image {
+        max-width: 140px;
+    }
+
+    .btn {
+        padding: 0.6rem 1.2rem;
+    }
+
+
+    .login_wnd {
+        padding: 1rem;
+    }
+}
+div.login {
+    width: 100%;
+    padding: 20px;
+    color: #ddd;
+    background: linear-gradient(135deg, #1B1D2B, #2A2C3F);
+    /*border: 2px solid #444;*/
+    border-radius: 20px;
+}
+div.login p {
+    margin: 0 0 10px 0;
+}
+div.login .title {
+    text-align: center;
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.login_input {
+    font-size: 16px;
+    width: 100%;
+    padding: 10px;
+    background: #1B1D2B;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 10px;
+    outline: none;
+    margin-bottom: 10px;
+}
+.form_input {
+    font-size: 16px;
+    width: 100%;
+    padding: 10px;
+    background: #1B1D2B;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 10px;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+
+.login_button {
+    color: #fff;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+.login_button:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    box-shadow: 0 0 10px rgba(93, 231, 252, 0.5);
+}
+
+/* Меню */
+.header {
+        position: fixed;
+        top: 10px; /* Отступ сверху */
+        left: 50%; /* Центрируем */
+        transform: translateX(-50%); /* Смещаем влево на половину ширины */
+        width: 90%; /* Ширина не на весь экран, например 80% */
+        max-width: 900px; /* Максимальная ширина для ограничения */
+        z-index: 1000;
+        transition: transform 0.3s ease-in-out; /* Плавный переход */
+        background: rgba(42, 44, 63, 0.5);/* Полупрозрачный фон */
+        border-radius: 10px; /* Закругленные края */
+        padding: 10px 20px; /* Внутренние отступы */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Тень для эффекта */
+        height: 60px;
+        align-items: center;
+    }
+
+    /* Скрытие меню */
+.header.hidden {
+    transform: translateX(-50%) translateY(-100%); /* Учитываем центрирование при скрытии */
+}
+
+
+ul.mainmenu {
+    flex-grow: 1; /* Меню занимает оставшееся пространство */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Центрируем элементы меню */
+    align-items: center;
+    color: #fff;
+    font-size: 18px;
+}
+
+ul.mainmenu li {
+    margin: 0 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+ul.mainmenu li a {
+    color: #fff;
+    text-transform: uppercase;
+    transition: color 0.3s ease-in-out; /* Плавный переход цвета */
+
+}
+
+ul.mainmenu li a:hover {
+    color: #22dcf1;
+}
+
+/* Список постов */
+ul.list-posts {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 800px;
+}
+
+ul.list-posts li {
+    margin: 20px 0;
+
+    border-radius: 10px;
+    background: #1B1D2B;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease-in-out; /* Анимация при наведении */
+}
+ul.list-posts li:hover {
+    transform: scale(1.02);
+}
+
+ul.list-posts .title {
+    margin: 0;
+    padding: 10px;
+    background: #2A2C3F;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-weight: bold;
+}
+
+ul.list-posts .annonce {
+    margin: 0;
+    padding: 10px;
+}
+
+/* Flash-сообщения */
+.flash {
+    padding: 10px;
+    margin: 10px 0;
+    color: #fff;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.flash.success {
+    border: 1px solid #21DB56;
+    background: #1E6E3D;
+}
+
+.flash.error {
+    border: 1px solid #FF4343;
+    background: #FF4C4C;
+}
+
+.profile-ava img {
+    max-width: 150px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+    animation: loop-animation 0s infinite;
+}
+
+@keyframes loop-animation {
+    0% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+/* Подвал */
+footer {
+    background: #1B1D2B;
+    color: #888;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 14px;
+}
+
+footer a {
+    color: #22dcf1;
+}
+
+.menu-button {
+    display: none; /* Скрываем кнопку по умолчанию на больших экранах */
+    background: #1B1D2B;
+    color: #fff;
+    padding: 10px 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto; /* Отодвигаем кнопку вправо */
+}
+
+.menu-button:hover {
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .menu-button {
+        display: block; /* Показываем кнопку на мобильных устройствах */
+    }
+
+    ul.mainmenu {
+        display: none; /* Скрываем меню по умолчанию */
+        flex-direction: column; /* Выравниваем меню вертикально */
+        background: #1B1D2B;
+        width: 100%;
+        justify-content: flex-start;
+        border-radius: 5px;
+    }
+    ul.mainmenu li {
+    margin: 0 15px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+        background: rgba(157, 157,  157, 0.23);
+    border-radius: 10px;
+    padding: 9px;
+}
+}
+
+#background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Устанавливаем ширину в 100% видимой области окна */
+    height: 100vh; /* Устанавливаем высоту в 100% видимой области окна */
+    object-fit: cover; /* Видео адаптируется к размеру экрана */
+    z-index: -1; /* Размещаем позади всех остальных элементов */
+    filter: brightness(0.4); /* Затемнение для повышения читаемости текста */
+}
+
+/* Стили для игрового окна */
+.game-frame {
+    display: block;
+    margin: 30px auto; /* Центрирование */
+    width: 100%; /* Адаптивная ширина */
+    /*max-width: 800px; !* Максимальная ширина *!*/
+    /*height: 500px; !* Высота окна *!*/
+    border: none; /* Убираем рамку */
+    border-radius: 10px; /* Скругленные углы */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Тень для визуального эффекта */
+    background: rgba(0, 0, 0, 0.5); /* Фон на случай, если iframe не загрузится */
+    transition: transform 0.2s ease-in-out; /* Анимация при наведении */
+}
+
+.game-frame:hover {
+    transform: scale(1.02); /* Увеличение при наведении */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7); /* Более яркая тень */
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .game-frame {
+        height: 400px; /* Уменьшенная высота */
+    }
+}
+
+/* Контейнер карточек */
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Карточка игры */
+.game-card {
+    width: 200px;
+    height: 250px; /* Квадратный размер */
+    background: #1B1D2B;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Эффект при наведении */
+.game-card:hover {
+    transform: scale(1.05);
+}
+
+/* Обложка игры */
+.game-cover {
+    width: 100%;
+    height: 150%; /* Фиксированная высота для изображения */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.game-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Обрезка изображения, чтобы не растягивалось */
+}
+
+/* Название игры */
+.game-title {
+    height: 30%; /* Фиксированная высота под текст */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.game-title a {
+    color: #129fe6;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.game-title a:hover {
+    color: #22dcf1;
+}
+
+/* Заголовок страницы */
+.page-title {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 24px;
+    color: #fff;
+}
+/* Стили для кнопки "Развернуть на весь экран" */
+/*.fullscreen-btn {*/
+/*    background: linear-gradient(135deg, #1196d7, #00cee7); !* Градиентный фон *!*/
+/*    color: #fff; !* Белый текст *!*/
+/*    font-size: 16px; !* Размер шрифта *!*/
+/*    padding: 12px 20px; !* Отступы *!*/
+/*    border: none; !* Без границы *!*/
+/*    border-radius: 25px; !* Скругленные углы *!*/
+/*    cursor: pointer; !* Указатель при наведении *!*/
+/*    text-align: center; !* Центрируем текст *!*/
+/*    transition: all 0.3s ease; !* Плавный переход для эффектов *!*/
+/*    display: inline-block;*/
+/*    margin: 20px auto; !* Центрирование кнопки *!*/
+/*    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); !* Тень для кнопки *!*/
+/*    display: block;*/
+/*}*/
+.btn.fullscreen-btn {
+    color: #fff;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: inline-block;
+}
+
+.btn.fullscreen-btn:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+}
+/*.fullscreen-btn:hover {*/
+/*     background: linear-gradient(135deg, #29abee, #22dcf1);*/
+/*    !*box-shadow: 0 0 10px rgba(93, 231, 252, 0.5); !* Яркая версия фона при наведении *!*!*/
+/*    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); !* Тень при наведении *!*/
+/*}*/
+
+/* Контейнер для центрирования кнопки */
+.fullscreen-btn-container {
+    display: flex;
+    justify-content: center; /* Центрируем по горизонтали */
+    align-items: center; /* Центрируем по вертикали */
+    height: 100vh; /* Высота контейнера 100% экрана */
+}
+
+
+/* Оформление блока комментариев */
+#comments-section {
+    margin-top: 20px;
+    padding: 20px;
+    border-top: 2px solid #129fe6;
+    background: #1B1D2B;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+#comments-section h3 {
+    color: #fff;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.comment {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #2A2C3F;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+}
+
+.comment-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.comment-user {
+    font-weight: bold;
+    color: #fff;
+    margin-left: 10px;
+    position: absolute;
+    left: 60px;
+    top: 5px;
+}
+
+.comment-timestamp {
+    font-size: 12px;
+    color: #aaa;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+.comment-content {
+    width: 100%;
+    color: #ddd;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.comment-text {
+    font-size: 14px;
+    color: #ddd;
+}
+
+.like-btn, .delete-btn-com {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    align-self: flex-end;
+    margin-top: 5px;
+    transition: color 0.3s;
+}
+
+.like-btn {
+    color: #FF4040;
+}
+
+.like-btn:hover {
+    color: #FF7070;
+}
+
+.delete-btn-com {
+    color: rgba(164, 164, 164, 0.41);
+    padding: 5px;
+}
+
+.delete-btn-com:hover {
+    color: rgba(244, 244, 244, 0.87);
+}
+
+#comment-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#comment-text {
+    width: 100%;
+    padding: 10px;
+    background: #2A2C3F;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    resize: none;
+    height: 80px;
+}
+
+#comment-form button {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: #fff;
+    transition: background 0.3s;
+    min-width: 150px;
+    margin-right: auto; /* Выравнивание по правому краю */
+}
+
+#comment-form button:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    box-shadow: 0 0 10px rgba(93, 231, 252, 0.5);
+}
+
+.replies-container {
+    margin-left: 20px;
+    width: 85%;
+    height: 70%/* Уменьшили размер секции ответа */
+}
+
+.reply-form {
+    /*display: flex;*/
+    flex-direction: column;
+    margin-top: 10px;
+
+}
+
+.reply-form textarea {
+    width: 100%;
+    /*padding: 8px;*/
+     height: 40px;
+    border-radius: 5px;
+    background: #2A2C3F;
+    color: #fff;
+}
+
+.reply-btn {
+    background: none;
+    border: none;
+    color: rgba(89, 155, 255, 0.51);
+    cursor: pointer;
+    font-size: 14px;
+    align-self: flex-end;
+    margin-top: 2px;
+    transition: color 0.3s;
+    padding: 5px;
+}
+
+.reply-btn:hover {
+    color: rgba(211, 231, 255, 0.87);
+}
+
+.reply-form button {
+    margin-top: 5px;
+    background: #0381c2;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+.game-info-container {
+    margin-top: 20px;
+    /*padding: 20px;*/
+    /*display: flex;*/
+    justify-content: center;
+    width: 100%;
+}
+
+.game-info {
+    /*max-width: 1000px;*/
+    background: rgba(27, 29, 43, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    text-align: justify;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-wrap: break-word; /* Перенос слов, если они не помещаются в контейнер */
+    word-wrap: break-word; /* Альтернативное свойство для старых браузеров */
+    word-break: break-word; /* Перенос слов, если они слишком длинные */
+
+}
+.game-info img {
+    display: block; /* Делаем изображение блочным элементом */
+    max-width: 100%; /* Ограничиваем ширину изображения шириной блока */
+    height: auto; /* Сохраняем пропорции изображения */
+    margin: 0 auto; /* Центрируем изображение по горизонтали */
+    border-radius: 10px; /* Скругление углов изображения (опционально) */
+}
+
+/* Стили для чекбокса */
+input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #1B1D2B;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+}
+
+input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "✔";
+    color: #fff;
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Улучшение полей ввода при фокусе */
+.login_input:focus {
+    border: 1px solid #00cee7;
+    box-shadow: 0 0 8px rgba(0, 206, 231, 0.5);
+    background: #2A2C3F;
+}
+
+/* Выравнивание группы формы */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    margin-left: 5px;
+    color: #ddd;}
+/* Сетка */
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px; /* Отступы от краев */
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.col {
+    padding-left: 15px;
+    padding-right: 15px;
+    flex: 1 0 0%;
+}
+
+.col-1 { flex: 0 0 8.33%; max-width: 8.33%; }
+.col-2 { flex: 0 0 16.67%; max-width: 16.67%; }
+.col-3 { flex: 0 0 25%; max-width: 25%; }
+.col-4 { flex: 0 0 33.33%; max-width: 33.33%; }
+.col-5 { flex: 0 0 41.67%; max-width: 41.67%; }
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+.col-7 { flex: 0 0 58.33%; max-width: 58.33%; }
+.col-8 { flex: 0 0 66.67%; max-width: 66.67%; }
+.col-9 { flex: 0 0 75%; max-width: 75%; }
+.col-10 { flex: 0 0 83.33%; max-width: 83.33%; }
+.col-11 { flex: 0 0 91.67%; max-width: 91.67%; }
+.col-12 { flex: 0 0 100%; max-width: 100%; }

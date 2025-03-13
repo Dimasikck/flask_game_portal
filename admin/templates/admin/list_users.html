@@ -1,0 +1,56 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{ cat }}">{{ msg }}</div>
+{% endfor %}
+
+<h1>{{ title }}</h1>
+
+<!-- Форма поиска, сортировки и фильтрации -->
+<div class="form-container" style="margin-bottom: 20px;">
+    <form method="get" action="{{ url_for('admin.list_users') }}">
+        <div class="form-group">
+            <label for="search">Поиск:</label>
+            <input type="text" name="search" id="search" class="form-input" value="{{ search }}" placeholder="Поиск по логину, имени или email">
+        </div>
+        <div class="form-group">
+            <label for="sort">Сортировка:</label>
+            <select name="sort" id="sort" class="form-input">
+                <option value="login_asc" {% if sort == 'login_asc' %}selected{% endif %}>Логин (А-Я)</option>
+                <option value="login_desc" {% if sort == 'login_desc' %}selected{% endif %}>Логин (Я-А)</option>
+                <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
+                <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
+            </select>
+        </div>
+        <!-- Фильтр по роли (убрать, если нет поля role в модели Users) -->
+        <div class="form-group">
+            <label for="role">Роль:</label>
+            <select name="role" id="role" class="form-input">
+                <option value="" {% if not filter_role %}selected{% endif %}>Все</option>
+                <option value="user" {% if filter_role == 'user' %} selected {% endif %} >Пользователь</option>
+                <option value="admin" {% if filter_role == 'admin' %} selected {% endif %} >Админ</option>
+            </select>
+        </div>
+        <button type="submit" class="styled-button">Применить</button>
+    </form>
+</div>
+
+<ul class="list-posts">
+{% for p in list %}
+<li>
+    <p class="title">Логин: {{ p.login }}</p>
+    <p class="annonce">Имя: {{ p.name }}</p>
+    <p class="annonce">E-mail: {{ p.email }}</p>
+    <form action="{{ url_for('admin.delete_user', user_id=p.id) }}" method="post" style="display:inline;">
+        <button type="submit" class="delete-button">Удалить</button>
+    </form>
+</li>
+{% endfor %}
+</ul>
+
+{% if not list %}
+<p>Пользователи пока не добавлены или не найдены по заданным критериям.</p>
+{% endif %}
+{% endblock %}

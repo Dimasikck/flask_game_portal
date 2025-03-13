@@ -1,0 +1,30 @@
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{ cat }}">{{ msg }}</div>
+{% endfor %}
+<div style="position: relative;">
+
+    <!-- Кнопка "Добавить игру" в правом верхнем углу -->
+    <a href="javascript:history.back()" class="add_btn">
+        Вернутся к списку
+    </a>
+</div>
+<div class="form-container">
+    <h1>Добавить пункт меню</h1>
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Название:</label>
+            <input type="text" name="title" id="title" class="form-input"  required>
+        </div>
+        <div class="form-group">
+            <label for="url">URL:</label>
+            <textarea name="url" id="rtl" class="form-input" rows="4" required></textarea>
+        </div>
+
+        <button type="submit" class="styled-button">Добавить пункт меню</button>
+    </form>
+</div>
+{% endblock %}
