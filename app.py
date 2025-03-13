@@ -103,14 +103,14 @@ def index():
 @app.route('/pygame')
 @login_required
 def pygame():
-    game_path = f'games/{request.cookies.get('game_path') }/build/web'
+    game_path = f'games/{request.cookies.get("game_path") }/build/web'
     return send_from_directory(os.path.join(app.static_folder, game_path), 'index.html')
 
 
 @app.route('/<path:path>')
 @login_required
 def game_static_files(path):
-    return send_from_directory(os.path.join(app.static_folder, f'games/{path.removesuffix('.apk')}/build/web'), path)
+    return send_from_directory(os.path.join(app.static_folder, f'games/{path.removesuffix(".apk")}/build/web'), path)
 #-----------------------------------------------------------------------------------------------------------------
 """
                                       Маршрут страницы СПИСКА ИГР на сайте 
@@ -397,4 +397,5 @@ def delete_comment(comment_id):
 """
 #-----------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    # app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    app.run(port=5001)
