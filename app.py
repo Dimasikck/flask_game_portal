@@ -394,26 +394,6 @@ def delete_comment(comment_id):
     return {"success": True}
 
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                               ЗАПУСК ОБНОВЛЕНИЯ ВЕРСИИ САЙТА
-"""
-#-----------------------------------------------------------------------------------------------------------------
-@app.route('/update', methods=['POST'])
-def webhook():
-    if request.method == 'POST':
-        signature = request.headers.get('X-Hub-Signature-256')
-        if signature:
-            secret = SECRET_KEY.encode('utf-8')  # Ваш секретный ключ
-            hash_object = hmac.new(secret, request.data, hashlib.sha256)
-            expected_signature = 'sha256=' + hash_object.hexdigest()
-            if not hmac.compare_digest(expected_signature, signature):
-                return 'Invalid signature', 403
-        repo = Repo('/home/stupeniuspeha/flask_game_portal')
-        repo.remotes.origin.pull()
-        os.system('touch /var/www/stupeniuspeha_pythonanywhere_com_wsgi.py')
-        return 'Updated successfully', 200
-    return 'Wrong event type', 400
 
 #-----------------------------------------------------------------------------------------------------------------
 """
