@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function createCommentElement(comment) {
-        const avatarSrc = comment.avatar ? comment.avatar : "/static/img/default_avatar.png";
+        const avatarSrc = comment.avatar ? comment.avatar : "/static/images/default.png";
         const commentElement = document.createElement("div");
         commentElement.classList.add("comment");
         commentElement.innerHTML = `
