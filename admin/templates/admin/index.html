@@ -28,7 +28,24 @@
             <canvas id="gamesChart"></canvas>
         </div>
     </div>
+    <!-- Кнопка обновления сайта -->
+    <div style="position: absolute; top: 10px; right: 10px;">
+        <form method="POST" action="{{ url_for('admin.update_site') }}">
+            <button type="submit" class="btn" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                Обновить сайт
+            </button>
+        </form>
+    </div>
 </div>
+
+<!-- Flash-сообщения -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <!-- Подключение Chart.js и адаптера -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

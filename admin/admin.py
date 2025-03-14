@@ -1,14 +1,15 @@
-import time
-import re
 import shutil
 import zipfile
 from flask import Blueprint, render_template, url_for, redirect, session, request, flash, g
-
 from werkzeug.utils import secure_filename
 import os
 from db import db, Posts, Users, Games, MainMenu,Comments, CommentLikes
 from datetime import datetime, timedelta
 from sqlalchemy import func, asc, desc
+from git import Repo
+import hmac
+import hashlib
+
 #-----------------------------------------------------------------------------------------------------------------
 """
                                      Маршрут ДЛЯ ПОЛУЧЕНИЯ И ОТОБРАЖЕНИЯ АВТАРА ПОЛЬЗОВАТЕЛЯ 
@@ -23,7 +24,7 @@ menu = [{'url': '.index', 'title': 'Панель'},
         # {'url': '.add_game', 'title': 'Добавить игру'},
         {'url': '.logout', 'title': 'Выйти'}]
 
-
+SECRET_KEY = '43fswQtodqAAAAAaLYQVnaNOyAwmqeOqWsGPvweqe'
 def isLogged():
     return True if session.get('admin_logged') else False
 def login_admin():
@@ -81,6 +82,42 @@ def index():
         game_dates=game_dates,
         game_counts=game_counts
     )
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                     Маршрут для обновления сайта в Панели администратора
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@admin.route('/update_site', methods=['POST'])
+def update_site():
+    if not isLogged():
+        return redirect(url_for('.login'))
+
+    print(f"Request received: {request.method} {request.headers.get('User-Agent')}")
+    signature = request.headers.get('X-Hub-Signature-256')
+    print(f"Signature: {signature}")
+    if signature:
+        secret = SECRET_KEY.encode('utf-8')
+        hash_object = hmac.new(secret, request.data, hashlib.sha256)
+        expected_signature = 'sha256=' + hash_object.hexdigest()
+        print(f"Expected signature: {expected_signature}")
+        if not hmac.compare_digest(expected_signature, signature):
+            print("Invalid signature")
+            flash("Неверная подпись запроса", "error")
+            return redirect(url_for('.index'))
+
+    try:
+        print("Pulling from Git")
+        repo = Repo('/home/Dimasickc/flask_game_portal')
+        repo.remotes.origin.pull()
+        print("Git pull successful")
+        os.system('touch /var/www/dimasickc_pythonanywhere_com_wsgi.py')
+        print("WSGI file touched")
+        flash("Сайт успешно обновлен", "success")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        flash(f"Ошибка обновления сайта: {str(e)}", "error")
+
+    return redirect(url_for('.index'))
 
 #-----------------------------------------------------------------------------------------------------------------
 """
