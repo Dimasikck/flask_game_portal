@@ -95,7 +95,7 @@ def update_site():
     print(f"Request received: {request.method} {request.headers.get('User-Agent')}")
     signature = request.headers.get('X-Hub-Signature-256')
     print(f"Signature: {signature}")
-    if signature:
+    if signature:  # Проверка подписи только для вебхуков GitHub
         secret = SECRET_KEY.encode('utf-8')
         hash_object = hmac.new(secret, request.data, hashlib.sha256)
         expected_signature = 'sha256=' + hash_object.hexdigest()
@@ -108,7 +108,9 @@ def update_site():
     try:
         print("Pulling from Git")
         repo = Repo('/home/Dimasickc/flask_game_portal')
-        repo.remotes.origin.pull()
+        # Сбрасываем локальные изменения и обновляем
+        repo.git.fetch('origin')
+        repo.git.reset('--hard', 'origin/main')  # Принудительно синхронизируем с origin/main
         print("Git pull successful")
         os.system('touch /var/www/dimasickc_pythonanywhere_com_wsgi.py')
         print("WSGI file touched")
@@ -118,7 +120,6 @@ def update_site():
         flash(f"Ошибка обновления сайта: {str(e)}", "error")
 
     return redirect(url_for('.index'))
-
 #-----------------------------------------------------------------------------------------------------------------
 """
                                      Маршрут страницы АВТОРИЗАЦИИ для Панели администратора
