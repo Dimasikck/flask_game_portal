@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+<div class="profile-container">
+
+  <h1>{{title}}</h1>
+
+</div>
+
+<div class="cards-container">
+
+    {% for game in games %}
+    <a href="{{ url_for('game', game_id=game.id) }}" class="game-card">
+        {% if game.cover %}
+        <div class="game-cover">
+            <img src="data:image/jpeg;base64,{{ game.cover|b64encode }}" alt="{{ game.title }}">
+        </div>
+        {% endif %}
+        <div class="game-title">
+            {{ game.title }}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

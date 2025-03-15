@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+        {% for cat, msg in get_flashed_messages(True) %}
+            <div class="flash {{cat}}">{{msg}}</div>
+        {% endfor %}
+
+<div class="wnd_dlg_back login_wnd">
+    <div class="login">
+        <p class="title">Регистрация</p>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.login(class="login_input", placeholder="Придумайте логин") }}
+                {% if form.login.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.login.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.name(class="login_input", placeholder="Ваше имя") }}
+                {% if form.name.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.email(class="login_input", placeholder="Ваш email") }}
+                {% if form.email.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.psw(class="login_input", placeholder="Придумайте пароль") }}
+                {% if form.psw.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.psw.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.psw2(class="login_input", placeholder="Повторите пароль") }}
+                {% if form.psw2.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.psw2.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.recaptcha() }}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="login_button") }}
+            </div>
+        </form>
+        <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a></p>
+    </div>
+</div>
+{% endblock %}

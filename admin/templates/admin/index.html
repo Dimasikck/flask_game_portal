@@ -1,0 +1,174 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="stats">
+        <div class="stat-item">
+            <i class="fas fa-users"></i>
+            <div class="stat-content">
+                <span class="stat-value">{{ total_users }}</span>
+                <span class="stat-label">Пользователи</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-gamepad"></i>
+            <div class="stat-content">
+                <span class="stat-value">{{ total_games }}</span>
+                <span class="stat-label">Игры</span>
+            </div>
+        </div>
+    </div>
+    <div class="charts">
+        <div class="chart-container">
+            <h3 class="chart-title">Регистрация пользователей</h3>
+            <canvas id="usersChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3 class="chart-title">Добавление игр</h3>
+            <canvas id="gamesChart"></canvas>
+        </div>
+    </div>
+    <!-- Кнопка обновления сайта -->
+    <div style="position: absolute; top: 10px; right: 10px;">
+        <form method="POST" action="{{ url_for('admin.update_site') }}">
+            <button type="submit" class="btn" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                Обновить сайт
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Flash-сообщения -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Подключение Chart.js и адаптера -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const usersChartCtx = document.getElementById('usersChart').getContext('2d');
+    const gamesChartCtx = document.getElementById('gamesChart').getContext('2d');
+
+    // Данные из Flask
+    const userDates = {{ user_dates|tojson|safe }};
+    const userCounts = {{ user_counts|tojson|safe }};
+    const gameDates = {{ game_dates|tojson|safe }};
+    const gameCounts = {{ game_counts|tojson|safe }};
+
+    // Проверка данных
+    console.log('User Dates:', userDates);
+    console.log('User Counts:', userCounts);
+    console.log('Game Dates:', gameDates);
+    console.log('Game Counts:', gameCounts);
+
+    // График пользователей
+    new Chart(usersChartCtx, {
+        type: 'line',
+        data: {
+            labels: userDates,
+            datasets: [{
+                label: 'Новые пользователи',
+                data: userCounts,
+                borderColor: '#6D5DFC',
+                backgroundColor: 'rgba(109, 93, 252, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#fff' }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: { day: 'MMM d' }
+                    },
+                    ticks: { color: '#fff' },
+                    title: {
+                        display: true,
+                        text: 'Дата',
+                        color: '#fff'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#fff',
+                        stepSize: 2
+                    },
+                    title: {
+                        display: true,
+                        text: 'Количество',
+                        color: '#fff'
+                    }
+                }
+            }
+        }
+    });
+
+    // График игр
+    new Chart(gamesChartCtx, {
+        type: 'bar',
+        data: {
+            labels: gameDates,
+            datasets: [{
+                label: 'Добавленные игры',
+                data: gameCounts,
+                backgroundColor: '#FF6F6F',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#fff' }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: { day: 'MMM d' }
+                    },
+                    ticks: { color: '#fff' },
+                    title: {
+                        display: true,
+                        text: 'Дата',
+                        color: '#fff'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#fff',
+                        stepSize: 2
+                    },
+                    title: {
+                        display: true,
+                        text: 'Количество',
+                        color: '#fff'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

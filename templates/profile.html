@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+<div class="profile-container">
+    <h1 class="profile-title">{{ title }}</h1>
+
+    {% for cat, msg in get_flashed_messages(True) %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+
+    <div class="profile-grid">
+        <!-- Аватар -->
+        <div class="profile-avatar">
+            <img src="{{ url_for('userava') }}" alt="Аватар" class="avatar-image">
+        </div>
+
+        <!-- Информация -->
+        <div class="profile-details">
+            <div class="profile-actions" style="flex-direction: row-reverse; margin-top:0px">
+            <a href="{{ url_for('edit_profile') }}" class="edit-link" >
+                    <span class="edit-icon">✏️</span> Изменить
+                </a>
+                </div>
+            <ul class="info-list">
+                <li><span class="label">Логин:</span> {{ current_user.getLogin() }}</li>
+                <li><span class="label">Имя:</span> {{ current_user.getName() }}</li>
+                <li><span class="label">Email:</span> {{ current_user.getEmail() }}</li>
+            </ul>
+            <div class="profile-actions">
+
+                <a href="{{ url_for('logout') }}" class="btn btn-logout">Выйти</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

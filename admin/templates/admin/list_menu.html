@@ -1,0 +1,32 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+<div style="position: relative;">
+    <!-- Кнопка в правом верхнем углу -->
+    <a href="{{ url_for('admin.add_menu') }}" class="add_btn">
+        Добавить пункт меню
+    </a>
+</div>
+
+<h1>{{title}}</h1>
+<ul class="list-posts">
+{% for p in menu_list %}
+<li>
+    <p class="title">Заголовок: {{ p.title }}</p>
+
+    <p class="annonce">URL: {{ p.url }}</p>
+<form action="{{ url_for('admin.edit_menu', menu_id=p.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="edit-button">Редактировать</button>
+        </form>
+    <form action="{{ url_for('admin.delete_menu', menu_id=p.id) }}" method="post" style="display:inline;">
+        <button type="submit" class="delete-button">Удалить</button>
+    </form>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}
