@@ -4,8 +4,8 @@
   "description": "Игровой развлекательный портал на Flask",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#9D9D9D",
-  "theme_color": "#9D9D9D",
+  "background_color": "#1a1b2f",
+  "theme_color": "#1a1b2f",
   "icons": [
   {
     "src": "/static/images/icon-192.png",
