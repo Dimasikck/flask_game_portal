@@ -1,6 +1,14 @@
 {% extends 'admin/base_admin.html' %}
 
 {% block content %}
+<!-- Flash-сообщения -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash {{ cat }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 <div class="dashboard">
     <div class="stats">
         <div class="stat-item">
@@ -38,14 +46,7 @@
     </div>
 </div>
 
-<!-- Flash-сообщения -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+
 
 <!-- Подключение Chart.js и адаптера -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
