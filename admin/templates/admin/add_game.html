@@ -22,6 +22,15 @@
             <textarea name="description" id="description" class="form-input" rows="4" required></textarea>
         </div>
         <div class="form-group">
+            <label for="genre">Жанр:</label>
+            <select name="genre" id="genre" class="form-input">
+                <option value="">Выберите жанр</option>
+                {% for genre in genres %}
+                <option value="{{ genre }}">{{ genre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
             <label for="cover">Обложка (файл):</label>
             <input type="file" name="cover" id="cover" class="form-input" accept="image/*" required>
         </div>
@@ -43,6 +52,8 @@
         <div class="form-group" id="pygame_fields" style="display: none;">
             <label for="game_zip">Архив с игрой:</label>
             <input type="file" name="game_zip" id="game_zip" class="form-input" accept=".zip">
+            <label for="installer">Установщик (.exe, необязательно):</label>
+            <input type="file" name="installer" id="installer" class="form-input" accept=".exe">
             <label for="screenshots_zip">Архив со скриншотами:</label>
             <input type="file" name="screenshots_zip" id="screenshots_zip" class="form-input" accept=".zip">
         </div>

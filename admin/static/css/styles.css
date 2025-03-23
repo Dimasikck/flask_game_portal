@@ -537,7 +537,7 @@ footer a {
 .sidebar {
     position: fixed;
     top: 0;
-    left: 0px;
+    left: -250px;
     width: 250px;
     height: 100%;
     background: #1B1D2B;
@@ -547,7 +547,7 @@ footer a {
     padding: 20px;
 }
 .sidebar.active {
-    left: -250px;
+    left: 0px;
 }
 .sidebar .close-btn {
     background: none;

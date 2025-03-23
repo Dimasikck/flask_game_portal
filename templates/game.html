@@ -22,17 +22,20 @@
 
 <!-- Кнопка для перехода в полноэкранный режим -->
 <a id="fullscreen-btn" class="btn fullscreen-btn">Развернуть на весь экран</a>
+{% if game.installer %}
+<a href="{{ url_for('download_installer', game_id=game.id) }}" class="btn download-btn">Скачать</a>
+{% endif %}
 
-<!-- Контейнер для информации об игре -->
 <div class="game-info-container">
     <div id="game-info" class="game-info">
         <h2 style="text-align: center">О игре</h2>
         <hr>
         <p>{{ game.description | safe }}</p>
-
+        {% if game.genre %}
+        <p><strong>Жанр:</strong> {{ game.genre }}</p>
+        {% endif %}
     </div>
 </div>
-
 <!-- Блок комментариев -->
 <div id="comments-section">
     <h3>Комментарии</h3>

@@ -1,6 +1,6 @@
 import os
 import base64
-from flask import Flask, render_template, url_for, request, flash, session, redirect, abort, g, make_response, send_from_directory
+from flask import Flask, render_template, url_for, request, flash, session, redirect, abort, g, make_response, send_from_directory, send_file
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -139,11 +139,21 @@ def listgames():
 def game(game_id):
     game = Games.query.get_or_404(game_id)
     menu = MainMenu.query.all()
-
     response = make_response(render_template('game.html', menu=menu, title=game.title, game=game))
     response.set_cookie('game_path', game.link, path='/', samesite='Lax')
-
     return response
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                    Маршрут для скачивания УСТАНОВЩИКА ИГРЫ на сайте
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/download_installer/<int:game_id>')
+@login_required
+def download_installer(game_id):
+    game = Games.query.get_or_404(game_id)
+    if game.installer and os.path.exists(game.installer):
+        return send_file(game.installer, as_attachment=True, download_name=f"{game.title}.exe")
+    abort(404)
 
 #-----------------------------------------------------------------------------------------------------------------
 """
