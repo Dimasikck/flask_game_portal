@@ -373,7 +373,7 @@ def add_game():
 
                     # Создаем папку с именем игры
                     game_folder = secure_filename(title)
-                    game_path = os.path.join('static/games', game_folder)
+                    game_path = os.path.join('flask_game_portal/static/games', game_folder)
                     os.makedirs(game_path, exist_ok=True)
 
                     # Сохранение и разархивирование архива игры с сохранением структуры
@@ -470,11 +470,11 @@ def edit_game(game_id):
                             # Удаляем старую папку игры, если она существует
                             old_game_folder = game.link
                             if old_game_folder and os.path.exists(os.path.join('static/games', old_game_folder)):
-                                shutil.rmtree(os.path.join('static/games', old_game_folder))
+                                shutil.rmtree(os.path.join('flask_game_portal/static/games', old_game_folder))
 
                             # Создаем новую папку с именем игры
                             game_folder = secure_filename(title)
-                            game_path = os.path.join('static/games', game_folder)
+                            game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
 
                             # Сохранение и разархивирование архива игры с сохранением структуры
@@ -496,7 +496,7 @@ def edit_game(game_id):
                             game.link = game_folder
                         if installer_file:
                             game_folder = secure_filename(title)
-                            game_path = os.path.join('static/games', game_folder)
+                            game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
                             installer_path = os.path.join(game_path, f"{game_folder}.exe")
                             if game.installer and os.path.exists(game.installer):
@@ -554,8 +554,8 @@ def delete_game(game_id):
         if game:
             # Проверяем, является ли игра Pygame (нет http в начале link)
             if game.link and not game.link.startswith('http'):
-                game_folder = game.link.replace('/static/games/', '')  # Извлекаем имя папки из пути
-                game_path = os.path.join('static/games', game_folder)
+                game_folder = game.link.replace('flask_game_portal/static/games/', '')  # Извлекаем имя папки из пути
+                game_path = os.path.join('flask_game_portal/static/games', game_folder)
                 if os.path.exists(game_path):
                     shutil.rmtree(game_path)  # Удаляем папку с игрой и всем содержимым
                     flash(f'Папка игры {game_folder} удалена из static/games', 'success')
