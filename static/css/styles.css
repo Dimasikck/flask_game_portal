@@ -684,14 +684,14 @@ footer a {
     align-items: center !important;
     max-width: 1140px !important;
     margin: 30px auto !important;
-    border: 2px solid red; /* Для отладки */
+
 }
 
 .game-frame-container {
     position: relative !important;
     width: 100% !important;
-    max-width: 800px !important;
-    border: 2px solid green;
+    max-width: 1100px !important;
+
 }
 .game-frame-container .game-frame {
     display: block;

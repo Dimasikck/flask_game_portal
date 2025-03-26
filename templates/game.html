@@ -14,20 +14,20 @@
 <div class="game-layout">
     <div class="game-frame-container">
         {% if game.game_type == 'link' %}
-            <iframe src="{{ game.link }}" id="game-link-frame" allowtransparency="true" class="game-frame"></iframe>
+            <iframe src="{{ game.link }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
         {% elif game.game_type == 'pygame' %}
-            <iframe src="{{ url_for('pygame') }}" id="game-pygame-frame" allowtransparency="true" class="game-frame"></iframe>
+            <iframe src="{{ url_for('pygame') }}" id="game-frame" allowtransparency="true" class="game-frame"allow="fullscreen"></iframe>
         {% elif game.game_type == 'unity' %}
-            <iframe src="{{ url_for('unity') }}" id="game-unity-frame" allowtransparency="true" class="game-frame"></iframe>
+            <iframe src="{{ url_for('unity') }}" id="game-frame" allowtransparency="true" class="game-frame"allow="fullscreen"></iframe>
         {% endif %}
         <div class="game-controls">
             {% if game.genre %}
                 <p class="game-genre"><strong>Жанр:</strong> {{ game.genre }}</p>
             {% endif %}
             <div class="button-group">
-                <a id="fullscreen-btn" class="btn fullscreen-btn">Развернуть на весь экран</a>
+                <a id="fullscreen-btn" class="btn fullscreen-btn">📺Развернуть на весь экран </a>
                 {% if game.installer %}
-                    <a href="{{ url_for('download_installer', game_id=game.id) }}" class="btn download-btn">Скачать 💾</a>
+                    <a href="{{ url_for('download_installer', game_id=game.id) }}" class="btn download-btn">💾Скачать </a>
                 {% endif %}
             </div>
         </div>
