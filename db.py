@@ -106,6 +106,7 @@ class Games(db.Model):
     cover = db.Column(db.LargeBinary, nullable=False)  # Ссылка на обложку
     link = db.Column(db.Text, nullable=False)  # HTML ссылка на игру
     genre = db.Column(db.Text, nullable=True)  # Жанр
+    game_type = db.Column(db.String(20), nullable=False, default='link')  # Тип игры: 'link', 'pygame', 'unity'
     installer = db.Column(db.Text, nullable=True)  # Путь к установщику
     time = db.Column(db.Integer, nullable=False, default=datetime.utcnow)  # Добавлено поле времени
 

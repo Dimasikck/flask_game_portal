@@ -98,22 +98,7 @@ def index():
         flash(f"Ошибка получения списка игр: {str(e)}", "error")
         games = []
     return render_template('index.html', title="Игровой развелекательный портал", menu=menu, user=current_user, games=games)
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                             Маршрут для ИГР Pygame
-"""
-#-----------------------------------------------------------------------------------------------------------------
-@app.route('/pygame')
-@login_required
-def pygame():
-    game_path = f'games/{request.cookies.get("game_path") }/build/web'
-    return send_from_directory(os.path.join(app.static_folder, game_path), 'index.html')
 
-
-@app.route('/<path:path>')
-@login_required
-def game_static_files(path):
-    return send_from_directory(os.path.join(app.static_folder, f'games/{path.removesuffix(".apk")}/build/web'), path)
 #-----------------------------------------------------------------------------------------------------------------
 """
                                       Маршрут страницы СПИСКА ИГР на сайте
@@ -139,9 +124,42 @@ def listgames():
 def game(game_id):
     game = Games.query.get_or_404(game_id)
     menu = MainMenu.query.all()
+
     response = make_response(render_template('game.html', menu=menu, title=game.title, game=game))
-    response.set_cookie('game_path', game.link, path='/', samesite='Lax')
+    if game.game_type == 'link':
+        response.set_cookie('game_path', '', path='/', samesite='Lax')  # Нет пути для внешних ссылок
+    elif game.game_type == 'pygame':
+        response.set_cookie('game_path', game.link, path='/', samesite='Lax')
+    elif game.game_type == 'unity':
+        response.set_cookie('game_path', game.link, path='/', samesite='Lax')
+
     return response
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                             Маршрут для ИГР Unity
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/unity')
+@login_required
+def unity():
+    game_path = f'games/{request.cookies.get("game_path")}/index.html'
+    return send_from_directory(os.path.join(app.static_folder), game_path)
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                             Маршрут для ИГР Pygame
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/pygame')
+@login_required
+def pygame():
+    game_path = f'games/{request.cookies.get("game_path") }/build/web'
+    return send_from_directory(os.path.join(app.static_folder, game_path), 'index.html')
+
+
+@app.route('/<path:path>')
+@login_required
+def game_static_files(path):
+    return send_from_directory(os.path.join(app.static_folder, f'games/{path.removesuffix(".apk")}/build/web'), path)
 #-----------------------------------------------------------------------------------------------------------------
 """
                                     Маршрут для скачивания УСТАНОВЩИКА ИГРЫ на сайте

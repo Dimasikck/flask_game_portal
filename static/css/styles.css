@@ -32,6 +32,9 @@ h1 {
     text-align: center;
     color: #fff;
 }
+iframe {
+    width: 100% !important; /* Высокая специфичность */
+}
 .clear { clear: both; }
 
 .text_error { color: #FF4040; }
@@ -157,6 +160,20 @@ h1 {
     background: #41c35b;
 }
 
+.btn.download-btn {
+    color: #fff;
+    background: #2db949;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.btn.download-btn:hover {
+    background: #41c35b;
+}
 /* Стиль для профиля */
 
 /* Контейнер профиля */
@@ -660,32 +677,114 @@ footer a {
     filter: brightness(0.4); /* Затемнение для повышения читаемости текста */
 }
 
-/* Стили для игрового окна */
-.game-frame {
+/* Стили для игрового окна и кнопок */
+.game-layout {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    max-width: 1140px !important;
+    margin: 30px auto !important;
+    border: 2px solid red; /* Для отладки */
+}
+
+.game-frame-container {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 800px !important;
+    border: 2px solid green;
+}
+.game-frame-container .game-frame {
     display: block;
-    margin: 30px auto; /* Центрирование */
-    width: 100%; /* Адаптивная ширина */
-    /*max-width: 800px; !* Максимальная ширина *!*/
-    /*height: 500px; !* Высота окна *!*/
-    border: none; /* Убираем рамку */
-    border-radius: 10px; /* Скругленные углы */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Тень для визуального эффекта */
-    background: rgba(0, 0, 0, 0.5); /* Фон на случай, если iframe не загрузится */
-    transition: transform 0.2s ease-in-out; /* Анимация при наведении */
+    width: 100%;
+    height: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease-in-out;
 }
 
-.game-frame:hover {
-    transform: scale(1.02); /* Увеличение при наведении */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7); /* Более яркая тень */
+.game-frame-container .game-frame:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
 }
 
-/* Для мобильных устройств */
+.game-frame-container .game-controls {
+    position: absolute;
+    bottom: 10px; /* Отступ от нижнего края iframe */
+    right: 10px; /* Отступ от правого края iframe */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.game-controls .game-genre {
+    color: #fff;
+    font-size: 16px;
+    margin: 0;
+    background: rgba(27, 29, 43, 0.9);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.button-group .btn.fullscreen-btn,
+.button-group .btn.download-btn {
+    color: #fff;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    display: inline-block; /* Кнопки не растягиваются по ширине */
+}
+
+.button-group .btn.download-btn {
+    background: #2db949; /* Отдельный цвет для кнопки "Скачать" */
+}
+
+.button-group .btn.fullscreen-btn:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.button-group .btn.download-btn:hover {
+    background: #41c35b;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
-    .game-frame {
-        height: 400px; /* Уменьшенная высота */
+    .game-frame-container .game-frame {
+        height: 400px;
+    }
+
+    .game-frame-container .game-controls {
+        position: static; /* Убираем абсолютное позиционирование на мобильных */
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .game-frame-container .button-group {
+        width: 100%;
+        align-items: center;
+    }
+
+    .game-frame-container .btn.fullscreen-btn,
+    .game-frame-container .btn.download-btn {
+        width: 80%; /* Кнопки занимают 80% ширины на мобильных */
     }
 }
-
 /* Контейнер карточек */
 .cards-container {
     display: flex;

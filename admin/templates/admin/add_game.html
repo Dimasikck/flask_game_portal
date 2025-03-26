@@ -41,6 +41,8 @@
                 <label for="game_link">Внешняя ссылка на игру</label>
                 <input type="radio" name="game_type" value="pygame" id="game_pygame">
                 <label for="game_pygame">Pygame игра</label>
+                <input type="radio" name="game_type" value="unity" id="game_unity">
+                 <label for="game_unity">Unity игра</label>
             </div>
         </div>
 
@@ -50,14 +52,21 @@
         </div>
 
         <div class="form-group" id="pygame_fields" style="display: none;">
-            <label for="game_zip">Архив с игрой:</label>
-            <input type="file" name="game_zip" id="game_zip" class="form-input" accept=".zip">
-            <label for="installer">Установщик (.exe, необязательно):</label>
-            <input type="file" name="installer" id="installer" class="form-input" accept=".exe">
-            <label for="screenshots_zip">Архив со скриншотами:</label>
-            <input type="file" name="screenshots_zip" id="screenshots_zip" class="form-input" accept=".zip">
+            <label for="pygame_zip">Архив с игрой:</label>
+            <input type="file" name="pygame_zip" id="pygame_zip" class="form-input" accept=".zip">
+            <label for="pygame_installer">Установщик (.exe, необязательно):</label>
+            <input type="file" name="pygame_installer" id="pygame_installer" class="form-input" accept=".exe">
+            <label for="pygame_screenshots_zip">Архив со скриншотами:</label>
+            <input type="file" name="pygame_screenshots_zip" id="pygame_screenshots_zip" class="form-input" accept=".zip">
         </div>
-
+        <div class="form-group" id="unity_fields" style="display: none;">
+            <label for="unity_zip">Архив с Unity WebGL игрой:</label>
+            <input type="file" name="unity_zip" id="unity_zip" class="form-input" accept=".zip">
+            <label for="unity_installer">Установщик (.exe, необязательно):</label>
+            <input type="file" name="unity_installer" id="unity_installer" class="form-input" accept=".exe">
+            <label for="unity_screenshots_zip">Архив со скриншотами:</label>
+            <input type="file" name="pygame_screenshots_zip" id="unity_screenshots_zip" class="form-input" accept=".zip">
+        </div>
         <button type="submit" class="styled-button">Добавить игру</button>
     </form>
 </div>
@@ -68,6 +77,8 @@
                 this.value === 'link' ? 'block' : 'none';
             document.getElementById('pygame_fields').style.display =
                 this.value === 'pygame' ? 'block' : 'none';
+            document.getElementById('unity_fields').style.display =
+                this.value === 'unity' ? 'block' : 'none';
         });
     });
 </script>
