@@ -154,8 +154,6 @@ def unity():
 def pygame():
     game_path = f'games/{request.cookies.get("game_path") }/build/web'
     return send_from_directory(os.path.join(app.static_folder, game_path), 'index.html')
-
-
 @app.route('/<path:path>')
 @login_required
 def game_static_files(path):
@@ -172,7 +170,6 @@ def download_installer(game_id):
     if game.installer and os.path.exists(game.installer):
         return send_file(game.installer, as_attachment=True, download_name=f"{game.title}.exe")
     abort(404)
-
 #-----------------------------------------------------------------------------------------------------------------
 """
                                     Маршрут страницы АВТОРИЗАЦИИ на сайте

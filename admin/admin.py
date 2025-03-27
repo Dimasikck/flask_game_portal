@@ -378,7 +378,7 @@ def add_game():
                     os.makedirs(game_path, exist_ok=True)
 
                     # Сохранение и разархивирование архива игры с сохранением структуры
-                    game_zip_path = os.path.join(game_path, 'pygame_zip')
+                    game_zip_path = os.path.join(game_path, 'pygame.zip')
                     pygame_zip.save(game_zip_path)
                     with zipfile.ZipFile(game_zip_path, 'r') as zip_ref:
                         zip_ref.extractall(game_path)  # Извлекаем все с исходной структурой
@@ -495,6 +495,8 @@ def edit_game(game_id):
                                                    game=game, genres=GENRES)
                         game.link = link
                         game.installer = None
+                        game.game_type = game_type
+
                     elif game_type == 'pygame':
                         pygame_zip = request.files.get('pygame_zip')
                         pygame_installer = request.files.get('pygame_installer')
@@ -514,7 +516,7 @@ def edit_game(game_id):
                             os.makedirs(game_path, exist_ok=True)
 
                             # Сохранение и разархивирование архива игры с сохранением структуры
-                            pygame_zip_path = os.path.join(game_path, 'pygame_zip')
+                            pygame_zip_path = os.path.join(game_path, 'pygame.zip')
                             pygame_zip.save(pygame_zip_path)
                             with zipfile.ZipFile(pygame_zip_path, 'r') as zip_ref:
                                 zip_ref.extractall(game_path)  # Извлекаем все с исходной структурой
@@ -540,7 +542,9 @@ def edit_game(game_id):
                                 os.remove(game.installer)
                             pygame_installer.save(installer_path)
                             game.installer = installer_path
-                    elif game_type == 'unity' and request.files.get('unity_zip'):
+                        game.game_type = game_type
+
+                    elif game_type == 'unity' and request.files.get('unity.zip'):
                         unity_zip = request.files.get('unity_zip')
                         unity_installer = request.files.get('unity_installer')
                         unity_screenshots_zip = request.files.get('unity_screenshots_zip')
@@ -585,6 +589,7 @@ def edit_game(game_id):
                                 os.remove(game.installer)
                             unity_installer.save(installer_path)
                             game.installer = installer_path
+                        game.game_type = game_type
 
                     db.session.commit()
                     flash("Игра успешно обновлена", "success")
@@ -636,16 +641,16 @@ def delete_game(game_id):
         game = Games.query.get(game_id)
         if game:
             # Проверяем, является ли игра Pygame (нет http в начале link)
-            if game.link and not game.link.startswith('http'):
+            if game.link and game.game_type != 'link':
                 game_folder = game.link.replace('flask_game_portal/static/games/', '')  # Извлекаем имя папки из пути
                 game_path = os.path.join('flask_game_portal/static/games', game_folder)
                 # game_folder = game.link.replace('static/games/', '')  # Извлекаем имя папки из пути
                 # game_path = os.path.join('static/games', game_folder)
                 if os.path.exists(game_path):
                     shutil.rmtree(game_path)  # Удаляем папку с игрой и всем содержимым
-                    flash(f'Папка игры {game_folder} удалена из static/games', 'success')
+                    flash(f'Папка игры {game_folder} удалена', 'success')
                 else:
-                    flash(f'Папка игры {game_folder} не найдена в static/games', 'error')
+                    flash(f'Папка игры {game_folder} не найдена', 'error')
 
             db.session.delete(game)
             db.session.commit()
