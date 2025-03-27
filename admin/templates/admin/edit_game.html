@@ -56,12 +56,12 @@
         </div>
 
         <div class="form-group" id="pygame_fields" style="display: {% if game.link.startswith('/static/games') %}block{% else %}none{% endif %};">
-            <label for="game_zip">Новый архив с игрой (опционально):</label>
-            <input type="file" name="game_zip" id="game_zip" class="form-input" accept=".zip">
-            <label for="installer">Новый установщик (.exe, заменит текущий, необязательно):</label>
-            <input type="file" name="installer" id="installer" class="form-input" accept=".exe">
-            <label for="screenshots_zip">Новый архив со скриншотами (опционально):</label>
-            <input type="file" name="screenshots_zip" id="screenshots_zip" class="form-input" accept=".zip">
+            <label for="pygame_zip">Новый архив с игрой (опционально):</label>
+            <input type="file" name="pygame_zip" id="pygame_zip" class="form-input" accept=".zip">
+            <label for="pygame_installer">Новый установщик (.exe, заменит текущий, необязательно):</label>
+            <input type="file" name="pygame_installer" id="pygame_installer" class="form-input" accept=".exe">
+            <label for="pygame_screenshots_zip">Новый архив со скриншотами (опционально):</label>
+            <input type="file" name="pygame_screenshots_zip" id="pygame_screenshots_zip" class="form-input" accept=".zip">
         </div>
         <div class="form-group" id="unity_fields" style="display: {% if game.game_type == 'unity' %}block{% else %}none{% endif %};">
           <label for="unity_zip">Архив с Unity WebGL игрой:</label>
