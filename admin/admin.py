@@ -25,7 +25,7 @@ menu = [{'url': '.index', 'title': 'Панель'},
 
 SECRET_KEY = '43fswQtodqAAAAAaLYQVnaNOyAwmqeOqWsGPvweqe'
 
-GENRES = ['🔫Экшн', '🌏Приключения', '🧙‍♂️RPG', '📈Стратегия', '💼Симулятор', '⚽Спорт', '🗿Головоломка', '🏃‍♂️Платформер', 'Другое']
+GENRES = ('🔫Экшн', '🌏Приключения', '🧙‍♂️RPG', '📈Стратегия', '💼Симулятор', '⚽Спорт', '🗿Головоломка', '🏃‍♂️Платформер',  'Другое')
 def isLogged():
     return True if session.get('admin_logged') else False
 def login_admin():
@@ -351,7 +351,7 @@ def add_game():
                     flash('Игра с таким названием уже добавлена', 'error')
                     return render_template('admin/add_game.html', menu=menu, title='Добавить игру', genres=GENRES)
                 cover_data = cover_file.read()
-                new_game = Games(title=title, description=description, cover=cover_data, genre=genre)
+                new_game = Games(title=title, description=description, cover=cover_data, genre=genre, time=int(datetime.now().timestamp()))
 
                 if game_type == 'link':
                     link = request.form.get('link')
@@ -411,7 +411,7 @@ def add_game():
                     # game_path = os.path.join('static/games', game_folder)
                     game_path = os.path.join('flask_game_portal/static/games', game_folder)
                     os.makedirs(game_path, exist_ok=True)
-                    game_zip_path = os.path.join(game_path, 'unity_game.zip')
+                    game_zip_path = os.path.join(game_path, 'unity.zip')
                     unity_zip.save(game_zip_path)
                     with zipfile.ZipFile(game_zip_path, 'r') as zip_ref:
                         zip_ref.extractall(game_path)
@@ -533,7 +533,7 @@ def edit_game(game_id):
                                 os.remove(screenshots_zip_path)
                             game.link = game_folder
                         if pygame_installer:
-                            game_folder = game.link if game.link else secure_filename(title)
+                            game_folder = game.link if game.link else secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             # game_path = os.path.join('static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
@@ -580,7 +580,7 @@ def edit_game(game_id):
                                 os.remove(screenshots_zip_path)
                             game.link = game_folder
                         if unity_installer:
-                            game_folder = secure_filename(title)
+                            game_folder = game.link if game.link else secure_filename(unity_zip.filename).rsplit('.', 1)[0]
                             # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)

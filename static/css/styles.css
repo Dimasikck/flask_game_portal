@@ -680,23 +680,23 @@ footer a {
 /* Стили для игрового окна и кнопок */
 .game-layout {
     display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    flex-direction: column; /* Изменяем направление flex на вертикальное */
+    align-items: center; /* Центрируем содержимое по горизонтали */
     max-width: 1140px !important;
     margin: 30px auto !important;
-
 }
 
+/* Стили для game-frame-container и кнопки fullscreen-btn */
 .game-frame-container {
     position: relative !important;
     width: 100% !important;
     max-width: 1100px !important;
-
 }
+
 .game-frame-container .game-frame {
     display: block;
     width: 100%;
-    height: 600px;
+    height: 650px;
     border: none;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
@@ -711,15 +711,61 @@ footer a {
 
 .game-frame-container .game-controls {
     position: absolute;
-    bottom: 10px; /* Отступ от нижнего края iframe */
-    right: 10px; /* Отступ от правого края iframe */
+    bottom: 10px;
+    right: 10px;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
+    align-items: center;
 }
 
-.game-controls .game-genre {
+.game-frame-container .btn.fullscreen-btn {
+
+    transition: all 0.3s ease;
+
+}
+
+.game-frame-container .btn.fullscreen-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Стили для нового блока game-meta */
+.game-meta {
+    max-width: 1100px;
+    margin: 10px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Для адаптивности */
+    gap: 10px; /* Расстояние между элементами */
+}
+
+.game-meta .game-type {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: 16px;
+    background: rgba(27, 29, 43, 0.9);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.game-meta .type-icon {
+    width: 18px; /* Размер иконки */
+    height: 18px;
+    margin-right: 5px; /* Отступ от текста */
+}
+
+.game-controls .fullscreen-icon {
+    width: 38px; /* Размер иконки */
+    height: 38px;
+
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.game-controls .fullscreen-icon:hover {
+    transform: scale(1.05);
+}
+.game-meta .game-genre {
     color: #fff;
     font-size: 16px;
     margin: 0;
@@ -728,16 +774,9 @@ footer a {
     border-radius: 5px;
 }
 
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.button-group .btn.fullscreen-btn,
-.button-group .btn.download-btn {
+.game-meta .btn.download-btn {
     color: #fff;
-    background: linear-gradient(135deg, #1196d7, #00cee7);
+    background: #2db949;
     border: none;
     padding: 10px 20px;
     border-radius: 25px;
@@ -746,19 +785,9 @@ footer a {
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     text-decoration: none;
-    display: inline-block; /* Кнопки не растягиваются по ширине */
 }
 
-.button-group .btn.download-btn {
-    background: #2db949; /* Отдельный цвет для кнопки "Скачать" */
-}
-
-.button-group .btn.fullscreen-btn:hover {
-    background: linear-gradient(135deg, #29abee, #22dcf1);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-}
-
-.button-group .btn.download-btn:hover {
+.game-meta .btn.download-btn:hover {
     background: #41c35b;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
@@ -769,20 +798,13 @@ footer a {
         height: 400px;
     }
 
-    .game-frame-container .game-controls {
-        position: static; /* Убираем абсолютное позиционирование на мобильных */
-        align-items: center;
-        margin-top: 10px;
+    .game-meta {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .game-frame-container .button-group {
-        width: 100%;
-        align-items: center;
-    }
-
-    .game-frame-container .btn.fullscreen-btn,
-    .game-frame-container .btn.download-btn {
-        width: 80%; /* Кнопки занимают 80% ширины на мобильных */
+    .game-meta .btn.download-btn {
+        align-self: flex-end;
     }
 }
 /* Контейнер карточек */
@@ -797,7 +819,7 @@ footer a {
 /* Карточка игры */
 .game-card {
     width: 200px;
-    height: 250px; /* Квадратный размер */
+    height: 300px; /* Увеличиваем высоту карточки, чтобы вместить новый контент */
     background: #1B1D2B;
     color: #fff;
     border-radius: 10px;
@@ -808,6 +830,7 @@ footer a {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-decoration: none; /* Убираем подчеркивание ссылки */
 }
 
 /* Эффект при наведении */
@@ -818,7 +841,7 @@ footer a {
 /* Обложка игры */
 .game-cover {
     width: 100%;
-    height: 150%; /* Фиксированная высота для изображения */
+    height: 60%; /* Уменьшаем высоту обложки, чтобы оставить место для текста */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -831,29 +854,59 @@ footer a {
     object-fit: cover; /* Обрезка изображения, чтобы не растягивалось */
 }
 
-/* Название игры */
+/* Название игры, тип и жанр */
 .game-title {
-    height: 30%; /* Фиксированная высота под текст */
+    height: 40%; /* Увеличиваем высоту для размещения всех элементов */
     display: flex;
+    flex-direction: column; /* Вертикальное расположение элементов */
     align-items: center;
     justify-content: center;
     padding: 10px;
     font-size: 14px;
-    font-weight: bold;
     text-align: center;
 }
 
+.game-name {
+    font-weight: bold;
+    font-size: 20px;
+    color: #129fe6; /* Цвет названия игры как у ссылок */
+    margin-bottom: 18px; /* Отступ перед типом игры */
+    overflow: hidden; /* Скрываем текст, если он не помещается */
+    text-overflow: ellipsis; /* Добавляем многоточие для длинных названий */
+    white-space: nowrap; /* Запрещаем перенос названия */
+    max-width: 100%; /* Ограничиваем ширину */
+}
+
+.game-type {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 5px; /* Отступ перед жанром */
+}
+
+.game-type .type-icon {
+    width: 20px; /* Размер иконки */
+    height: 20px;
+    margin-right: 5px; /* Отступ между иконкой и текстом */
+}
+
+.game-genre {
+    color: #ddd; /* Цвет жанра чуть светлее для контраста */
+    font-size: 16px;
+    overflow: hidden; /* Скрываем текст, если он не помещается */
+    text-overflow: ellipsis; /* Добавляем многоточие для длинных жанров */
+    white-space: nowrap; /* Запрещаем перенос жанра */
+    max-width: 100%; /* Ограничиваем ширину */
+}
+
+/* Убираем подчеркивание и меняем цвет текста у ссылки внутри game-title */
 .game-title a {
-    color: #129fe6;
+    color: inherit; /* Наследуем цвет от родительских элементов */
     text-decoration: none;
-    transition: color 0.3s;
 }
 
-.game-title a:hover {
-    color: #22dcf1;
-}
-
-/* Заголовок страницы */
+/* Остальные стили остаются без изменений */
 .page-title {
     text-align: center;
     margin: 20px 0;

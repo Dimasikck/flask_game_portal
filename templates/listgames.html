@@ -8,13 +8,10 @@
 {% endfor %}
 
 <div class="profile-container">
-
-  <h1>{{title}}</h1>
-
+    <h1>{{title}}</h1>
 </div>
 
 <div class="cards-container">
-
     {% for game in games %}
     <a href="{{ url_for('game', game_id=game.id) }}" class="game-card">
         {% if game.cover %}
@@ -23,7 +20,22 @@
         </div>
         {% endif %}
         <div class="game-title">
-            {{ game.title }}
+            <div class="game-name">{{ game.title }}</div>
+            <div class="game-type">
+                {% if game.game_type == 'link' %}
+                    <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
+                    <span>Web</span>
+                {% elif game.game_type == 'pygame' %}
+                    <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
+                    <span>Pygame</span>
+                {% elif game.game_type == 'unity' %}
+                    <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
+                    <span>Unity</span>
+                {% endif %}
+            </div>
+            {% if game.genre %}
+            <div class="game-genre">{{ game.genre }}</div>
+            {% endif %}
         </div>
     </a>
     {% endfor %}

@@ -134,16 +134,7 @@ def game(game_id):
         response.set_cookie('game_path', game.link, path='/', samesite='Lax')
 
     return response
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                             Маршрут для ИГР Unity
-"""
-#-----------------------------------------------------------------------------------------------------------------
-@app.route('/unity')
-@login_required
-def unity():
-    game_path = f'games/{request.cookies.get("game_path")}/index.html'
-    return send_from_directory(os.path.join(app.static_folder), game_path)
+
 #-----------------------------------------------------------------------------------------------------------------
 """
                                              Маршрут для ИГР Pygame
@@ -152,8 +143,9 @@ def unity():
 @app.route('/pygame')
 @login_required
 def pygame():
-    game_path = f'games/{request.cookies.get("game_path") }/build/web'
+    game_path = f'games/{request.cookies.get("game_path")}/build/web'
     return send_from_directory(os.path.join(app.static_folder, game_path), 'index.html')
+
 @app.route('/<path:path>')
 @login_required
 def game_static_files(path):

@@ -15,24 +15,44 @@
     <div class="game-frame-container">
         {% if game.game_type == 'link' %}
             <iframe src="{{ game.link }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
-        {% elif game.game_type == 'pygame' %}
-            <iframe src="{{ url_for('pygame') }}" id="game-frame" allowtransparency="true" class="game-frame"allow="fullscreen"></iframe>
-        {% elif game.game_type == 'unity' %}
-            <iframe src="{{ url_for('unity') }}" id="game-frame" allowtransparency="true" class="game-frame"allow="fullscreen"></iframe>
-        {% endif %}
         <div class="game-controls">
-            {% if game.genre %}
-                <p class="game-genre"><strong>Жанр:</strong> {{ game.genre }}</p>
-            {% endif %}
-            <div class="button-group">
-                <a id="fullscreen-btn" class="btn fullscreen-btn">📺Развернуть на весь экран </a>
-                {% if game.installer %}
-                    <a href="{{ url_for('download_installer', game_id=game.id) }}" class="btn download-btn">💾Скачать </a>
-                {% endif %}
-            </div>
+            <a id="fullscreen-btn" class="btn fullscreen-btn">📺</a>
         </div>
+        {% elif game.game_type == 'pygame' %}
+            <iframe src="{{ url_for('pygame') }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
+        <div class="game-controls">
+            <a id="fullscreen-btn" >
+             <img src="{{ url_for('static', filename='images/fullscreen-button.png') }}" alt="Fullscreen" class="fullscreen-icon">
+            </a>
+        </div>
+        {% elif game.game_type == 'unity' %}
+            <iframe src="{{ url_for('static', filename='games/' + game.link + '/index.html') }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
+        {% endif %}
+
+    </div>
+
+    <div class="game-meta">
+        <div class="game-type">
+            {% if game.game_type == 'link' %}
+                <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
+                <span>Web</span>
+            {% elif game.game_type == 'pygame' %}
+                <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
+                <span>Pygame</span>
+            {% elif game.game_type == 'unity' %}
+                <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
+                <span>Unity</span>
+            {% endif %}
+        </div>
+        {% if game.genre %}
+            <p class="game-genre"><strong>Жанр:</strong> {{ game.genre }}</p>
+        {% endif %}
+        {% if game.installer %}
+            <a href="{{ url_for('download_installer', game_id=game.id) }}" class="btn download-btn">💾Скачать</a>
+        {% endif %}
     </div>
 </div>
+
 
 <div class="game-info-container">
     <div id="game-info" class="game-info">
@@ -57,7 +77,6 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.cookie = "game_path={{ game.link }}; path=/; SameSite=Lax";
-        // Убрано перенаправление для теста
         console.log("game-layout:", document.querySelector('.game-layout'));
     });
 </script>
