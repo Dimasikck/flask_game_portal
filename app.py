@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask_migrate import Migrate
+from sqlalchemy import func, asc, desc
 from db import *
 from forms import *
 from UserLogin import UserLogin
@@ -40,6 +41,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
 login_manager.login_message_category = "success"
+
+GENRES = ('🔫Экшн', '🌏Приключения', '🧙‍♂️RPG', '📈Стратегия', '💼Симулятор', '⚽Спорт', '🗿Головоломка', '🏃‍♂️Платформер',  'Другое')
 #-----------------------------------------------------------------------------------------------------------------
 
 """
@@ -109,11 +112,42 @@ def index():
 def listgames():
     menu = MainMenu.query.all()
     try:
-        games = Games.query.all()
+        # Получаем параметры запроса
+        search = request.args.get('search', '').strip()
+        sort = request.args.get('sort_name', 'time_desc')  # По умолчанию сортировка по дате убывания
+        filter_type = request.args.get('type_filter', '')  # Фильтр по типу игры
+        filter_genre = request.args.get('genre_filter', '')  # Фильтр по жанру
+        # Базовый запрос
+        query = Games.query
+        # Поиск по названию или описанию
+        if search:
+            query = query.filter(
+                (Games.title.ilike(f'%{search}%')) |
+                (Games.description.ilike(f'%{search}%'))
+            )
+        # Фильтрация по типу игры
+        if filter_type:
+            query = query.filter(Games.type == filter_type)
+        # Сортировка
+        if filter_genre:
+            query = query.filter(Games.genre == filter_genre)
+        if sort == 'title_asc':
+            query = query.order_by(asc(Games.title))
+        elif sort == 'title_desc':
+            query = query.order_by(desc(Games.title))
+        elif sort == 'time_asc':
+            query = query.order_by(asc(Games.time))
+        elif sort == 'time_desc':
+            query = query.order_by(desc(Games.time))
+        else:
+            query = query.order_by(desc(Games.time))  # По умолчанию
+
+        games = query.all()
     except Exception as e:
-        flash(f"Ошибка получения списка игр: {str(e)}", "error")
+        flash(f'Ошибка получения списка игр: {str(e)}', 'error')
         games = []
-    return render_template('listgames.html', title="Игры", menu=menu, games=games)
+    return render_template('listgames.html', title="Игры", menu=menu, games=games,
+                          search=search, sort=sort, filter_type=filter_type, filter_genre=filter_genre, genres=GENRES)
 #-----------------------------------------------------------------------------------------------------------------
 """
                                       Маршрут страницы ИГРЫ на сайте
