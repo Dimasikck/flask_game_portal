@@ -250,7 +250,7 @@ def list_games():
         # Получаем параметры запроса
         search = request.args.get('search', '').strip()
         sort = request.args.get('sort', 'time_desc')  # По умолчанию сортировка по дате убывания
-        filter_type = request.args.get('type', '')  # Фильтр по типу игры (link или pygame)
+        filter_type = request.args.get('type', '')  # Фильтр по типу игры
         filter_genre = request.args.get('genre', '')# Фильтр по жанру
         # Базовый запрос
         query = Games.query
@@ -261,10 +261,8 @@ def list_games():
                 (Games.description.ilike(f'%{search}%'))
             )
         # Фильтрация по типу игры
-        if filter_type == 'link':
-            query = query.filter(Games.link.like('http%'))
-        elif filter_type == 'pygame':
-            query = query.filter(Games.link.like('%'))
+        if filter_type:
+            query = query.filter(Games.type == filter_type)
         # Сортировка
         if filter_genre:
             query = query.filter(Games.genre == filter_genre)
@@ -340,7 +338,7 @@ def add_game():
         title = request.form.get('title')
         description = request.form.get('description')
         genre = request.form.get('genre')
-        game_type = request.form.get('game_type')
+        type = request.form.get('type')
         cover_file = request.files.get('cover')
 
         if not title or not description or not cover_file:
@@ -353,7 +351,7 @@ def add_game():
                 cover_data = cover_file.read()
                 new_game = Games(title=title, description=description, cover=cover_data, genre=genre, time=int(datetime.now().timestamp()))
 
-                if game_type == 'link':
+                if type == 'link':
                     link = request.form.get('link')
                     if not link:
                         flash('Ссылка для внешней игры обязательна', 'error')
@@ -362,8 +360,8 @@ def add_game():
                         flash('Игра с такой ссылкой уже добавлена', 'error')
                         return render_template('admin/add_game.html', menu=menu, title='Добавить игру', genres=GENRES)
                     new_game.link = link
-                    new_game.game_type = 'link'
-                elif game_type == 'pygame':
+                    new_game.type = 'link'
+                elif type == 'pygame':
                     pygame_zip = request.files.get('pygame_zip')
                     pygame_installer = request.files.get('pygame_installer')
                     pygame_screenshots_zip = request.files.get('pygame_screenshots_zip')
@@ -398,9 +396,9 @@ def add_game():
                         pygame_installer.save(installer_path)
                         new_game.installer = installer_path
                     new_game.link = game_folder
-                    new_game.game_type = 'pygame'
+                    new_game.type = 'pygame'
 
-                elif game_type == 'unity':
+                elif type == 'unity':
                     unity_zip = request.files.get('unity_zip')
                     unity_installer = request.files.get('unity_installer')
                     unity_screenshots_zip = request.files.get('unity_screenshots_zip')
@@ -430,7 +428,7 @@ def add_game():
                         unity_installer.save(installer_path)
                         new_game.installer = installer_path
                     new_game.link = game_folder
-                    new_game.game_type = 'unity'
+                    new_game.type = 'unity'
 
                 db.session.add(new_game)
                 db.session.commit()
@@ -463,7 +461,7 @@ def edit_game(game_id):
         title = request.form.get('title', '').strip()
         description = request.form.get('description', '').strip()
         genre = request.form.get('genre')
-        game_type = request.form.get('game_type')
+        type = request.form.get('type')
         cover_file = request.files.get('cover')
 
         if title or description or (cover_file and cover_file.filename):
@@ -482,7 +480,7 @@ def edit_game(game_id):
                         cover_data = cover_file.read()
                         game.cover = cover_data
 
-                    if game_type == 'link':
+                    if type == 'link':
                         link = request.form.get('link')
                         if not link:
                             flash('Ссылка для внешней игры обязательна', 'error')
@@ -495,9 +493,9 @@ def edit_game(game_id):
                                                    game=game, genres=GENRES)
                         game.link = link
                         game.installer = None
-                        game.game_type = game_type
+                        game.type = type
 
-                    elif game_type == 'pygame':
+                    elif type == 'pygame':
                         pygame_zip = request.files.get('pygame_zip')
                         pygame_installer = request.files.get('pygame_installer')
                         pygame_screenshots_zip = request.files.get('pygame_screenshots_zip')
@@ -542,9 +540,9 @@ def edit_game(game_id):
                                 os.remove(game.installer)
                             pygame_installer.save(installer_path)
                             game.installer = installer_path
-                        game.game_type = game_type
+                        game.type = type
 
-                    elif game_type == 'unity' and request.files.get('unity.zip'):
+                    elif type == 'unity' and request.files.get('unity.zip'):
                         unity_zip = request.files.get('unity_zip')
                         unity_installer = request.files.get('unity_installer')
                         unity_screenshots_zip = request.files.get('unity_screenshots_zip')
@@ -589,7 +587,7 @@ def edit_game(game_id):
                                 os.remove(game.installer)
                             unity_installer.save(installer_path)
                             game.installer = installer_path
-                        game.game_type = game_type
+                        game.type = type
 
                     db.session.commit()
                     flash("Игра успешно обновлена", "success")
@@ -641,7 +639,7 @@ def delete_game(game_id):
         game = Games.query.get(game_id)
         if game:
             # Проверяем, является ли игра Pygame (нет http в начале link)
-            if game.link and game.game_type != 'link':
+            if game.link and game.type != 'link':
                 game_folder = game.link.replace('flask_game_portal/static/games/', '')  # Извлекаем имя папки из пути
                 game_path = os.path.join('flask_game_portal/static/games', game_folder)
                 # game_folder = game.link.replace('static/games/', '')  # Извлекаем имя папки из пути

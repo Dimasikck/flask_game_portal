@@ -807,6 +807,118 @@ footer a {
         align-self: flex-end;
     }
 }
+
+/* Стили для блока управления в profile-container */
+.search-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(20, 20, 30, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+/* Стили для заголовка */
+
+
+.search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+
+
+#search-input {
+    padding: 8px 12px;
+    background: #2A2C3F;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    width: 312px;
+}
+
+#search-btn {
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+#search-btn:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    transform: scale(1.05);
+}
+
+.sort-container, .filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-container label, .filter-container label {
+    color: #ddd;
+    font-size: 14px;
+}
+
+.sort-container select, .filter-container select {
+    padding: 8px 12px;
+    background: #2A2C3F;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#apply-filters-btn {
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#apply-filters-btn:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    transform: scale(1.05);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .game-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #search-input {
+        width: 100%;
+    }
+
+    .sort-container, .filter-container {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sort-container select, .filter-container select {
+        width: 100%;
+    }
+
+    #apply-filters-btn {
+        width: 100%;
+    }
+}
+
 /* Контейнер карточек */
 .cards-container {
     display: flex;
@@ -909,8 +1021,8 @@ footer a {
 /* Остальные стили остаются без изменений */
 .page-title {
     text-align: center;
-    margin: 20px 0;
-    font-size: 24px;
+
+    font-size: 44px;
     color: #fff;
 }
 /* Стили для кнопки "Развернуть на весь экран" */

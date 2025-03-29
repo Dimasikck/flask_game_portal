@@ -126,11 +126,11 @@ def game(game_id):
     menu = MainMenu.query.all()
 
     response = make_response(render_template('game.html', menu=menu, title=game.title, game=game))
-    if game.game_type == 'link':
+    if game.type == 'link':
         response.set_cookie('game_path', '', path='/', samesite='Lax')  # Нет пути для внешних ссылок
-    elif game.game_type == 'pygame':
+    elif game.type == 'pygame':
         response.set_cookie('game_path', game.link, path='/', samesite='Lax')
-    elif game.game_type == 'unity':
+    elif game.type == 'unity':
         response.set_cookie('game_path', game.link, path='/', samesite='Lax')
 
     return response

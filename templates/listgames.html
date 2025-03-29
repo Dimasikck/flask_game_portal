@@ -7,8 +7,50 @@
 <div class="flash {{cat}}">{{msg}}</div>
 {% endfor %}
 
-<div class="profile-container">
-    <h1>{{title}}</h1>
+<div class="search-container">
+    <h1 class="page-title">{{title}}</h1>
+
+    <!-- Блок управления: поиск, сортировка, фильтры -->
+    <div class="search-controls">
+        <!-- Поиск -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Поиск по названию или описанию..." value="{{ request.args.get('search', '') }}">
+            <button id="search-btn">🔍</button>
+        </div>
+
+        <!-- Сортировка -->
+        <div class="sort-container">
+            <label for="sort-select">Сортировать по типу:</label>
+            <select id="sort-select" name="sort">
+                <option value="" {% if not request.args.get('sort') %}selected{% endif %}>Без сортировки</option>
+                <option value="link" {% if request.args.get('sort') == 'link' %}selected{% endif %}>Web</option>
+                <option value="pygame" {% if request.args.get('sort') == 'pygame' %}selected{% endif %}>Pygame</option>
+                <option value="unity" {% if request.args.get('sort') == 'unity' %}selected{% endif %}>Unity</option>
+            </select>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filter-container">
+            <label>Фильтр по типу:</label>
+            <select id="type-filter" name="type_filter">
+                <option value="" {% if not request.args.get('type_filter') %}selected{% endif %}>Все типы</option>
+                <option value="link" {% if request.args.get('type_filter') == 'link' %}selected{% endif %}>Web</option>
+                <option value="pygame" {% if request.args.get('type_filter') == 'pygame' %}selected{% endif %}>Pygame</option>
+                <option value="unity" {% if request.args.get('type_filter') == 'unity' %}selected{% endif %}>Unity</option>
+            </select>
+
+            <label>Фильтр по жанру:</label>
+            <select id="genre-filter" name="genre_filter">
+                <option value="" {% if not request.args.get('genre_filter') %}selected{% endif %}>Все жанры</option>
+                {% for genre in genres %}
+                <option value="{{ genre }}" {% if request.args.get('genre_filter') == genre %}selected{% endif %}>{{ genre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Кнопка применения фильтров -->
+        <button id="apply-filters-btn" class="btn">Применить</button>
+    </div>
 </div>
 
 <div class="cards-container">
@@ -22,13 +64,13 @@
         <div class="game-title">
             <div class="game-name">{{ game.title }}</div>
             <div class="game-type">
-                {% if game.game_type == 'link' %}
+                {% if game.type == 'link' %}
                     <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
                     <span>Web</span>
-                {% elif game.game_type == 'pygame' %}
+                {% elif game.type == 'pygame' %}
                     <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
                     <span>Pygame</span>
-                {% elif game.game_type == 'unity' %}
+                {% elif game.type == 'unity' %}
                     <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
                     <span>Unity</span>
                 {% endif %}
@@ -40,5 +82,25 @@
     </a>
     {% endfor %}
 </div>
+
+<script>
+    document.getElementById('search-btn').addEventListener('click', applyFilters);
+    document.getElementById('apply-filters-btn').addEventListener('click', applyFilters);
+
+    function applyFilters() {
+        const search = document.getElementById('search-input').value;
+        const sort = document.getElementById('sort-select').value;
+        const typeFilter = document.getElementById('type-filter').value;
+        const genreFilter = document.getElementById('genre-filter').value;
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', search);
+        url.searchParams.set('sort', sort);
+        url.searchParams.set('type_filter', typeFilter);
+        url.searchParams.set('genre_filter', genreFilter);
+
+        window.location.href = url.toString();
+    }
+</script>
 
 {% endblock %}

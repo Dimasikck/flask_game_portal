@@ -37,11 +37,11 @@
         <div class="form-group">
             <label>Тип игры:</label>
             <div class="radio-group">
-                <input type="radio" name="game_type" value="link" id="game_link" checked>
+                <input type="radio" name="type" value="link" id="game_link" checked>
                 <label for="game_link">Внешняя ссылка на игру</label>
-                <input type="radio" name="game_type" value="pygame" id="game_pygame">
+                <input type="radio" name="type" value="pygame" id="game_pygame">
                 <label for="game_pygame">Pygame игра</label>
-                <input type="radio" name="game_type" value="unity" id="game_unity">
+                <input type="radio" name="type" value="unity" id="game_unity">
                  <label for="game_unity">Unity игра</label>
             </div>
         </div>
@@ -71,7 +71,7 @@
     </form>
 </div>
 <script>
-    document.querySelectorAll('input[name="game_type"]').forEach(radio => {
+    document.querySelectorAll('input[name="type"]').forEach(radio => {
         radio.addEventListener('change', function() {
             document.getElementById('link_field').style.display =
                 this.value === 'link' ? 'block' : 'none';

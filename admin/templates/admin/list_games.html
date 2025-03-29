@@ -42,6 +42,7 @@
                 <option value="" {% if not filter_type %}selected{% endif %}>Все</option>
                 <option value="link" {% if filter_type == 'link' %}selected{% endif %}>Внешняя ссылка</option>
                 <option value="pygame" {% if filter_type == 'pygame' %}selected{% endif %}>Pygame</option>
+                <option value="unity" {% if filter_type == 'unity' %}selected{% endif %}>Unity</option>
             </select>
         </div>
         <button type="submit" class="styled-button">Применить</button>

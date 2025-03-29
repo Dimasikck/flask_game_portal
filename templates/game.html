@@ -13,19 +13,21 @@
 
 <div class="game-layout">
     <div class="game-frame-container">
-        {% if game.game_type == 'link' %}
+        {% if game.type == 'link' %}
             <iframe src="{{ game.link }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
         <div class="game-controls">
-            <a id="fullscreen-btn" class="btn fullscreen-btn">📺</a>
+            <a id="fullscreen-btn" >
+             <img src="{{ url_for('static', filename='images/fullscreen-button.png') }}" alt="Fullscreen" class="fullscreen-icon">
+            </a>
         </div>
-        {% elif game.game_type == 'pygame' %}
+        {% elif game.type == 'pygame' %}
             <iframe src="{{ url_for('pygame') }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
         <div class="game-controls">
             <a id="fullscreen-btn" >
              <img src="{{ url_for('static', filename='images/fullscreen-button.png') }}" alt="Fullscreen" class="fullscreen-icon">
             </a>
         </div>
-        {% elif game.game_type == 'unity' %}
+        {% elif game.type == 'unity' %}
             <iframe src="{{ url_for('static', filename='games/' + game.link + '/index.html') }}" id="game-frame" allowtransparency="true" class="game-frame" allow="fullscreen"></iframe>
         {% endif %}
 
@@ -33,13 +35,13 @@
 
     <div class="game-meta">
         <div class="game-type">
-            {% if game.game_type == 'link' %}
+            {% if game.type == 'link' %}
                 <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
                 <span>Web</span>
-            {% elif game.game_type == 'pygame' %}
+            {% elif game.type == 'pygame' %}
                 <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
                 <span>Pygame</span>
-            {% elif game.game_type == 'unity' %}
+            {% elif game.type == 'unity' %}
                 <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
                 <span>Unity</span>
             {% endif %}
