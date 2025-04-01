@@ -2,5 +2,54 @@
 
 {% block content %}
 {{ super() }}
-{{ post | safe }}
+
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+<div class="profile-container">
+    <h1>{{ post.title }}</h1>
+</div>
+
+<div class="post-layout">
+    <div class="post-content-container">
+        {% if post.cover %}
+        <div class="post-cover">
+            <img src="data:image/jpeg;base64,{{ post.cover|b64encode }}" alt="{{ post.title }}" class="post-image">
+        </div>
+        {% endif %}
+        <div class="post-text">
+            <p>{{ post.text | safe }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Блок комментариев -->
+<div id="comments-section">
+    <h3>Комментарии</h3>
+    <form id="comment-form">
+        <textarea id="comment-text" placeholder="Оставьте комментарий..." required></textarea>
+        <button type="submit">Отправить</button>
+    </form>
+    <div id="comments-container"></div>
+</div>
+
+<script src="{{ url_for('static', filename='js/coments.js') }}" rel="javascript"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Переопределяем URL для комментариев поста
+        const postId = {{ post.id }};
+        const commentsUrl = `/post/${postId}/comments`;
+        const addCommentUrl = `/post/${postId}/comment`;
+
+        // Переопределяем функции из coments.js для работы с постами
+        fetchComments(commentsUrl);
+        document.getElementById('comment-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const text = document.getElementById('comment-text').value;
+            addComment(addCommentUrl, text, null, commentsUrl); // null — это parent_id для основного комментария
+        });
+    });
+</script>
+
 {% endblock %}

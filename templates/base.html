@@ -188,7 +188,26 @@
         </main>
     {% endblock %}
 </div>
+<button id="scrollTopBtn" class="scroll-top-btn" title="Наверх">↑</button>
+<script>
+        // Показ/скрытие кнопки при прокрутке
+        window.onscroll = function() {
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollTopBtn.style.display = 'block';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        };
 
+        // Плавная прокрутка наверх
+        document.getElementById('scrollTopBtn').addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
 </body>
 <script>
   if ('serviceWorker' in navigator) {

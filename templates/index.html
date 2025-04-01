@@ -3,30 +3,38 @@
 {% block content %}
 {{ super() }}
 
-
-        <div class="profile-container">
-
-            <h1>Добро пожаловать на Игровой Портал</h1>
-
-        </div>
+<div class="profile-container">
+    <h1>Добро пожаловать на Игровой Портал</h1>
+</div>
 <p>Запускайте игры прямо в браузере! Наши игры разработаны на pygame.</p>
+<img src="{{ url_for('static', filename='images/gamepad.png') }}" alt="Геймпад" style="max-width: 50%; margin: 0 auto; display: block;">
 
- <img src="static/images/gamepad.png" alt="Геймпад" style="max-width: 50%;margin: 0 auto; display: block;">
-<h2> Наши игры</h2>
+<h2>Наши посты</h2>
 <div class="cards-container">
-             {% for game in games %}
-            <div class ="game-card">
-             {% if game.cover %}
-           <div class="game-cover">
+    {% for post in posts %}
+    <a href="{{ url_for('showPost', post_id=post.id) }}" class="post-card">
+        {% if post.cover %}
+        <div class="post-cover">
+            <img src="data:image/jpeg;base64,{{ post.cover|b64encode }}" alt="{{ post.title }}">
+        </div>
+        {% endif %}
+        <div class="post-title">{{ post.title }}</div>
+    </a>
+    {% endfor %}
+</div>
+
+<h2>Наши игры</h2>
+<div class="cards-container">
+    {% for game in games %}
+    <a href="{{ url_for('game', game_id=game.id) }}" class="game-card">
+        {% if game.cover %}
+        <div class="game-cover">
             <img src="data:image/jpeg;base64,{{ game.cover|b64encode }}" alt="{{ game.title }}">
         </div>
-            {% endif %}
-        <div class="game-title">
-            {{ game.title }}
-        </div>
-                </div>
-            {% endfor %}
-
-        </div>
+        {% endif %}
+        <div class="game-title">{{ game.title }}</div>
+    </a>
+    {% endfor %}
+</div>
 
 {% endblock %}

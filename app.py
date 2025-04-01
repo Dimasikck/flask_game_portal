@@ -128,10 +128,12 @@ def index():
     menu = MainMenu.query.all()
     try:
         games = Games.query.all()
+        posts = Posts.query.order_by(desc(Posts.time)).all()  # Получаем все посты, сортируем по дате
     except Exception as e:
-        flash(f"Ошибка получения списка игр: {str(e)}", "error")
+        flash(f"Ошибка получения данных: {str(e)}", "error")
         games = []
-    return render_template('index.html', title="Игровой развелекательный портал", menu=menu, user=current_user, games=games)
+        posts = []
+    return render_template('index.html', title="Игровой развлекательный портал", menu=menu, user=current_user, games=games, posts=posts)
 
 #-----------------------------------------------------------------------------------------------------------------
 """
@@ -268,13 +270,50 @@ def register():
         return redirect(url_for('login'))
 
     return render_template("register.html", menu=MainMenu.query.all(), title="Регистрация", form=form)
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                     Маршрут СТРАНИЦЫ ПОСТА
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route("/post/<int:post_id>")
+@login_required
+def showPost(post_id):
+    post = Posts.query.get_or_404(post_id)
+    menu = MainMenu.query.all()
+    return render_template('post.html', menu=menu, title=post.title, post=post)
 
-# @app.route("/post/<int:post_id>")
-# @login_required
-# def showPost(post_id):
-#     post = Posts.query.get_or_404(post_id)
-#     menu = MainMenu.query.all()
-#     return render_template('post.html', menu=menu, title=post.title, post=post.text)
+# Комментарии для постов
+@app.route('/post/<int:post_id>/comments')
+@login_required
+def get_post_comments(post_id):
+    comments = Comments.query.filter_by(post_id=post_id, parent_id=None).order_by(Comments.timestamp.desc()).all()
+    current_user_id = int(current_user.get_id())
+    def serialize_comment(comment):
+        return {
+            "id": comment.id,
+            "user": comment.user.name,
+            "avatar": f"data:image/png;base64,{base64.b64encode(comment.user.avatar).decode('utf-8')}" if comment.user.avatar else None,
+            "text": comment.text,
+            "timestamp": comment.timestamp.strftime('%Y-%m-%d %H:%M'),
+            "likes": comment.likes,
+            "is_owner": comment.user_id == current_user_id,
+            "replies": [serialize_comment(reply) for reply in comment.replies]
+        }
+    comments_data = [serialize_comment(comment) for comment in comments]
+    return {"comments": comments_data}
+
+@app.route('/post/<int:post_id>/comment', methods=['POST'])
+@login_required
+def add_post_comment(post_id):
+    data = request.json
+    text = data.get('text', '').strip()
+    parent_id = data.get('parent_id')
+    if not text:
+        return {"error": "Комментарий не может быть пустым"}, 400
+    comment = Comments(user_id=current_user.get_id(), post_id=post_id, text=text, parent_id=parent_id)
+    db.session.add(comment)
+    db.session.commit()
+    return {"message": "Комментарий добавлен"}
 #-----------------------------------------------------------------------------------------------------------------
 """
                                      Маршрут для ВЫХОДА ИЗ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ
