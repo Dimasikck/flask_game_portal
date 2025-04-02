@@ -258,18 +258,25 @@ def add_post():
         return redirect(url_for('.login'))
     if request.method == 'POST':
         title = request.form.get('title')
-        url = request.form.get('url')
         text = request.form.get('text')
         cover_file = request.files.get('cover')
-        if not title or not url or not text or not cover_file:
+        if not title or not text or not cover_file:
             flash('Все поля должны быть заполнены', 'error')
         else:
             try:
+                # Генерируем URL на основе заголовка
+                url = secure_filename(title.lower().replace(' ', '-'))
+                # Проверяем уникальность URL
+                existing_post = Posts.query.filter_by(url=url).first()
+                if existing_post:
+                    url = f"{url}-{int(datetime.now().timestamp())}"  # Добавляем временную метку для уникальности
+
                 if Posts.query.filter_by(title=title).first():
                     flash('Пост с таким названием уже существует', 'error')
                     return render_template('admin/add_post.html', menu=menu, title='Добавить пост')
                 cover_data = cover_file.read()
-                new_post = Posts(title=title, url=url, text=text, cover=cover_data, time=int(datetime.now().timestamp()))
+                new_post = Posts(title=title, url=url, text=text, cover=cover_data,
+                                 time=int(datetime.now().timestamp()))
                 db.session.add(new_post)
                 db.session.commit()
                 flash('Пост успешно добавлен', 'success')
@@ -291,19 +298,25 @@ def edit_post(post_id):
     post = Posts.query.get_or_404(post_id)
     if request.method == 'POST':
         title = request.form.get('title')
-        url = request.form.get('url')
         text = request.form.get('text')
         cover_file = request.files.get('cover')
-        if not title or not url or not text:
+        if not title or not text:
             flash('Все поля должны быть заполнены', 'error')
         else:
             try:
+                # Обновляем URL на основе нового заголовка
+                new_url = secure_filename(title.lower().replace(' ', '-'))
+                existing_post_with_url = Posts.query.filter_by(url=new_url).first()
+                if existing_post_with_url and existing_post_with_url.id != post_id:
+                    new_url = f"{new_url}-{int(datetime.now().timestamp())}"  # Уникальность при конфликте
+
                 existing_post = Posts.query.filter_by(title=title).first()
                 if existing_post and existing_post.id != post_id:
                     flash('Пост с таким названием уже существует', 'error')
                     return render_template('admin/edit_post.html', menu=menu, title='Редактировать пост', post=post)
+
                 post.title = title
-                post.url = url
+                post.url = new_url  # Обновляем URL
                 post.text = text
                 if cover_file and cover_file.filename:
                     cover_data = cover_file.read()
@@ -315,7 +328,6 @@ def edit_post(post_id):
                 db.session.rollback()
                 flash(f'Ошибка обновления поста: {str(e)}', 'error')
     return render_template('admin/edit_post.html', menu=menu, title='Редактировать пост', post=post)
-
 #-----------------------------------------------------------------------------------------------------------------
 """
                             Маршрут страницы УДАЛЕНИЕ ПОСТА в Панели администратора 

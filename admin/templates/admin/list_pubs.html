@@ -1,36 +1,56 @@
-{% extends 'admin/base_admin.html' %}
+{% extends "admin/base_admin.html" %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<div class="search-controls">
-    <input type="text" id="search" name="search" placeholder="Поиск по названию или тексту..." value="{{ search }}">
-    <select id="sort" name="sort">
-        <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>По дате (убывание)</option>
-        <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>По дате (возрастание)</option>
-        <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>По названию (A-Z)</option>
-        <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>По названию (Z-A)</option>
-    </select>
-    <button id="apply-filters-btn" class="btn">Применить</button>
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{ cat }}">{{ msg }}</div>
+{% endfor %}
+<div style="position: relative;">
+    <a href="{{ url_for('admin.add_post') }}" class="add_btn">Добавить пост</a>
 </div>
+
+<h1>Список постов</h1>
+
+<!-- Форма поиска и сортировки -->
+<div class="form-container" style="margin-bottom: 20px;">
+    <form method="get" action="{{ url_for('admin.list_pubs') }}">
+        <div class="form-group">
+            <label for="search">Поиск:</label>
+            <input type="text" name="search" id="search" class="form-input" value="{{ search }}" placeholder="Поиск по названию или тексту">
+        </div>
+        <div class="form-group">
+            <label for="sort">Сортировка:</label>
+            <select name="sort" id="sort" class="form-input">
+                <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Название (А-Я)</option>
+                <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Название (Я-А)</option>
+                <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
+                <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
+            </select>
+        </div>
+        <button type="submit" class="styled-button">Применить</button>
+    </form>
+</div>
+
 <ul class="list-posts">
     {% for post in posts %}
     <li>
-        <div class="title">{{ post.title }}</div>
-        <div class="annonce">{{ post.text[:100] }}...</div>
-        <a href="{{ url_for('admin.edit_post', post_id=post.id) }}" class="edit-link">✏️ Редактировать</a>
-        <a href="{{ url_for('admin.delete_post', post_id=post.id) }}" class="edit-link" onclick="return confirm('Вы уверены?')">🗑️ Удалить</a>
+        <p class="title"><a href="{{ url_for('showPost', post_id=post.id) }}" target="_blank">{{ post.title }}</a></p>
+        {% if post.cover %}
+        <img src="data:image/jpeg;base64,{{ post.cover|b64encode }}" alt="{{ post.title }}"
+             style="max-width: 150px; max-height: 150px; display: block; margin: 10px 0;">
+        {% endif %}
+        <p class="annonce">{{ post.text[:50] | striptags }}</p>
+        <form action="{{ url_for('admin.edit_post', post_id=post.id) }}" method="get" style="display:inline;">
+            <button type="submit" class="edit-button">Редактировать</button>
+        </form>
+        <form action="{{ url_for('admin.delete_post', post_id=post.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="delete-button">Удалить</button>
+        </form>
     </li>
     {% endfor %}
 </ul>
-<a href="{{ url_for('admin.add_post') }}" class="add-btn">Добавить пост</a>
-<script>
-    document.getElementById('apply-filters-btn').addEventListener('click', function() {
-        const search = document.getElementById('search').value;
-        const sort = document.getElementById('sort').value;
-        const url = new URL(window.location.href);
-        url.searchParams.set('search', search);
-        url.searchParams.set('sort', sort);
-        window.location.href = url.toString();
-    });
-</script>
+
+{% if not posts %}
+<p>Посты пока не добавлены или не найдены по заданным критериям.</p>
+{% endif %}
 {% endblock %}

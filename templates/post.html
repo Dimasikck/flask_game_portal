@@ -34,22 +34,10 @@
     <div id="comments-container"></div>
 </div>
 
-<script src="{{ url_for('static', filename='js/coments.js') }}" rel="javascript"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Переопределяем URL для комментариев поста
-        const postId = {{ post.id }};
-        const commentsUrl = `/post/${postId}/comments`;
-        const addCommentUrl = `/post/${postId}/comment`;
-
-        // Переопределяем функции из coments.js для работы с постами
-        fetchComments(commentsUrl);
-        document.getElementById('comment-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const text = document.getElementById('comment-text').value;
-            addComment(addCommentUrl, text, null, commentsUrl); // null — это parent_id для основного комментария
-        });
-    });
+    window.entityId = {{ post.id }};
+    window.entityType = "post";
 </script>
+<script src="{{ url_for('static', filename='js/coments.js') }}" rel="javascript"></script>
 
 {% endblock %}

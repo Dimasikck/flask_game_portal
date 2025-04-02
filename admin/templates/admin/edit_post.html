@@ -1,24 +1,32 @@
-{% extends 'admin/base_admin.html' %}
+{% extends "admin/base_admin.html" %}
 
 {% block content %}
-<h1>{{ title }}</h1>
-<form method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label>Название</label>
-        <input type="text" name="title" class="form_input" value="{{ post.title }}" required>
-    </div>
-    <div class="form-group">
-        <label>URL</label>
-        <input type="text" name="url" class="form_input" value="{{ post.url }}" required>
-    </div>
-    <div class="form-group">
-        <label>Текст</label>
-        <textarea name="text" class="form_input" rows="5" required>{{ post.text }}</textarea>
-    </div>
-    <div class="form-group">
-        <label>Обложка</label>
-        <input type="file" name="cover" class="form_input" accept="image/*">
-    </div>
-    <button type="submit" class="btn">Сохранить</button>
-</form>
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{ cat }}">{{ msg }}</div>
+{% endfor %}
+<div style="position: relative;">
+    <a href="javascript:history.back()" class="add_btn">Вернуться к списку</a>
+</div>
+<div class="form-container">
+    <h1>Редактировать пост: {{ post.title }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Название:</label>
+            <input type="text" name="title" id="title" class="form-input" value="{{ post.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="text">Текст:</label>
+            <textarea name="text" id="text" class="form-input" rows="5" required>{{ post.text }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="cover">Обложка (файл):</label>
+            <input type="file" name="cover" id="cover" class="form-input" accept="image/*">
+            {% if post.cover %}
+                <p>Текущая обложка загружена. Загрузите новый файл, если хотите обновить.</p>
+            {% endif %}
+        </div>
+        <button type="submit" class="styled-button">Сохранить изменения</button>
+    </form>
+</div>
 {% endblock %}

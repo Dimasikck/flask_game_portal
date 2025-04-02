@@ -286,8 +286,10 @@ def showPost(post_id):
 @app.route('/post/<int:post_id>/comments')
 @login_required
 def get_post_comments(post_id):
-    comments = Comments.query.filter_by(post_id=post_id, parent_id=None).order_by(Comments.timestamp.desc()).all()
+    # Фильтруем только комментарии, где post_id соответствует и game_id равен NULL
+    comments = Comments.query.filter_by(post_id=post_id, game_id=None, parent_id=None).order_by(Comments.timestamp.desc()).all()
     current_user_id = int(current_user.get_id())
+
     def serialize_comment(comment):
         return {
             "id": comment.id,
@@ -299,18 +301,26 @@ def get_post_comments(post_id):
             "is_owner": comment.user_id == current_user_id,
             "replies": [serialize_comment(reply) for reply in comment.replies]
         }
+
     comments_data = [serialize_comment(comment) for comment in comments]
     return {"comments": comments_data}
-
 @app.route('/post/<int:post_id>/comment', methods=['POST'])
 @login_required
 def add_post_comment(post_id):
     data = request.json
     text = data.get('text', '').strip()
     parent_id = data.get('parent_id')
+
     if not text:
         return {"error": "Комментарий не может быть пустым"}, 400
-    comment = Comments(user_id=current_user.get_id(), post_id=post_id, text=text, parent_id=parent_id)
+
+    comment = Comments(
+        user_id=current_user.get_id(),
+        post_id=post_id,
+        game_id=None,  # Устанавливаем game_id в None для поста
+        text=text,
+        parent_id=parent_id
+    )
     db.session.add(comment)
     db.session.commit()
     return {"message": "Комментарий добавлен"}
@@ -431,7 +441,8 @@ def upload():
 @app.route('/game/<int:game_id>/comments')
 @login_required
 def get_comments(game_id):
-    comments = Comments.query.filter_by(game_id=game_id, parent_id=None).order_by(Comments.timestamp.desc()).all()
+    # Фильтруем только комментарии, где game_id соответствует и post_id равен NULL
+    comments = Comments.query.filter_by(game_id=game_id, post_id=None, parent_id=None).order_by(Comments.timestamp.desc()).all()
     current_user_id = int(current_user.get_id())
 
     def serialize_comment(comment):
@@ -443,7 +454,7 @@ def get_comments(game_id):
             "timestamp": comment.timestamp.strftime('%Y-%m-%d %H:%M'),
             "likes": comment.likes,
             "is_owner": comment.user_id == current_user_id,
-            "replies": [serialize_comment(reply) for reply in comment.replies]  # Вложенные комментарии
+            "replies": [serialize_comment(reply) for reply in comment.replies]
         }
 
     comments_data = [serialize_comment(comment) for comment in comments]
@@ -459,7 +470,7 @@ def get_comments(game_id):
 def add_comment(game_id):
     data = request.json
     text = data.get('text', '').strip()
-    parent_id = data.get('parent_id')  # ID родительского комментария (если есть)
+    parent_id = data.get('parent_id')
 
     if not text:
         return {"error": "Комментарий не может быть пустым"}, 400
@@ -467,8 +478,9 @@ def add_comment(game_id):
     comment = Comments(
         user_id=current_user.get_id(),
         game_id=game_id,
+        post_id=None,  # Устанавливаем post_id в None для игры
         text=text,
-        parent_id=parent_id  # Привязываем к родительскому комментарию
+        parent_id=parent_id
     )
     db.session.add(comment)
     db.session.commit()

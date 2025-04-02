@@ -75,7 +75,11 @@
 </div>
 
 <script src="{{url_for('static', filename='js/fullscreen.js')}}" rel="javascript"></script>
-<script src="{{url_for('static', filename='js/coments.js')}}" rel="javascript"></script>
+<script>
+    window.entityId = {{ game.id }};
+    window.entityType = "game";
+</script>
+<script src="{{ url_for('static', filename='js/coments.js') }}" rel="javascript"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.cookie = "game_path={{ game.link }}; path=/; SameSite=Lax";
