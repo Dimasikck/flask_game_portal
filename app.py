@@ -4,7 +4,7 @@ from flask import Flask, render_template, url_for, request, flash, session, redi
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from datetime import datetime, timedelta, UTC, timezone
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import func, asc, desc
 from db import *
 from forms import *
@@ -295,13 +295,13 @@ def register():
             name=form.name.data,
             email=form.email.data.lower(),
             psw=hash_psw,
-            time=int(datetime.now(UTC).timestamp())
+            time=int(datetime.now(timezone.utc).timestamp())
         )
         db.session.add(new_user)
         db.session.flush()
 
         token = generate_token()
-        expires_at = datetime.now(UTC) + timedelta(hours=24)  # Токен действителен 24 часа
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=24)  # Токен действителен 24 часа
         confirmation_token = Token(
             user_id=new_user.id,
             token=token,
@@ -329,7 +329,7 @@ def confirm_email(token):
 
     # Предполагаем, что expires_at в базе хранится как UTC, делаем его "осведомленным"
     expires_at_aware = token_record.expires_at.replace(tzinfo=timezone.utc)
-    if expires_at_aware < datetime.now(UTC):
+    if expires_at_aware < datetime.now(timezone.utc):
         flash("Срок действия ссылки истек.", "error")
         return redirect(url_for('register'))
 
@@ -353,7 +353,7 @@ def reset_password(token):
 
     # Предполагаем, что expires_at в базе хранится как UTC, делаем его "осведомленным"
     expires_at_aware = token_record.expires_at.replace(tzinfo=timezone.utc)
-    if expires_at_aware < datetime.now(UTC):
+    if expires_at_aware < datetime.now(timezone.utc):
         flash("Срок действия ссылки истек.", "error")
         return redirect(url_for('forgot_password'))
 
@@ -378,7 +378,7 @@ def forgot_password():
         user = Users.query.filter_by(email=form.email.data.lower()).first()
         if user:
             token = generate_token()
-            expires_at = datetime.now(UTC) + timedelta(hours=1)  # Токен действителен 1 час
+            expires_at = datetime.now(timezone.utc) + timedelta(hours=1)  # Токен действителен 1 час
             reset_token = Token(
                 user_id=user.id,
                 token=token,

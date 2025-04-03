@@ -30,8 +30,11 @@
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
+
                 {% endif %}
+                <a href="{{ url_for('forgot_password') }}">Забыл пароль?</a>
             </div>
+
             <div class="form-group">
                 {{ form.remember() }} {{ form.remember.label }}
             </div>
@@ -39,7 +42,7 @@
                 {{ form.submit(class="login_button") }}
             </div>
         </form>
-        <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрируйтесь</a></p>
+        <p>Нет аккаунта? <a href="{{ url_for('register') }}"> Регистрация</a> </p>
     </div>
 </div>
 {% endblock %}
