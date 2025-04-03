@@ -3,17 +3,16 @@ import base64
 from flask import Flask, render_template, url_for, request, flash, session, redirect, abort, g, make_response, send_from_directory, send_file
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-from datetime import datetime
 from flask_migrate import Migrate
+from datetime import datetime, timedelta, UTC, timezone
 from sqlalchemy import func, asc, desc
 from db import *
 from forms import *
 from UserLogin import UserLogin
 from admin.admin import admin
-from git import Repo
-import hmac
-import hashlib
+from flask_mail import Mail, Message
+import secrets
+
 #-----------------------------------------------------------------------------------------------------------------
 """
                                              Конфигурация Сайта
@@ -21,11 +20,18 @@ import hashlib
 #-----------------------------------------------------------------------------------------------------------------
 
 SECRET_KEY = '43fswQtodqAAAAAaLYQVnaNOyAwmqeOqWsGPvweqe'
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(app.root_path, 'flask.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = SECRET_KEY
+
+# Конфигурация Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Пример для Gmail
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'tmei.institute@gmail.com'  # Замените на ваш email
+app.config['MAIL_PASSWORD'] = 'jgayqxajjloiganv '  # Используйте пароль приложения для Gmail
+app.config['MAIL_DEFAULT_SENDER'] = 'tmei.institute@gmail.com'
 
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdFw-MqAAAAAGIjhuO3UTNYU6gArOpYEbpF3Xb4'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6LdFw-MqAAAAAIQvr_MjNveev2woBtY-uUkDTDjv'
@@ -35,6 +41,7 @@ app.app_context().push()
 
 db.init_app(app)
 migrate = Migrate(app, db)
+mail = Mail(app)  # Инициализация Flask-Mail
 app.register_blueprint(admin, url_prefix='/admin')
 
 login_manager = LoginManager(app)
@@ -74,6 +81,26 @@ GENRES = (
     '🏞️Открытый мир',
     'Другое'
 )
+
+# Функция генерации токена
+def generate_token():
+    return secrets.token_urlsafe(32)
+
+# Функция отправки письма для подтверждения email
+def send_confirmation_email(user_email, token):
+    confirm_url = url_for('confirm_email', token=token, _external=True)
+    msg = Message("Подтверждение регистрации", recipients=[user_email])
+    msg.body = f"Перейдите по ссылке для подтверждения вашей учетной записи: {confirm_url}"
+    msg.html = f"<p>Перейдите по ссылке для подтверждения вашей учетной записи: <a href='{confirm_url}'>{confirm_url}</a></p>"
+    mail.send(msg)
+
+# Функция отправки письма для сброса пароля
+def send_password_reset_email(user_email, token):
+    reset_url = url_for('reset_password', token=token, _external=True)
+    msg = Message("Сброс пароля", recipients=[user_email])
+    msg.body = f"Перейдите по ссылке для сброса пароля: {reset_url}"
+    msg.html = f"<p>Перейдите по ссылке для сброса пароля: <a href='{reset_url}'>{reset_url}</a></p>"
+    mail.send(msg)
 #-----------------------------------------------------------------------------------------------------------------
 
 """
@@ -117,6 +144,8 @@ def page_not_found(error):
 def unauthorized(error):
     menu = MainMenu.query.all()
     return render_template('page401.html', title='Не авторизованный пользователь', menu=menu)
+
+
 #-----------------------------------------------------------------------------------------------------------------
 """
                                      Основной маршрут (Главная страница) Сайта
@@ -255,21 +284,117 @@ def login():
                                     Маршрут страницы РЕГИСТРАЦИИ на сайте
 """
 #-----------------------------------------------------------------------------------------------------------------
+# Обновленный маршрут регистрации
 @app.route("/register", methods=["POST", "GET"])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
         hash_psw = generate_password_hash(form.psw.data)
-        new_user = Users(login=form.login.data.lower(),
-                         name=form.name.data,
-                         email=form.email.data.lower(),
-                         psw=hash_psw, time=int(datetime.now().timestamp()))
+        new_user = Users(
+            login=form.login.data.lower(),
+            name=form.name.data,
+            email=form.email.data.lower(),
+            psw=hash_psw,
+            time=int(datetime.now(UTC).timestamp())
+        )
         db.session.add(new_user)
+        db.session.flush()
+
+        token = generate_token()
+        expires_at = datetime.now(UTC) + timedelta(hours=24)  # Токен действителен 24 часа
+        confirmation_token = Token(
+            user_id=new_user.id,
+            token=token,
+            type="email_confirmation",
+            expires_at=expires_at
+        )
+        db.session.add(confirmation_token)
         db.session.commit()
-        flash("Вы успешно зарегистрированы", "success")
+
+        send_confirmation_email(new_user.email, token)
+        flash("Письмо с подтверждением отправлено на вашу почту.", "success")
         return redirect(url_for('login'))
 
     return render_template("register.html", menu=MainMenu.query.all(), title="Регистрация", form=form)
+
+from datetime import timezone  # Добавьте этот импорт, если используете timezone.utc
+
+# Маршрут для подтверждения email
+@app.route("/confirm_email/<token>")
+def confirm_email(token):
+    token_record = Token.query.filter_by(token=token, type="email_confirmation").first()
+    if not token_record:
+        flash("Ссылка недействительна.", "error")
+        return redirect(url_for('register'))
+
+    # Предполагаем, что expires_at в базе хранится как UTC, делаем его "осведомленным"
+    expires_at_aware = token_record.expires_at.replace(tzinfo=timezone.utc)
+    if expires_at_aware < datetime.now(UTC):
+        flash("Срок действия ссылки истек.", "error")
+        return redirect(url_for('register'))
+
+    user = Users.query.get(token_record.user_id)
+    if not user:
+        flash("Пользователь не найден.", "error")
+        return redirect(url_for('register'))
+
+    flash("Ваша учетная запись успешно подтверждена!", "success")
+    db.session.delete(token_record)
+    db.session.commit()
+    return redirect(url_for('login'))
+
+# Маршрут для сброса пароля
+@app.route("/reset_password/<token>", methods=["POST", "GET"])
+def reset_password(token):
+    token_record = Token.query.filter_by(token=token, type="password_reset").first()
+    if not token_record:
+        flash("Ссылка недействительна.", "error")
+        return redirect(url_for('forgot_password'))
+
+    # Предполагаем, что expires_at в базе хранится как UTC, делаем его "осведомленным"
+    expires_at_aware = token_record.expires_at.replace(tzinfo=timezone.utc)
+    if expires_at_aware < datetime.now(UTC):
+        flash("Срок действия ссылки истек.", "error")
+        return redirect(url_for('forgot_password'))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = Users.query.get(token_record.user_id)
+        if user:
+            user.psw = generate_password_hash(form.password.data)
+            db.session.delete(token_record)
+            db.session.commit()
+            flash("Пароль успешно изменен. Войдите с новым паролем.", "success")
+            return redirect(url_for('login'))
+        else:
+            flash("Пользователь не найден.", "error")
+
+    return render_template("reset_password.html", menu=MainMenu.query.all(), title="Сброс пароля", form=form, token=token)
+# Маршрут для формы "Забыл пароль"
+@app.route("/forgot_password", methods=["POST", "GET"])
+def forgot_password():
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data.lower()).first()
+        if user:
+            token = generate_token()
+            expires_at = datetime.now(UTC) + timedelta(hours=1)  # Токен действителен 1 час
+            reset_token = Token(
+                user_id=user.id,
+                token=token,
+                type="password_reset",
+                expires_at=expires_at
+            )
+            db.session.add(reset_token)
+            db.session.commit()
+
+            send_password_reset_email(user.email, token)
+            flash("Письмо для сброса пароля отправлено на вашу почту.", "success")
+        else:
+            flash("Пользователь с такой почтой не найден.", "error")
+        return redirect(url_for('login'))
+
+    return render_template("forgot_password.html", menu=MainMenu.query.all(), title="Восстановление пароля", form=form)
 #-----------------------------------------------------------------------------------------------------------------
 """
                                      Маршрут СТРАНИЦЫ ПОСТА

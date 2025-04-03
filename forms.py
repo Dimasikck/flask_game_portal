@@ -72,3 +72,18 @@ class EditProfileForm(FlaskForm):
             from flask_login import  current_user
             if Users.query.filter(Users.email == field.data, Users.id != current_user.get_id()).first():
                 raise ValidationError("Этот почта используется другим пользователем.")
+
+class ForgotPasswordForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Отправить письмо')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Новый пароль', validators=[
+        DataRequired(),
+        Length(min=6, message="Пароль должен содержать минимум 6 символов")
+    ])
+    password_confirm = PasswordField('Подтвердите пароль', validators=[
+        DataRequired(),
+        EqualTo('password', message="Пароли должны совпадать")
+    ])
+    submit = SubmitField('Сбросить пароль')

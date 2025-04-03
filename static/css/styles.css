@@ -546,6 +546,116 @@ ul.mainmenu li a:hover {
     color: #22dcf1;
 }
 
+/* Существующие стили из вашего файла */
+
+/* Контейнер для форм авторизации (общий для login, register, forgot_password, reset_password) */
+.auth-container {
+    max-width: 375px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(18, 19, 33, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    color: #ddd;
+}
+
+.auth-container h1 {
+    text-align: center;
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.auth-container .form-group {
+    margin-bottom: 15px;
+}
+
+.auth-container .form-group label {
+    margin-left: 5px;
+    color: #ddd;
+}
+
+.auth-container .login_input {
+    font-size: 16px;
+    width: 100%;
+    padding: 10px;
+    background: #1B1D2B;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 10px;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+.auth-container .login_input:focus {
+    border: 1px solid #00cee7;
+    box-shadow: 0 0 8px rgba(0, 206, 231, 0.5);
+    background: #2A2C3F;
+}
+
+.auth-container .btn {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #1196d7, #00cee7);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.auth-container .btn:hover {
+    background: linear-gradient(135deg, #29abee, #22dcf1);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(93, 231, 252, 0.5);
+}
+
+.auth-container p {
+    text-align: center;
+    margin-top: 15px;
+    color: #ddd;
+}
+
+.auth-container p a {
+    color: #129fe6;
+    transition: color 0.3s ease;
+}
+
+.auth-container p a:hover {
+    color: #22dcf1;
+}
+
+.auth-container .error {
+    color: #FF4040;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    .auth-container h1 {
+        font-size: 20px;
+    }
+
+    .auth-container .login_input {
+        font-size: 14px;
+    }
+
+    .auth-container .btn {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+/* Остальные стили остаются без изменений */
 /* Список постов */
 ul.list-posts {
     list-style: none;

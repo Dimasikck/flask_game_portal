@@ -130,3 +130,16 @@ class CommentLikes(db.Model):
 
     def __repr__(self):
         return f"<CommentLike {self.id}, User {self.user_id}, Comment {self.comment_id}>"
+
+class Token(db.Model):
+    __tablename__ = 'tokens'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    token = db.Column(db.String(100), nullable=False, unique=True)
+    type = db.Column(db.String(20), nullable=False)  # "email_confirmation" или "password_reset"
+    expires_at = db.Column(db.DateTime, nullable=False)
+
+    user = db.relationship('Users', backref=db.backref('tokens', lazy=True, cascade="all, delete"))
+
+    def __repr__(self):
+        return f"<Token {self.id}, User {self.user_id}, Type {self.type}>"
