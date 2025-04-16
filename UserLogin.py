@@ -42,3 +42,5 @@ class UserLogin(UserMixin):
         if ext in ["png", "PNG", "gif", "GIF", "jpg", "jpeg"]:
             return True
         return False
+    def is_active(self):
+        return self.__user.is_active if self.__user else False

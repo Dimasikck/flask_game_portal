@@ -30,7 +30,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Пример для Gmail
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'tmei.institute@gmail.com'  # Замените на ваш email
-app.config['MAIL_PASSWORD'] = 'jgayqxajjloiganv '  # Используйте пароль приложения для Gmail
+app.config['MAIL_PASSWORD'] = 'jgayqxajjloiganv'  # Используйте пароль приложения для Gmail
 app.config['MAIL_DEFAULT_SENDER'] = 'tmei.institute@gmail.com'
 
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdFw-MqAAAAAGIjhuO3UTNYU6gArOpYEbpF3Xb4'
@@ -263,7 +263,6 @@ def download_installer(game_id):
                                     Маршрут страницы АВТОРИЗАЦИИ на сайте
 """
 #-----------------------------------------------------------------------------------------------------------------
-
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if current_user.is_authenticated:
@@ -273,18 +272,20 @@ def login():
     if form.validate_on_submit():
         user = Users.query.filter_by(login=form.login.data.lower()).first()
         if user and check_password_hash(user.psw, form.psw.data):
+            if not user.is_active:
+                flash("Ваша учетная запись не подтверждена. Проверьте почту для подтверждения.", "error")
+                return render_template("login.html", menu=MainMenu.query.all(), title="Авторизация", form=form)
             userlogin = UserLogin().create(user)
             login_user(userlogin, remember=form.remember.data)
             return redirect(request.args.get("next") or url_for("profile"))
-
         flash("Неверная пара логин/пароль", "error")
     return render_template("login.html", menu=MainMenu.query.all(), title="Авторизация", form=form)
+
 #-----------------------------------------------------------------------------------------------------------------
 """
                                     Маршрут страницы РЕГИСТРАЦИИ на сайте
 """
 #-----------------------------------------------------------------------------------------------------------------
-# Обновленный маршрут регистрации
 @app.route("/register", methods=["POST", "GET"])
 def register():
     form = RegisterForm()
@@ -295,13 +296,14 @@ def register():
             name=form.name.data,
             email=form.email.data.lower(),
             psw=hash_psw,
-            time=int(datetime.now(timezone.utc).timestamp())
+            time=int(datetime.now(timezone.utc).timestamp()),
+            is_active=False  # Устанавливаем неактивный статус
         )
         db.session.add(new_user)
         db.session.flush()
 
         token = generate_token()
-        expires_at = datetime.now(timezone.utc) + timedelta(hours=24)  # Токен действителен 24 часа
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
         confirmation_token = Token(
             user_id=new_user.id,
             token=token,
@@ -314,12 +316,15 @@ def register():
         send_confirmation_email(new_user.email, token)
         flash("Письмо с подтверждением отправлено на вашу почту.", "success")
         return redirect(url_for('login'))
-
     return render_template("register.html", menu=MainMenu.query.all(), title="Регистрация", form=form)
 
-from datetime import timezone  # Добавьте этот импорт, если используете timezone.utc
 
-# Маршрут для подтверждения email
+
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                    Маршрут для ПОДТВЕРЖДЕНИЯ EMAIL
+"""
+#-----------------------------------------------------------------------------------------------------------------
 @app.route("/confirm_email/<token>")
 def confirm_email(token):
     token_record = Token.query.filter_by(token=token, type="email_confirmation").first()
@@ -327,7 +332,6 @@ def confirm_email(token):
         flash("Ссылка недействительна.", "error")
         return redirect(url_for('register'))
 
-    # Предполагаем, что expires_at в базе хранится как UTC, делаем его "осведомленным"
     expires_at_aware = token_record.expires_at.replace(tzinfo=timezone.utc)
     if expires_at_aware < datetime.now(timezone.utc):
         flash("Срок действия ссылки истек.", "error")
@@ -338,12 +342,18 @@ def confirm_email(token):
         flash("Пользователь не найден.", "error")
         return redirect(url_for('register'))
 
-    flash("Ваша учетная запись успешно подтверждена!", "success")
+    user.is_active = True  # Активируем учетную запись
     db.session.delete(token_record)
     db.session.commit()
+    flash("Ваша учетная запись успешно подтверждена!", "success")
     return redirect(url_for('login'))
 
-# Маршрут для сброса пароля
+
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                    Маршрут для СБРОСА ПАРОЛЯ
+"""
+#-----------------------------------------------------------------------------------------------------------------
 @app.route("/reset_password/<token>", methods=["POST", "GET"])
 def reset_password(token):
     token_record = Token.query.filter_by(token=token, type="password_reset").first()
@@ -351,7 +361,6 @@ def reset_password(token):
         flash("Ссылка недействительна.", "error")
         return redirect(url_for('forgot_password'))
 
-    # Предполагаем, что expires_at в базе хранится как UTC, делаем его "осведомленным"
     expires_at_aware = token_record.expires_at.replace(tzinfo=timezone.utc)
     if expires_at_aware < datetime.now(timezone.utc):
         flash("Срок действия ссылки истек.", "error")
@@ -362,15 +371,19 @@ def reset_password(token):
         user = Users.query.get(token_record.user_id)
         if user:
             user.psw = generate_password_hash(form.password.data)
+            user.is_active = True  # Активируем учетную запись, если она была неактивной
             db.session.delete(token_record)
             db.session.commit()
             flash("Пароль успешно изменен. Войдите с новым паролем.", "success")
             return redirect(url_for('login'))
         else:
             flash("Пользователь не найден.", "error")
-
     return render_template("reset_password.html", menu=MainMenu.query.all(), title="Сброс пароля", form=form, token=token)
-# Маршрут для формы "Забыл пароль"
+#-----------------------------------------------------------------------------------------------------------------
+"""
+                                    Маршрут для ФОРМЫ "ЗАБЫЛ ПАРОЛЬ"
+"""
+#-----------------------------------------------------------------------------------------------------------------
 @app.route("/forgot_password", methods=["POST", "GET"])
 def forgot_password():
     form = ForgotPasswordForm()
@@ -378,7 +391,7 @@ def forgot_password():
         user = Users.query.filter_by(email=form.email.data.lower()).first()
         if user:
             token = generate_token()
-            expires_at = datetime.now(timezone.utc) + timedelta(hours=1)  # Токен действителен 1 час
+            expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
             reset_token = Token(
                 user_id=user.id,
                 token=token,
@@ -387,13 +400,11 @@ def forgot_password():
             )
             db.session.add(reset_token)
             db.session.commit()
-
             send_password_reset_email(user.email, token)
             flash("Письмо для сброса пароля отправлено на вашу почту.", "success")
         else:
             flash("Пользователь с такой почтой не найден.", "error")
         return redirect(url_for('login'))
-
     return render_template("forgot_password.html", menu=MainMenu.query.all(), title="Восстановление пароля", form=form)
 #-----------------------------------------------------------------------------------------------------------------
 """

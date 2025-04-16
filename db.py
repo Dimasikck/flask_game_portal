@@ -35,7 +35,6 @@ class Posts(db.Model):
     cover = db.Column(db.LargeBinary, nullable=True)
     text = db.Column(db.Text, nullable=False)
     time = db.Column(db.Integer, nullable=False, default=datetime.utcnow)
-
     def __repr__(self):
         return f"<Posts {self.id}, {self.title}>"
 
@@ -49,6 +48,7 @@ class Users(db.Model):
     psw = db.Column(db.Text, nullable=False)
     avatar = db.Column(db.LargeBinary, default=None)
     time = db.Column(db.Integer, nullable=False, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, nullable=False, default=False)  # Новое поле
     comments = db.relationship('Comments', cascade="all, delete-orphan", passive_deletes=True)
     comment_likes = db.relationship('CommentLikes', cascade="all, delete-orphan", passive_deletes=True)
 
