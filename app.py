@@ -1,6 +1,6 @@
 import os
 import base64
-from flask import Flask, render_template, url_for, request, flash, session, redirect, abort, g, make_response, send_from_directory, send_file
+from flask import Flask, render_template, url_for, request, flash, session, redirect, abort, g, make_response, send_from_directory, send_file, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
@@ -12,6 +12,7 @@ from UserLogin import UserLogin
 from admin.admin import admin
 from flask_mail import Mail, Message
 import secrets
+from config import MAIL_CONFIG, GENRES
 
 #-----------------------------------------------------------------------------------------------------------------
 """
@@ -25,23 +26,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(app.root_path,
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = SECRET_KEY
 
-# Конфигурация Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Пример для Gmail
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'tmei.institute@gmail.com'  # Замените на ваш email
-app.config['MAIL_PASSWORD'] = 'jgayqxajjloiganv'  # Используйте пароль приложения для Gmail
-app.config['MAIL_DEFAULT_SENDER'] = 'tmei.institute@gmail.com'
+# Применение конфигурации Flask-Mail
+app.config.update(MAIL_CONFIG)
 
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdFw-MqAAAAAGIjhuO3UTNYU6gArOpYEbpF3Xb4'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6LdFw-MqAAAAAIQvr_MjNveev2woBtY-uUkDTDjv'
 app.config['RECAPTCHA_OPTIONS'] = {'theme': 'light'}
 
-app.app_context().push()
+# Инициализация Flask-Mail
+mail = Mail(app)
 
 db.init_app(app)
 migrate = Migrate(app, db)
-mail = Mail(app)  # Инициализация Flask-Mail
 app.register_blueprint(admin, url_prefix='/admin')
 
 login_manager = LoginManager(app)
@@ -49,44 +45,9 @@ login_manager.login_view = 'login'
 login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
 login_manager.login_message_category = "success"
 
-GENRES = (
-    '🔫Экшн',
-    '🌏Приключения',
-    '🧙‍♂️RPG',
-    '⚽Спорт',
-    '🗿Головоломка',
-    '🏃‍♂️Платформер',
-    '🚗Гонки',
-    '👊Файтинг',
-    '🕵️‍♂️Детектив',
-    '🧟‍♂️Хоррор',
-    '🎮Аркада',
-    '🎲Настольная',
-    '🎵Музыкальная',
-    '✈️Авиасимулятор',
-    '🪖Тактика',
-    '🃏Карточная',
-    '🏰Tower Defense',
-    '🌌Космический симулятор',
-    '🐉Фэнтези',
-    '🤖Научная фантастика',
-    '🏹Стелс',
-    '👨‍🚀Выживание',
-    '🧩Пазл',
-    '🛠️Крафтинг',
-    '👑Королевская битва',
-    '🎯Шутер от первого лица',
-    '🧑‍🤝‍🧑Мультиплеер',
-    '🕹️Ретро',
-    '🏞️Открытый мир',
-    'Другое'
-)
-
-# Функция генерации токена
 def generate_token():
     return secrets.token_urlsafe(32)
 
-# Функция отправки письма для подтверждения email
 def send_confirmation_email(user_email, token):
     confirm_url = url_for('confirm_email', token=token, _external=True)
     msg = Message("Подтверждение регистрации", recipients=[user_email])
@@ -94,18 +55,18 @@ def send_confirmation_email(user_email, token):
     msg.html = f"<p>Перейдите по ссылке для подтверждения вашей учетной записи: <a href='{confirm_url}'>{confirm_url}</a></p>"
     mail.send(msg)
 
-# Функция отправки письма для сброса пароля
 def send_password_reset_email(user_email, token):
     reset_url = url_for('reset_password', token=token, _external=True)
     msg = Message("Сброс пароля", recipients=[user_email])
     msg.body = f"Перейдите по ссылке для сброса пароля: {reset_url}"
     msg.html = f"<p>Перейдите по ссылке для сброса пароля: <a href='{reset_url}'>{reset_url}</a></p>"
     mail.send(msg)
+
 #-----------------------------------------------------------------------------------------------------------------
 
 """
                             Функции для проверки авторизации пользователя в сессии, кодирования изображения,
-                            вывода странц ненайдено и пользователь не авторизован
+                            вывода страниц ненайдено и пользователь не авторизован
 """
 #-----------------------------------------------------------------------------------------------------------------
 @login_manager.user_loader
@@ -120,12 +81,9 @@ def create_tables():
 
 @app.before_request
 def check_user_in_db():
-    # Проверяем, авторизован ли пользователь
     if current_user.is_authenticated:
-        # Ищем пользователя в базе данных
         user = Users.query.get(current_user.get_id())
         if user is None:
-            # Если пользователь не найден, выходим из системы
             logout_user()
             flash("Ваша учетная запись была удалена.", "error")
             return redirect(url_for('login'))
@@ -135,6 +93,23 @@ def b64encode(data):
     if data is None:
         return ""
     return base64.b64encode(data).decode('utf-8')
+
+@app.template_filter('format_time')
+def format_time(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    if hours > 0:
+        return f"{hours}ч {minutes}м {seconds}с"
+    elif minutes > 0:
+        return f"{minutes}м {seconds}с"
+    else:
+        return f"{seconds}с"
+
+@app.template_filter('datetimeformat')
+def datetimeformat(value):
+    return datetime.fromtimestamp(value, tz=timezone.utc).strftime('%Y-%m-%d %H:%M')
+
 @app.errorhandler(404)
 def page_not_found(error):
     menu = MainMenu.query.all()
@@ -145,8 +120,8 @@ def unauthorized(error):
     menu = MainMenu.query.all()
     return render_template('page401.html', title='Не авторизованный пользователь', menu=menu)
 
-
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Основной маршрут (Главная страница) Сайта
 """
@@ -157,7 +132,7 @@ def index():
     menu = MainMenu.query.all()
     try:
         games = Games.query.all()
-        posts = Posts.query.order_by(desc(Posts.time)).all()  # Получаем все посты, сортируем по дате
+        posts = Posts.query.order_by(desc(Posts.time)).all()
     except Exception as e:
         flash(f"Ошибка получения данных: {str(e)}", "error")
         games = []
@@ -165,6 +140,7 @@ def index():
     return render_template('index.html', title="Игровой развлекательный портал", menu=menu, user=current_user, games=games, posts=posts)
 
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                       Маршрут страницы СПИСКА ИГР на сайте
 """
@@ -174,25 +150,25 @@ def index():
 def listgames():
     menu = MainMenu.query.all()
     try:
-        # Получаем параметры запроса
         search = request.args.get('search', '').strip()
-        sort = request.args.get('sort_name', 'time_desc')  # По умолчанию сортировка по дате убывания
-        filter_type = request.args.get('type_filter', '')  # Фильтр по типу игры
-        filter_genre = request.args.get('genre_filter', '')  # Фильтр по жанру
-        # Базовый запрос
+        sort = request.args.get('sort_name', 'time_desc')
+        filter_type = request.args.get('type_filter', '')
+        filter_genre = request.args.get('genre_filter', '')
+        filter_favorite = request.args.get('favorite_filter', '')
+
         query = Games.query
-        # Поиск по названию или описанию
         if search:
             query = query.filter(
                 (Games.title.ilike(f'%{search}%')) |
                 (Games.description.ilike(f'%{search}%'))
             )
-        # Фильтрация по типу игры
         if filter_type:
             query = query.filter(Games.type == filter_type)
-        # Сортировка
         if filter_genre:
             query = query.filter(Games.genre == filter_genre)
+        if filter_favorite == 'favorite':
+            query = query.join(Favorites, Favorites.game_id == Games.id).filter(Favorites.user_id == current_user.get_id())
+
         if sort == 'title_asc':
             query = query.order_by(asc(Games.title))
         elif sort == 'title_desc':
@@ -202,15 +178,20 @@ def listgames():
         elif sort == 'time_desc':
             query = query.order_by(desc(Games.time))
         else:
-            query = query.order_by(desc(Games.time))  # По умолчанию
+            query = query.order_by(desc(Games.time))
 
         games = query.all()
+        favorite_game_ids = [fav.game_id for fav in Favorites.query.filter_by(user_id=current_user.get_id()).all()]
     except Exception as e:
         flash(f'Ошибка получения списка игр: {str(e)}', 'error')
         games = []
+        favorite_game_ids = []
     return render_template('listgames.html', title="Игры", menu=menu, games=games,
-                          search=search, sort=sort, filter_type=filter_type, filter_genre=filter_genre, genres=GENRES)
+                          search=search, sort=sort, filter_type=filter_type, filter_genre=filter_genre,
+                          filter_favorite=filter_favorite, genres=GENRES, favorite_game_ids=favorite_game_ids)
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                       Маршрут страницы ИГРЫ на сайте
 """
@@ -220,10 +201,11 @@ def listgames():
 def game(game_id):
     game = Games.query.get_or_404(game_id)
     menu = MainMenu.query.all()
+    is_favorite = Favorites.query.filter_by(user_id=current_user.get_id(), game_id=game_id).first() is not None
 
-    response = make_response(render_template('game.html', menu=menu, title=game.title, game=game))
+    response = make_response(render_template('game.html', menu=menu, title=game.title, game=game, is_favorite=is_favorite))
     if game.type == 'link':
-        response.set_cookie('game_path', '', path='/', samesite='Lax')  # Нет пути для внешних ссылок
+        response.set_cookie('game_path', '', path='/', samesite='Lax')
     elif game.type == 'pygame':
         response.set_cookie('game_path', game.link, path='/', samesite='Lax')
     elif game.type == 'unity':
@@ -232,6 +214,7 @@ def game(game_id):
     return response
 
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                              Маршрут для ИГР Pygame
 """
@@ -246,7 +229,9 @@ def pygame():
 @login_required
 def game_static_files(path):
     return send_from_directory(os.path.join(app.static_folder, f'games/{path.removesuffix(".apk")}/build/web'), path)
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                     Маршрут для скачивания УСТАНОВЩИКА ИГРЫ на сайте
 """
@@ -258,7 +243,9 @@ def download_installer(game_id):
     if game.installer and os.path.exists(game.installer):
         return send_file(game.installer, as_attachment=True, download_name=f"{game.title}.exe")
     abort(404)
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                     Маршрут страницы АВТОРИЗАЦИИ на сайте
 """
@@ -282,6 +269,7 @@ def login():
     return render_template("login.html", menu=MainMenu.query.all(), title="Авторизация", form=form)
 
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                     Маршрут страницы РЕГИСТРАЦИИ на сайте
 """
@@ -297,7 +285,7 @@ def register():
             email=form.email.data.lower(),
             psw=hash_psw,
             time=int(datetime.now(timezone.utc).timestamp()),
-            is_active=False  # Устанавливаем неактивный статус
+            is_active=False
         )
         db.session.add(new_user)
         db.session.flush()
@@ -318,9 +306,8 @@ def register():
         return redirect(url_for('login'))
     return render_template("register.html", menu=MainMenu.query.all(), title="Регистрация", form=form)
 
-
-
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                     Маршрут для ПОДТВЕРЖДЕНИЯ EMAIL
 """
@@ -342,14 +329,14 @@ def confirm_email(token):
         flash("Пользователь не найден.", "error")
         return redirect(url_for('register'))
 
-    user.is_active = True  # Активируем учетную запись
+    user.is_active = True
     db.session.delete(token_record)
     db.session.commit()
     flash("Ваша учетная запись успешно подтверждена!", "success")
     return redirect(url_for('login'))
 
-
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                     Маршрут для СБРОСА ПАРОЛЯ
 """
@@ -371,7 +358,7 @@ def reset_password(token):
         user = Users.query.get(token_record.user_id)
         if user:
             user.psw = generate_password_hash(form.password.data)
-            user.is_active = True  # Активируем учетную запись, если она была неактивной
+            user.is_active = True
             db.session.delete(token_record)
             db.session.commit()
             flash("Пароль успешно изменен. Войдите с новым паролем.", "success")
@@ -379,7 +366,9 @@ def reset_password(token):
         else:
             flash("Пользователь не найден.", "error")
     return render_template("reset_password.html", menu=MainMenu.query.all(), title="Сброс пароля", form=form, token=token)
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                     Маршрут для ФОРМЫ "ЗАБЫЛ ПАРОЛЬ"
 """
@@ -406,7 +395,9 @@ def forgot_password():
             flash("Пользователь с такой почтой не найден.", "error")
         return redirect(url_for('login'))
     return render_template("forgot_password.html", menu=MainMenu.query.all(), title="Восстановление пароля", form=form)
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Маршрут СТРАНИЦЫ ПОСТА
 """
@@ -418,11 +409,9 @@ def showPost(post_id):
     menu = MainMenu.query.all()
     return render_template('post.html', menu=menu, title=post.title, post=post)
 
-# Комментарии для постов
 @app.route('/post/<int:post_id>/comments')
 @login_required
 def get_post_comments(post_id):
-    # Фильтруем только комментарии, где post_id соответствует и game_id равен NULL
     comments = Comments.query.filter_by(post_id=post_id, game_id=None, parent_id=None).order_by(Comments.timestamp.desc()).all()
     current_user_id = int(current_user.get_id())
 
@@ -430,6 +419,7 @@ def get_post_comments(post_id):
         return {
             "id": comment.id,
             "user": comment.user.name,
+            "user_id": comment.user_id,  # Добавляем ID пользователя для ссылки на профиль
             "avatar": f"data:image/png;base64,{base64.b64encode(comment.user.avatar).decode('utf-8')}" if comment.user.avatar else None,
             "text": comment.text,
             "timestamp": comment.timestamp.strftime('%Y-%m-%d %H:%M'),
@@ -440,6 +430,7 @@ def get_post_comments(post_id):
 
     comments_data = [serialize_comment(comment) for comment in comments]
     return {"comments": comments_data}
+
 @app.route('/post/<int:post_id>/comment', methods=['POST'])
 @login_required
 def add_post_comment(post_id):
@@ -453,14 +444,16 @@ def add_post_comment(post_id):
     comment = Comments(
         user_id=current_user.get_id(),
         post_id=post_id,
-        game_id=None,  # Устанавливаем game_id в None для поста
+        game_id=None,
         text=text,
         parent_id=parent_id
     )
     db.session.add(comment)
     db.session.commit()
     return {"message": "Комментарий добавлен"}
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Маршрут для ВЫХОДА ИЗ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ
 """
@@ -471,7 +464,9 @@ def logout():
     logout_user()
     flash("Вы вышли из аккаунта", "success")
     return redirect(url_for('login'))
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Маршрут страницы ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ на сайте
 """
@@ -480,8 +475,30 @@ def logout():
 @login_required
 def profile():
     menu = MainMenu.query.all()
-    return render_template("profile.html", menu=menu, title="Профиль")
+    stats = GameStats.query.filter_by(user_id=current_user.get_id()).order_by(GameStats.last_played.desc()).all()
+    favorites = Favorites.query.filter_by(user_id=current_user.get_id()).order_by(Favorites.added_at.desc()).all()
+    return render_template("profile.html", menu=menu, title="Профиль", stats=stats, favorites=favorites)
+
 #-----------------------------------------------------------------------------------------------------------------
+
+"""
+                                     Маршрут страницы ПРОФИЛЯ ДРУГОГО ПОЛЬЗОВАТЕЛЯ
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/user/<int:user_id>')
+@login_required
+def user_profile(user_id):
+    user = Users.query.get_or_404(user_id)
+    if not user.is_active:
+        flash("Этот пользователь не активирован.", "error")
+        return redirect(url_for('index'))
+    menu = MainMenu.query.all()
+    stats = GameStats.query.filter_by(user_id=user_id).order_by(GameStats.last_played.desc()).all()
+    favorites = Favorites.query.filter_by(user_id=user_id).order_by(Favorites.added_at.desc()).all()
+    return render_template("user_profile.html", menu=menu, title=f"Профиль {user.name}", user=user, stats=stats, favorites=favorites)
+
+#-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Маршрут страницы РЕДАКТИРОВАНИЯ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ на сайте
 """
@@ -495,16 +512,12 @@ def edit_profile():
             updates = {}
             if form.name.data and form.name.data != current_user.getName():
                 updates['name'] = form.name.data
-
             if form.email.data and form.email.data != current_user.getEmail():
                 updates['email'] = form.email.data
-
             if form.password.data:
                 updates['psw'] = generate_password_hash(form.password.data)
-
             if updates:
                 Users.updateUser(current_user.get_id(), **updates)
-
             if form.avatar.data:
                 avatar = form.avatar.data
                 img = avatar.read()
@@ -513,37 +526,37 @@ def edit_profile():
                 else:
                     success = Users.updateUserAvatar(img, current_user.get_id())
                     if not success:
-                        flash('Ошибка обновления аватра', 'error')
+                        flash('Ошибка обновления аватара', 'error')
             if updates or form.avatar.data:
                 flash('Профиль успешно обновлен','success')
             return redirect(url_for('profile'))
         except Exception as e:
             flash(f'Ошибка при обновлении профиля: {str(e)}', 'error')
-
     form.name.data = current_user.getName()
     form.email.data = current_user.getEmail()
-
     menu = MainMenu.query.all()
-    return render_template("edit_profile.html", menu=menu, title="Редактирование профиля", form = form)
+    return render_template("edit_profile.html", menu=menu, title="Редактирование профиля", form=form)
+
 #-----------------------------------------------------------------------------------------------------------------
 
-
 """
-                                     Маршрут для ПОЛУЧЕНИЯ И ОТОБРАЖЕНИЯ АВТАРА ПОЛЬЗОВАТЕЛЯ
+                                     Маршрут для ПОЛУЧЕНИЯ И ОТОБРАЖЕНИЯ АВАТАРА ПОЛЬЗОВАТЕЛЯ
 """
 #-----------------------------------------------------------------------------------------------------------------
 @app.route('/userava')
 @login_required
 def userava():
-    img = current_user.getAvatar(app)  # Используем метод getAvatar из UserLogin
+    img = current_user.getAvatar(app)
     if img:
         h = make_response(img)
         h.headers['Content-Type'] = 'image/png'
         return h
     return ""
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
-                                     Маршрут для ОБНОВЛЕНИЯ АВТАРА ПОЛЬЗОВАТЕЛЯ
+                                     Маршрут для ОБНОВЛЕНИЯ АВАТАРА ПОЛЬЗОВАТЕЛЯ
 """
 #-----------------------------------------------------------------------------------------------------------------
 @app.route('/upload', methods=["POST", "GET"])
@@ -553,12 +566,8 @@ def upload():
         file = request.files['file']
         if file and current_user.verifyExt(file.filename):
             try:
-                # Чтение файла в переменную
                 img = file.read()
-
-                # Вызов метода для обновления аватара
                 success = Users.updateUserAvatar(img, current_user.get_id())
-
                 if not success:
                     flash("Ошибка обновления аватара", "error")
                 else:
@@ -567,9 +576,10 @@ def upload():
                 flash("Ошибка чтения файла", "error")
         else:
             flash("Ошибка обновления аватара", "error")
-
     return redirect(url_for('profile'))
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Маршрут для ПОЛУЧЕНИЯ СПИСКА КОММЕНТАРИЕВ ИГРЫ
 """
@@ -577,7 +587,6 @@ def upload():
 @app.route('/game/<int:game_id>/comments')
 @login_required
 def get_comments(game_id):
-    # Фильтруем только комментарии, где game_id соответствует и post_id равен NULL
     comments = Comments.query.filter_by(game_id=game_id, post_id=None, parent_id=None).order_by(Comments.timestamp.desc()).all()
     current_user_id = int(current_user.get_id())
 
@@ -585,6 +594,7 @@ def get_comments(game_id):
         return {
             "id": comment.id,
             "user": comment.user.name,
+            "user_id": comment.user_id,  # Добавляем ID пользователя для ссылки на профиль
             "avatar": f"data:image/png;base64,{base64.b64encode(comment.user.avatar).decode('utf-8')}" if comment.user.avatar else None,
             "text": comment.text,
             "timestamp": comment.timestamp.strftime('%Y-%m-%d %H:%M'),
@@ -595,12 +605,13 @@ def get_comments(game_id):
 
     comments_data = [serialize_comment(comment) for comment in comments]
     return {"comments": comments_data}
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
                                      Маршрут для ДОБАВЛЕНИЯ КОММЕНТАРИЯ К ИГРЕ
 """
 #-----------------------------------------------------------------------------------------------------------------
-
 @app.route('/game/<int:game_id>/comment', methods=['POST'])
 @login_required
 def add_comment(game_id):
@@ -614,63 +625,113 @@ def add_comment(game_id):
     comment = Comments(
         user_id=current_user.get_id(),
         game_id=game_id,
-        post_id=None,  # Устанавливаем post_id в None для игры
+        post_id=None,
         text=text,
         parent_id=parent_id
     )
     db.session.add(comment)
     db.session.commit()
     return {"message": "Комментарий добавлен"}
+
 #-----------------------------------------------------------------------------------------------------------------
+
 """
-                                     Маршрут для ПОЛУЧЕНИЯ ЛАЙКА К КОМЕНТАРИЮ
+                                     Маршрут для ПОЛУЧЕНИЯ ЛАЙКА К КОММЕНТАРИЮ
 """
 #-----------------------------------------------------------------------------------------------------------------
 @app.route('/comment/<int:comment_id>/like', methods=['POST'])
 @login_required
 def like_comment(comment_id):
     comment = Comments.query.get_or_404(comment_id)
-    # Проверяем, поставил ли пользователь уже лайк
     existing_like = CommentLikes.query.filter_by(user_id=current_user.get_id(), comment_id=comment_id).first()
     if existing_like:
-        # Если лайк уже поставлен, удаляем его и уменьшаем количество лайков
         db.session.delete(existing_like)
         comment.likes -= 1
     else:
-        # Если лайк не был поставлен, добавляем новый лайк и увеличиваем количество лайков
         new_like = CommentLikes(user_id=current_user.get_id(), comment_id=comment_id)
         db.session.add(new_like)
         comment.likes += 1
     db.session.commit()
     return {"likes": comment.likes}
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Маршрут для УДАЛЕНИЯ К КОМЕНТАРИЯ
-"""
+
 #-----------------------------------------------------------------------------------------------------------------
 
+"""
+                                     Маршрут для УДАЛЕНИЯ КОММЕНТАРИЯ
+"""
+#-----------------------------------------------------------------------------------------------------------------
 @app.route('/comment/<int:comment_id>/delete', methods=['DELETE'])
 @login_required
 def delete_comment(comment_id):
     comment = Comments.query.get_or_404(comment_id)
-
     if comment.user_id != int(current_user.get_id()):
         return {"error": "Вы можете удалить только свои комментарии"}, 403
     CommentLikes.query.filter_by(comment_id=comment_id).delete()
-
     db.session.delete(comment)
     db.session.commit()
     return {"success": True}
 
+#-----------------------------------------------------------------------------------------------------------------
 
+"""
+                                     Маршруты для ОТСЛЕЖИВАНИЯ ВРЕМЕНИ ИГРЫ
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/game/<int:game_id>/track_time', methods=['POST'])
+@login_required
+def track_time(game_id):
+    data = request.json
+    time_spent = data.get('time_spent', 0)
+    if not isinstance(time_spent, int) or time_spent < 0:
+        return {"error": "Некорректное время"}, 400
+
+    stat = GameStats.query.filter_by(user_id=current_user.get_id(), game_id=game_id).first()
+    if stat:
+        stat.time_spent += time_spent
+        stat.last_played = datetime.now(timezone.utc)
+    else:
+        stat = GameStats(
+            user_id=current_user.get_id(),
+            game_id=game_id,
+            time_spent=time_spent,
+            last_played=datetime.now(timezone.utc)
+        )
+        db.session.add(stat)
+    db.session.commit()
+    return {"message": "Время обновлено"}
 
 #-----------------------------------------------------------------------------------------------------------------
+
+"""
+                                     Маршруты для УПРАВЛЕНИЯ ИЗБРАННЫМИ ИГРАМИ
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/game/<int:game_id>/favorite', methods=['POST'])
+@login_required
+def toggle_favorite(game_id):
+    favorite = Favorites.query.filter_by(user_id=current_user.get_id(), game_id=game_id).first()
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return {"message": "Игра удалена из избранного", "is_favorite": False}
+    else:
+        new_favorite = Favorites(
+            user_id=current_user.get_id(),
+            game_id=game_id,
+            added_at=datetime.now(timezone.utc)
+        )
+        db.session.add(new_favorite)
+        db.session.commit()
+        return {"message": "Игра добавлена в избранное", "is_favorite": True}
+
+#-----------------------------------------------------------------------------------------------------------------
+
 """
                                                ЗАПУСК ВЕБ ПРИЛОЖЕНИЯ
 """
 #-----------------------------------------------------------------------------------------------------------------
-
-
 if __name__ == "__main__":
-    # app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    with app.app_context():
+        db.create_all()  # Создание таблиц при запуске
     app.run(port=5001)
+    # app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)

@@ -31,10 +31,10 @@ function createCommentElement(comment) {
     commentElement.classList.add("comment");
     commentElement.innerHTML = `
         <div class="comment-header">
-            <span class="comment-user">${comment.user}</span>
+            <a href="/user/${comment.user_id}" class="comment-user">${comment.user}</a>
             <span class="comment-timestamp">${comment.timestamp}</span>
         </div>
-        <img src="${avatarSrc}" alt="Avatar" class="comment-avatar">
+        <a href="/user/${comment.user_id}"><img src="${avatarSrc}" alt="Avatar" class="comment-avatar"></a>
         <div class="comment-content">
             <p class="comment-text">${comment.text}</p>
             <button class="like-btn" data-id="${comment.id}">❤️ ${comment.likes}</button>

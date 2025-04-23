@@ -19,20 +19,75 @@
         <!-- Информация -->
         <div class="profile-details">
             <div class="profile-actions" style="flex-direction: row-reverse; margin-top:0px">
-            <a href="{{ url_for('edit_profile') }}" class="edit-link" >
+                <a href="{{ url_for('edit_profile') }}" class="edit-link">
                     <span class="edit-icon">✏️</span> Изменить
                 </a>
-                </div>
+            </div>
             <ul class="info-list">
                 <li><span class="label">Логин:</span> {{ current_user.getLogin() }}</li>
                 <li><span class="label">Имя:</span> {{ current_user.getName() }}</li>
                 <li><span class="label">Email:</span> {{ current_user.getEmail() }}</li>
             </ul>
             <div class="profile-actions">
-
                 <a href="{{ url_for('logout') }}" class="btn btn-logout">Выйти</a>
             </div>
         </div>
+    </div>
+
+    <!-- Статистика игр -->
+    <div class="stats-container">
+        <h2 class="stats-title">Статистика игр</h2>
+        {% if stats %}
+            <ul class="stats-list">
+                {% for stat in stats %}
+                    <li>
+                        <span class="game-name">{{ stat.game.title }}</span>
+                        <span class="time-spent">Время: {{ stat.time_spent | format_time }}</span>
+                        <span class="last-played">Последний раз: {{ stat.last_played.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-stats">Вы ещё не играли в игры.</p>
+        {% endif %}
+    </div>
+
+    <!-- Избранные игры -->
+    <div class="favorites-container">
+        <h2 class="favorites-title">Избранные игры</h2>
+        {% if favorites %}
+            <div class="cards-container">
+                {% for favorite in favorites %}
+                    <a href="{{ url_for('game', game_id=favorite.game.id) }}" class="game-card">
+                        {% if favorite.game.cover %}
+                            <div class="game-cover">
+                                <img src="data:image/jpeg;base64,{{ favorite.game.cover|b64encode }}" alt="{{ favorite.game.title }}">
+                            </div>
+                        {% endif %}
+                        <div class="game-title">
+                            <div class="game-name">{{ favorite.game.title }}</div>
+                            <div class="game-type">
+                                {% if favorite.game.type == 'link' %}
+                                    <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
+                                    <span>Web</span>
+                                {% elif favorite.game.type == 'pygame' %}
+                                    <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
+                                    <span>Pygame</span>
+                                {% elif favorite.game.type == 'unity' %}
+                                    <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
+                                    <span>Unity</span>
+                                {% endif %}
+                            </div>
+                            {% if favorite.game.genre %}
+                                <div class="game-genre">{{ favorite.game.genre }}</div>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-favorites">У вас нет избранных игр.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+<div class="profile-container">
+    <h1>Профиль {{ user.name }}</h1>
+</div>
+
+<div class="profile-layout">
+    <div class="profile-info">
+        <div class="avatar-container">
+            {% if user.avatar %}
+                <img src="data:image/png;base64,{{ user.avatar|b64encode }}" alt="Аватар" class="profile-avatar">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Аватар" class="profile-avatar">
+            {% endif %}
+        </div>
+        <div class="user-details">
+            <p><strong>Имя:</strong> {{ user.name }}</p>
+            <p><strong>Логин:</strong> {{ user.login }}</p>
+            <p><strong>Дата регистрации:</strong> {{ user.time|datetimeformat }}</p>
+        </div>
+    </div>
+
+    <div class="profile-stats">
+        <h2>Статистика игр</h2>
+        {% if stats %}
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Игра</th>
+                        <th>Время игры</th>
+                        <th>Последний раз играл</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in stats %}
+                        <tr>
+                            <td>{{ stat.game.title }}</td>
+                            <td>{{ stat.time_spent|format_time }}</td>
+                            <td>{{ stat.last_played.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Нет статистики игр.</p>
+        {% endif %}
+    </div>
+
+    <div class="profile-favorites">
+        <h2>Избранные игры</h2>
+        {% if favorites %}
+            <ul class="favorites-list">
+                {% for favorite in favorites %}
+                    <li><a href="{{ url_for('game', game_id=favorite.game_id) }}">{{ favorite.game.title }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Нет избранных игр.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .profile-layout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+    .profile-info, .profile-stats, .profile-favorites {
+        background: rgba(30, 30, 40, 0.9);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 400px;
+    }
+    .avatar-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #00cee7;
+    }
+    .user-details p {
+        margin: 10px 0;
+        font-size: 16px;
+    }
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .stats-table th, .stats-table td {
+        padding: 10px;
+        border: 1px solid #444;
+        text-align: left;
+    }
+    .stats-table th {
+        background: #1196d7;
+    }
+    .favorites-list {
+        list-style: none;
+        padding: 0;
+    }
+    .favorites-list li {
+        margin: 10px 0;
+    }
+    .favorites-list a {
+        color: #00cee7;
+        text-decoration: none;
+    }
+    .favorites-list a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

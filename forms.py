@@ -16,6 +16,7 @@ class LoginForm(FlaskForm):
     psw = PasswordField("Пароль: ", validators=[DataRequired(),
                                                 Length(min=4, max=100, message="Пароль должен быть от 4 до 100 символов")])
     remember = BooleanField("Запомнить", default=False)
+    recaptcha = RecaptchaField()  # Поле reCAPTCHA
     submit = SubmitField("Войти", render_kw={'class': 'login_button'})
 # ----------------------------------------------------------------------------------------------------------------
 """

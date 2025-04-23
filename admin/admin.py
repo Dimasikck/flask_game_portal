@@ -1,20 +1,18 @@
 import shutil
 import zipfile
+import base64
 from flask import Blueprint, render_template, url_for, redirect, session, request, flash, g
 from werkzeug.utils import secure_filename
 import os
-from db import db, Posts, Users, Games, MainMenu,Comments, CommentLikes
+from db import db, Posts, Users, Games, MainMenu, Comments, CommentLikes
 from datetime import datetime, timedelta
 from sqlalchemy import func, asc, desc
 from git import Repo
 import hmac
 import hashlib
+from config import GENRES
+from flask_mail import Message
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Маршрут ДЛЯ ПОЛУЧЕНИЯ И ОТОБРАЖЕНИЯ АВТАРА ПОЛЬЗОВАТЕЛЯ 
-"""
-#-----------------------------------------------------------------------------------------------------------------
 admin = Blueprint('admin', __name__, template_folder='templates', static_folder='static')
 
 menu = [{'url': '.index', 'title': 'Панель'},
@@ -26,49 +24,15 @@ menu = [{'url': '.index', 'title': 'Панель'},
 
 SECRET_KEY = '43fswQtodqAAAAAaLYQVnaNOyAwmqeOqWsGPvweqe'
 
-GENRES = (
-    '🔫Экшн',
-    '🌏Приключения',
-    '🧙‍♂️RPG',
-    '⚽Спорт',
-    '🗿Головоломка',
-    '🏃‍♂️Платформер',
-    '🚗Гонки',
-    '👊Файтинг',
-    '🕵️‍♂️Детектив',
-    '🧟‍♂️Хоррор',
-    '🎮Аркада',
-    '🎲Настольная',
-    '🎵Музыкальная',
-    '✈️Авиасимулятор',
-    '🪖Тактика',
-    '🃏Карточная',
-    '🏰Tower Defense',
-    '🌌Космический симулятор',
-    '🐉Фэнтези',
-    '🤖Научная фантастика',
-    '🏹Стелс',
-    '👨‍🚀Выживание',
-    '🧩Пазл',
-    '🛠️Крафтинг',
-    '👑Королевская битва',
-    '🎯Шутер от первого лица',
-    '🧑‍🤝‍🧑Мультиплеер',
-    '🕹️Ретро',
-    '🏞️Открытый мир',
-    'Другое'
-)
 def isLogged():
     return True if session.get('admin_logged') else False
+
 def login_admin():
     session['admin_logged'] = 1
+
 def logout_admin():
     session.pop('admin_logged', None)
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Основной маршрут (Главная страница) Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
+
 @admin.route('/')
 def index():
     if not isLogged():
@@ -80,7 +44,7 @@ def index():
 
     user_stats = (
         db.session.query(
-            func.date(func.datetime(Users.time, 'unixepoch')),  # Преобразуем Unix timestamp в дату
+            func.date(func.datetime(Users.time, 'unixepoch')),
             func.count()
         )
         .filter(Users.time >= int(last_week.timestamp()))
@@ -89,7 +53,7 @@ def index():
     )
     game_stats = (
         db.session.query(
-            func.date(func.datetime(Games.time, 'unixepoch')),  # То же для Games
+            func.date(func.datetime(Games.time, 'unixepoch')),
             func.count()
         )
         .filter(Games.time >= int(last_week.timestamp()))
@@ -114,11 +78,6 @@ def index():
         game_counts=game_counts
     )
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Маршрут для обновления сайта через админ-панель
-"""
-#-----------------------------------------------------------------------------------------------------------------
 @admin.route('/update_site', methods=['POST'])
 def update_site():
     if not isLogged():
@@ -129,7 +88,7 @@ def update_site():
         print("Pulling from Git")
         repo = Repo('/home/Dimasickc/flask_game_portal')
         repo.git.fetch('origin')
-        repo.git.reset('--hard', 'origin/main')  # Принудительно синхронизируем с origin/main
+        repo.git.reset('--hard', 'origin/main')
         print("Git pull successful")
         os.system('touch /var/www/dimasickc_pythonanywhere_com_wsgi.py')
         print("WSGI file touched")
@@ -140,17 +99,12 @@ def update_site():
 
     return redirect(url_for('.index'))
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Маршрут для обновления сайта через вебхук GitHub
-"""
-#-----------------------------------------------------------------------------------------------------------------
 @admin.route('/webhook', methods=['POST'])
 def webhook():
     print(f"Request received: {request.method} {request.headers.get('User-Agent')}")
     signature = request.headers.get('X-Hub-Signature-256')
     print(f"Signature: {signature}")
-    if not signature:  # Если подписи нет, это не запрос от GitHub
+    if not signature:
         print("No signature provided")
         return 'No signature provided', 403
 
@@ -166,7 +120,7 @@ def webhook():
         print("Pulling from Git")
         repo = Repo('/home/Dimasickc/flask_game_portal')
         repo.git.fetch('origin')
-        repo.git.reset('--hard', 'origin/main')  # Принудительно синхронизируем с origin/main
+        repo.git.reset('--hard', 'origin/main')
         print("Git pull successful")
         os.system('touch /var/www/dimasickc_pythonanywhere_com_wsgi.py')
         print("WSGI file touched")
@@ -174,11 +128,7 @@ def webhook():
     except Exception as e:
         print(f"Error: {str(e)}")
         return f"Error: {str(e)}", 500
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Маршрут страницы АВТОРИЗАЦИИ для Панели администратора
-"""
-#-----------------------------------------------------------------------------------------------------------------
+
 @admin.route('/login', methods=["POST", "GET"])
 def login():
     if isLogged():
@@ -192,11 +142,6 @@ def login():
             flash("Неверная пара логин/пароль", "error")
 
     return render_template('admin/login.html', title='Админ-панель')
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                                     Маршрут для ВЫХОДА из авторизации  Панели администратора
-"""
-#-----------------------------------------------------------------------------------------------------------------
 
 @admin.route('/logout', methods=["POST", "GET"])
 def logout():
@@ -206,30 +151,20 @@ def logout():
     logout_admin()
 
     return redirect(url_for('.login'))
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут страницы СПИСОК ПОСТОВ на Панели администратора 
-"""
-#-----------------------------------------------------------------------------------------------------------------
 
-# Обновляем маршрут списка постов
 @admin.route('/list_pubs')
 def list_pubs():
     if not isLogged():
         return redirect(url_for('.login'))
     try:
-        # Получаем параметры запроса
         search = request.args.get('search', '').strip()
-        sort = request.args.get('sort', 'time_desc')  # По умолчанию сортировка по дате убывания
-        # Базовый запрос
+        sort = request.args.get('sort', 'time_desc')
         query = Posts.query
-        # Поиск по названию или тексту
         if search:
             query = query.filter(
                 (Posts.title.ilike(f'%{search}%')) |
                 (Posts.text.ilike(f'%{search}%'))
             )
-        # Сортировка
         if sort == 'title_asc':
             query = query.order_by(asc(Posts.title))
         elif sort == 'title_desc':
@@ -239,7 +174,7 @@ def list_pubs():
         elif sort == 'time_desc':
             query = query.order_by(desc(Posts.time))
         else:
-            query = query.order_by(desc(Posts.time))  # По умолчанию
+            query = query.order_by(desc(Posts.time))
         posts = query.all()
     except Exception as e:
         flash(f'Ошибка получения списка постов: {str(e)}', 'error')
@@ -247,13 +182,9 @@ def list_pubs():
     return render_template('admin/list_pubs.html', title='Список постов', menu=menu, posts=posts,
                           search=search, sort=sort)
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут страницы ДОБАВЛЕНИЕ ПОСТА в Панели администратора 
-"""
-#-----------------------------------------------------------------------------------------------------------------
 @admin.route('/add_post', methods=['POST', 'GET'])
 def add_post():
+    from app import mail  # Локальный импорт внутри функции
     if not isLogged():
         return redirect(url_for('.login'))
     if request.method == 'POST':
@@ -264,12 +195,10 @@ def add_post():
             flash('Все поля должны быть заполнены', 'error')
         else:
             try:
-                # Генерируем URL на основе заголовка
                 url = secure_filename(title.lower().replace(' ', '-'))
-                # Проверяем уникальность URL
                 existing_post = Posts.query.filter_by(url=url).first()
                 if existing_post:
-                    url = f"{url}-{int(datetime.now().timestamp())}"  # Добавляем временную метку для уникальности
+                    url = f"{url}-{int(datetime.now().timestamp())}"
 
                 if Posts.query.filter_by(title=title).first():
                     flash('Пост с таким названием уже существует', 'error')
@@ -279,6 +208,28 @@ def add_post():
                                  time=int(datetime.now().timestamp()))
                 db.session.add(new_post)
                 db.session.commit()
+
+                # Отправка уведомлений всем зарегистрированным пользователям
+                users = Users.query.filter_by(is_active=True).all()
+                post_url = url_for('showPost', post_id=new_post.id, _external=True)
+                cover_b64 = base64.b64encode(cover_data).decode('utf-8')
+                for user in users:
+                    msg = Message(
+                        subject=f"Новый пост: {title}",
+                        recipients=[user.email]
+                    )
+                    msg.html = render_template(
+                        'email/post_notification.html',
+                        post_title=title,
+                        post_text=text[:200] + ('...' if len(text) > 200 else ''),
+                        post_url=post_url,
+                        cover_b64=cover_b64
+                    )
+                    try:
+                        mail.send(msg)
+                    except Exception as e:
+                        print(f"Ошибка отправки письма пользователю {user.email}: {str(e)}")
+
                 flash('Пост успешно добавлен', 'success')
                 return redirect(url_for('.list_pubs'))
             except Exception as e:
@@ -286,11 +237,6 @@ def add_post():
                 flash(f'Ошибка добавления поста: {str(e)}', 'error')
     return render_template('admin/add_post.html', menu=menu, title='Добавить пост')
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут страницы РЕДАКТИРОВАНИЕ ПОСТА в Панели администратора 
-"""
-#-----------------------------------------------------------------------------------------------------------------
 @admin.route('/edit_post/<int:post_id>', methods=['POST', 'GET'])
 def edit_post(post_id):
     if not isLogged():
@@ -304,11 +250,10 @@ def edit_post(post_id):
             flash('Все поля должны быть заполнены', 'error')
         else:
             try:
-                # Обновляем URL на основе нового заголовка
                 new_url = secure_filename(title.lower().replace(' ', '-'))
                 existing_post_with_url = Posts.query.filter_by(url=new_url).first()
                 if existing_post_with_url and existing_post_with_url.id != post_id:
-                    new_url = f"{new_url}-{int(datetime.now().timestamp())}"  # Уникальность при конфликте
+                    new_url = f"{new_url}-{int(datetime.now().timestamp())}"
 
                 existing_post = Posts.query.filter_by(title=title).first()
                 if existing_post and existing_post.id != post_id:
@@ -316,7 +261,7 @@ def edit_post(post_id):
                     return render_template('admin/edit_post.html', menu=menu, title='Редактировать пост', post=post)
 
                 post.title = title
-                post.url = new_url  # Обновляем URL
+                post.url = new_url
                 post.text = text
                 if cover_file and cover_file.filename:
                     cover_data = cover_file.read()
@@ -328,11 +273,7 @@ def edit_post(post_id):
                 db.session.rollback()
                 flash(f'Ошибка обновления поста: {str(e)}', 'error')
     return render_template('admin/edit_post.html', menu=menu, title='Редактировать пост', post=post)
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут страницы УДАЛЕНИЕ ПОСТА в Панели администратора 
-"""
-#-----------------------------------------------------------------------------------------------------------------
+
 @admin.route('/delete_post/<int:post_id>', methods=['POST', 'GET'])
 def delete_post(post_id):
     if not isLogged():
@@ -347,33 +288,23 @@ def delete_post(post_id):
         flash(f'Ошибка удаления поста: {str(e)}', 'error')
     return redirect(url_for('.list_pubs'))
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут страницы СПИСКА ПОЛЬЗОВАТЕЛЕЙ в Панели администратора 
-"""
-#-----------------------------------------------------------------------------------------------------------------
 @admin.route('/list_users')
 def list_users():
     if not isLogged():
         return redirect(url_for('.login'))
     try:
-        # Получаем параметры запроса
         search = request.args.get('search', '').strip()
-        sort = request.args.get('sort', 'time_desc')  # По умолчанию сортировка по дате убывания
-        filter_role = request.args.get('role', '')  # Фильтр по роли (если есть в модели Users)
-        # Базовый запрос
+        sort = request.args.get('sort', 'time_desc')
+        filter_role = request.args.get('role', '')
         query = Users.query
-        # Поиск по логину, имени или email
         if search:
             query = query.filter(
                 (Users.login.ilike(f'%{search}%')) |
                 (Users.name.ilike(f'%{search}%')) |
                 (Users.email.ilike(f'%{search}%'))
             )
-        # Фильтрация по роли (предполагаем, что есть поле role, если нет — убрать этот блок)
         if filter_role:
             query = query.filter(Users.role == filter_role)
-        # Сортировка
         if sort == 'login_asc':
             query = query.order_by(asc(Users.login))
         elif sort == 'login_desc':
@@ -383,7 +314,7 @@ def list_users():
         elif sort == 'time_desc':
             query = query.order_by(desc(Users.time))
         else:
-            query = query.order_by(desc(Users.time))  # По умолчанию
+            query = query.order_by(desc(Users.time))
         users = query.all()
     except Exception as e:
         flash(f'Ошибка получения пользователей: {str(e)}', 'error')
@@ -392,34 +323,24 @@ def list_users():
     return render_template('admin/list_users.html', title='Список пользователей', menu=menu, list=users,
                           search=search, sort=sort, filter_role=filter_role)
 
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                              Маршрут страницы  СПИСКА ИГР в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
 @admin.route('/list_games')
 def list_games():
     if not isLogged():
         return redirect(url_for('.login'))
 
     try:
-        # Получаем параметры запроса
         search = request.args.get('search', '').strip()
-        sort = request.args.get('sort', 'time_desc')  # По умолчанию сортировка по дате убывания
-        filter_type = request.args.get('type', '')  # Фильтр по типу игры
-        filter_genre = request.args.get('genre', '')# Фильтр по жанру
-        # Базовый запрос
+        sort = request.args.get('sort', 'time_desc')
+        filter_type = request.args.get('type', '')
+        filter_genre = request.args.get('genre', '')
         query = Games.query
-        # Поиск по названию или описанию
         if search:
             query = query.filter(
                 (Games.title.ilike(f'%{search}%')) |
                 (Games.description.ilike(f'%{search}%'))
             )
-        # Фильтрация по типу игры
         if filter_type:
             query = query.filter(Games.type == filter_type)
-        # Сортировка
         if filter_genre:
             query = query.filter(Games.genre == filter_genre)
         if sort == 'title_asc':
@@ -431,7 +352,7 @@ def list_games():
         elif sort == 'time_desc':
             query = query.order_by(desc(Games.time))
         else:
-            query = query.order_by(desc(Games.time))  # По умолчанию
+            query = query.order_by(desc(Games.time))
 
         games = query.all()
     except Exception as e:
@@ -440,11 +361,6 @@ def list_games():
 
     return render_template('admin/list_games.html', title='Список игр', menu=menu, games=games,
                           search=search, sort=sort, filter_type=filter_type, filter_genre=filter_genre, genres=GENRES)
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                        Маршрут страницы СПИСКА ПУНКТОВ МЕНЮ САЙТА в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
 
 @admin.route('/list_menu')
 def list_menu():
@@ -456,11 +372,7 @@ def list_menu():
         flash(f'Ошибка получения списка меню: {str(e)}', 'error')
         menu_list = []
     return render_template('admin/list_menu.html', title='Пункты меню', menu=menu, menu_list=menu_list)
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                        Маршрут страницы ДОБАВЛЕНИЯ ПУНКТА МЕНЮ ДЛЯ САЙТА в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
+
 @admin.route('/add_menu', methods=['POST', 'GET'])
 def add_menu():
     if not isLogged():
@@ -476,18 +388,16 @@ def add_menu():
                 new_menu = MainMenu(title=title, url=url)
                 db.session.add(new_menu)
                 db.session.commit()
-                flash('Пукт успешно добавлена', 'success')
+                flash('Пункт успешно добавлен', 'success')
                 return redirect(url_for('.list_menu'))
             except Exception as e:
                 db.session.rollback()
                 flash(f'Ошибка добавления пункта: {str(e)}', 'error')
     return render_template('admin/add_menu.html', menu=menu, title='Добавить пункт меню')
 
-# -----------------------------------------------------------------------------------------------------------------
-# Маршрут добавления игры
-# -----------------------------------------------------------------------------------------------------------------
 @admin.route('/add_game', methods=['POST', 'GET'])
 def add_game():
+    from app import mail  # Локальный импорт внутри функции
     if not isLogged():
         return redirect(url_for('.login'))
     if request.method == 'POST':
@@ -525,27 +435,23 @@ def add_game():
                         flash('Необходимо загрузить архив с игрой', 'error')
                         return render_template('admin/add_game.html', menu=menu, title='Добавить игру', genres=GENRES)
 
-                    # Создаем папку с именем игры
                     game_folder = secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
-                    # game_path = os.path.join('static/games', game_folder)
                     game_path = os.path.join('flask_game_portal/static/games', game_folder)
                     os.makedirs(game_path, exist_ok=True)
 
-                    # Сохранение и разархивирование архива игры с сохранением структуры
                     game_zip_path = os.path.join(game_path, 'pygame.zip')
                     pygame_zip.save(game_zip_path)
                     with zipfile.ZipFile(game_zip_path, 'r') as zip_ref:
-                        zip_ref.extractall(game_path)  # Извлекаем все с исходной структурой
+                        zip_ref.extractall(game_path)
                     os.remove(game_zip_path)
 
-                    # Сохранение и разархивирование скриншотов с сохранением структуры
                     if pygame_screenshots_zip:
                         pygame_screenshots_path = os.path.join(game_path, 'screenshots')
                         os.makedirs(pygame_screenshots_path, exist_ok=True)
                         screenshots_zip_path = os.path.join(pygame_screenshots_path, 'screenshots.zip')
                         pygame_screenshots_zip.save(screenshots_zip_path)
                         with zipfile.ZipFile(screenshots_zip_path, 'r') as zip_ref:
-                            zip_ref.extractall(pygame_screenshots_path)  # Извлекаем все с исходной структурой
+                            zip_ref.extractall(pygame_screenshots_path)
                         os.remove(screenshots_zip_path)
                     if pygame_installer:
                         installer_path = os.path.join(game_path, f"{game_folder}.exe")
@@ -562,7 +468,6 @@ def add_game():
                         flash('Необходимо загрузить архив с Unity WebGL игрой', 'error')
                         return render_template('admin/add_game.html', menu=menu, title='Добавить игру')
                     game_folder = secure_filename(unity_zip.filename).rsplit('.', 1)[0]
-                    # game_path = os.path.join('static/games', game_folder)
                     game_path = os.path.join('flask_game_portal/static/games', game_folder)
                     os.makedirs(game_path, exist_ok=True)
                     game_zip_path = os.path.join(game_path, 'unity.zip')
@@ -570,14 +475,14 @@ def add_game():
                     with zipfile.ZipFile(game_zip_path, 'r') as zip_ref:
                         zip_ref.extractall(game_path)
                     os.remove(game_zip_path)
-                    # Сохранение и разархивирование скриншотов с сохранением структуры
+
                     if unity_screenshots_zip:
                         unity_screenshots_path = os.path.join(game_path, 'screenshots')
                         os.makedirs(unity_screenshots_path, exist_ok=True)
                         screenshots_zip_path = os.path.join(unity_screenshots_path, 'screenshots.zip')
                         unity_screenshots_zip.save(screenshots_zip_path)
                         with zipfile.ZipFile(screenshots_zip_path, 'r') as zip_ref:
-                            zip_ref.extractall(unity_screenshots_path)  # Извлекаем все с исходной структурой
+                            zip_ref.extractall(unity_screenshots_path)
                         os.remove(screenshots_zip_path)
                     if unity_installer:
                         installer_path = os.path.join(game_path, f"{game_folder}.exe")
@@ -588,6 +493,29 @@ def add_game():
 
                 db.session.add(new_game)
                 db.session.commit()
+
+                # Отправка уведомлений всем зарегистрированным пользователям
+                users = Users.query.filter_by(is_active=True).all()
+                game_url = url_for('game', game_id=new_game.id, _external=True)
+                cover_b64 = base64.b64encode(cover_data).decode('utf-8')
+                for user in users:
+                    msg = Message(
+                        subject=f"Новая игра: {title}",
+                        recipients=[user.email]
+                    )
+                    msg.html = render_template(
+                        'email/game_notification.html',
+                        game_title=title,
+                        game_description=description[:200] + ('...' if len(description) > 200 else ''),
+                        game_url=game_url,
+                        cover_b64=cover_b64,
+                        genre=genre
+                    )
+                    try:
+                        mail.send(msg)
+                    except Exception as e:
+                        print(f"Ошибка отправки письма пользователю {user.email}: {str(e)}")
+
                 flash('Игра успешно добавлена', 'success')
                 return redirect(url_for('.list_games'))
             except Exception as e:
@@ -595,14 +523,6 @@ def add_game():
                 flash(f'Ошибка добавления игры: {str(e)}', 'error')
     return render_template('admin/add_game.html', menu=menu, title='Добавить игру', genres=GENRES)
 
-
-# -----------------------------------------------------------------------------------------------------------------
-"""
-                         Маршрут для РЕДАКТИРОВАНИЯ ИГРЫ в Панели администратора  
-"""
-
-
-# -----------------------------------------------------------------------------------------------------------------
 @admin.route('/edit_game/<int:game_id>', methods=["POST", "GET"])
 def edit_game(game_id):
     if not isLogged():
@@ -623,7 +543,6 @@ def edit_game(game_id):
         if title or description or (cover_file and cover_file.filename):
             if title and description:
                 try:
-                    # Проверяем, что игра с таким названием не существует (кроме текущей)
                     existing_game = Games.query.filter_by(title=title).first()
                     if existing_game and existing_game.id != game_id:
                         flash('Игра с таким названием уже добавлена', 'error')
@@ -655,41 +574,33 @@ def edit_game(game_id):
                         pygame_zip = request.files.get('pygame_zip')
                         pygame_installer = request.files.get('pygame_installer')
                         pygame_screenshots_zip = request.files.get('pygame_screenshots_zip')
-                        if pygame_zip:  # Обновляем только если загружен новый архив
-                            # Удаляем старую папку игры, если она существует
+                        if pygame_zip:
                             old_game_folder = game.link
                             if old_game_folder and os.path.exists(os.path.join('flask_game_portal/static/games', old_game_folder)):
                                 shutil.rmtree(os.path.join('flask_game_portal/static/games', old_game_folder))
-                            # if old_game_folder and os.path.exists(os.path.join('static/games', old_game_folder)):
-                            #     shutil.rmtree(os.path.join('static/games', old_game_folder))
 
-                            # Создаем новую папку с именем игры
                             game_folder = secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
-                            # game_path = os.path.join('static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
 
-                            # Сохранение и разархивирование архива игры с сохранением структуры
                             pygame_zip_path = os.path.join(game_path, 'pygame.zip')
                             pygame_zip.save(pygame_zip_path)
                             with zipfile.ZipFile(pygame_zip_path, 'r') as zip_ref:
-                                zip_ref.extractall(game_path)  # Извлекаем все с исходной структурой
+                                zip_ref.extractall(game_path)
                             os.remove(pygame_zip_path)
 
-                            # Сохранение и разархивирование скриншотов с сохранением структуры
                             if pygame_screenshots_zip:
                                 screenshots_path = os.path.join(game_path, 'screenshots')
                                 os.makedirs(screenshots_path, exist_ok=True)
                                 screenshots_zip_path = os.path.join(screenshots_path, 'screenshots.zip')
                                 pygame_screenshots_zip.save(screenshots_zip_path)
                                 with zipfile.ZipFile(screenshots_zip_path, 'r') as zip_ref:
-                                    zip_ref.extractall(screenshots_path)  # Извлекаем все с исходной структурой
+                                    zip_ref.extractall(screenshots_path)
                                 os.remove(screenshots_zip_path)
                             game.link = game_folder
                         if pygame_installer:
                             game_folder = game.link if game.link else secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
-                            # game_path = os.path.join('static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
                             installer_path = os.path.join(game_path, f"{game_folder}.exe")
                             if game.installer and os.path.exists(game.installer):
@@ -698,44 +609,36 @@ def edit_game(game_id):
                             game.installer = installer_path
                         game.type = type
 
-                    elif type == 'unity' and request.files.get('unity.zip'):
+                    elif type == 'unity' and request.files.get('unity_zip'):
                         unity_zip = request.files.get('unity_zip')
                         unity_installer = request.files.get('unity_installer')
                         unity_screenshots_zip = request.files.get('unity_screenshots_zip')
-                        if unity_installer:  # Обновляем только если загружен новый архив
-                            # Удаляем старую папку игры, если она существует
+                        if unity_zip:
                             old_game_folder = game.link
                             if old_game_folder and os.path.exists(os.path.join('flask_game_portal/static/games', old_game_folder)):
                                 shutil.rmtree(os.path.join('flask_game_portal/static/games', old_game_folder))
-                            # if old_game_folder and os.path.exists(os.path.join('static/games', old_game_folder)):
-                            #     shutil.rmtree(os.path.join('static/games', old_game_folder))
 
-                            # Создаем новую папку с именем игры
                             game_folder = secure_filename(unity_zip.filename).rsplit('.', 1)[0]
-                            # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
 
-                            # Сохранение и разархивирование архива игры с сохранением структуры
                             unity_game_zip_path = os.path.join(game_path, 'game.zip')
                             unity_zip.save(unity_game_zip_path)
                             with zipfile.ZipFile(unity_game_zip_path, 'r') as zip_ref:
-                                zip_ref.extractall(game_path)  # Извлекаем все с исходной структурой
+                                zip_ref.extractall(game_path)
                             os.remove(unity_game_zip_path)
 
-                            # Сохранение и разархивирование скриншотов с сохранением структуры
                             if unity_screenshots_zip:
                                 screenshots_path = os.path.join(game_path, 'screenshots')
                                 os.makedirs(screenshots_path, exist_ok=True)
                                 screenshots_zip_path = os.path.join(screenshots_path, 'screenshots.zip')
                                 unity_screenshots_zip.save(screenshots_zip_path)
                                 with zipfile.ZipFile(screenshots_zip_path, 'r') as zip_ref:
-                                    zip_ref.extractall(screenshots_path)  # Извлекаем все с исходной структурой
+                                    zip_ref.extractall(screenshots_path)
                                 os.remove(screenshots_zip_path)
                             game.link = game_folder
                         if unity_installer:
                             game_folder = game.link if game.link else secure_filename(unity_zip.filename).rsplit('.', 1)[0]
-                            # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
                             installer_path = os.path.join(game_path, f"{game_folder}.exe")
@@ -755,11 +658,7 @@ def edit_game(game_id):
                 flash("Все поля должны быть заполнены", "error")
 
     return render_template('admin/edit_game.html', menu=menu, title="Редактировать игру", game=game, genres=GENRES)
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                       Маршрут  для УДАЛЕНИЯ ПОЛЬЗОВАТЕЛЯ в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
+
 @admin.route('/delete_user/<int:user_id>', methods=['POST', "GET"])
 def delete_user(user_id):
     if not isLogged():
@@ -767,11 +666,8 @@ def delete_user(user_id):
     try:
         user = Users.query.get(user_id)
         if user:
-            # Удаляем все комментарии пользователя
             Comments.query.filter_by(user_id=user.id).delete()
-            # Удаляем все лайки пользователя
             CommentLikes.query.filter_by(user_id=user.id).delete()
-            # Удаляем самого пользователя
             db.session.delete(user)
             db.session.commit()
             flash('Пользователь успешно удален', 'success')
@@ -781,11 +677,6 @@ def delete_user(user_id):
         db.session.rollback()
         flash(f'Ошибка удаления пользователя: {str(e)}', 'error')
     return redirect(url_for('.list_users'))
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут  для УДАЛЕНИЯ ИГРЫ в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
 
 @admin.route('/delete-game/<int:game_id>', methods=['POST', "GET"])
 def delete_game(game_id):
@@ -794,14 +685,11 @@ def delete_game(game_id):
     try:
         game = Games.query.get(game_id)
         if game:
-            # Проверяем, является ли игра Pygame (нет http в начале link)
             if game.link and game.type != 'link':
-                game_folder = game.link.replace('flask_game_portal/static/games/', '')  # Извлекаем имя папки из пути
+                game_folder = game.link.replace('flask_game_portal/static/games/', '')
                 game_path = os.path.join('flask_game_portal/static/games', game_folder)
-                # game_folder = game.link.replace('static/games/', '')  # Извлекаем имя папки из пути
-                # game_path = os.path.join('static/games', game_folder)
                 if os.path.exists(game_path):
-                    shutil.rmtree(game_path)  # Удаляем папку с игрой и всем содержимым
+                    shutil.rmtree(game_path)
                     flash(f'Папка игры {game_folder} удалена', 'success')
                 else:
                     flash(f'Папка игры {game_folder} не найдена', 'error')
@@ -815,11 +703,6 @@ def delete_game(game_id):
         db.session.rollback()
         flash(f'Ошибка удаления игры: {str(e)}', 'error')
     return redirect(url_for('.list_games'))
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                       Маршрут  для УДАЛЕНИЯ ПУКТА МЕНЮ в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
 
 @admin.route('/delete-menu/<int:menu_id>', methods=['POST', "GET"])
 def delete_menu(menu_id):
@@ -837,11 +720,6 @@ def delete_menu(menu_id):
         db.session.rollback()
         flash(f'Ошибка удаления пункта: {str(e)}', 'error')
     return redirect(url_for('.list_menu'))
-#-----------------------------------------------------------------------------------------------------------------
-"""
-                            Маршрут для РЕДАКТИРОВАНИЯ ПУНКТА МЕНЮ в Панели администратора  
-"""
-#-----------------------------------------------------------------------------------------------------------------
 
 @admin.route('/edit_menu/<int:menu_id>', methods=["POST", "GET"])
 def edit_menu(menu_id):
@@ -857,17 +735,15 @@ def edit_menu(menu_id):
         title = request.form.get('title')
         url = request.form.get('url')
 
-        # Проверяем, что хотя бы одно поле формы заполнено, иначе считаем, что форму не отправили
         if title or url:
             try:
                 menu_list.title = title
                 menu_list.url = url
                 db.session.commit()
-                flash("Пункт успешно обновлена", "success")
-                return redirect(url_for('.list_menu'))  # Перенаправление на список игр
+                flash("Пункт успешно обновлен", "success")
+                return redirect(url_for('.list_menu'))
             except Exception as e:
                 db.session.rollback()
                 flash(f"Ошибка обновления пункта: {str(e)}", "error")
-
 
     return render_template('admin/edit_menu.html', menu=menu, title="Редактировать пункт меню", menu_list=menu_list)
