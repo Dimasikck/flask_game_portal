@@ -13,6 +13,8 @@ from admin.admin import admin
 from flask_mail import Mail, Message
 import secrets
 from config import MAIL_CONFIG, GENRES
+from apscheduler.schedulers.background import BackgroundScheduler
+import logging
 
 #-----------------------------------------------------------------------------------------------------------------
 """
@@ -61,6 +63,42 @@ def send_password_reset_email(user_email, token):
     msg.body = f"Перейдите по ссылке для сброса пароля: {reset_url}"
     msg.html = f"<p>Перейдите по ссылке для сброса пароля: <a href='{reset_url}'>{reset_url}</a></p>"
     mail.send(msg)
+
+
+def clean_inactive_users():
+    try:
+        with app.app_context():
+            now = datetime.now(timezone.utc)
+            # Находим токены подтверждения, срок действия которых истек
+            expired_tokens = Token.query.filter(
+                Token.type == "email_confirmation",
+                Token.expires_at < now
+            ).all()
+
+            deleted_users = 0
+            deleted_tokens = 0
+            for token in expired_tokens:
+                user = Users.query.get(token.user_id)
+                if user and not user.is_active:
+                    # Удаляем связанные записи (Comments, CommentLikes, GameStats, Favorites, Tokens)
+                    Comments.query.filter_by(user_id=user.id).delete()
+                    CommentLikes.query.filter_by(user_id=user.id).delete()
+                    GameStats.query.filter_by(user_id=user.id).delete()
+                    Favorites.query.filter_by(user_id=user.id).delete()
+                    Token.query.filter_by(user_id=user.id).delete()
+                    # Удаляем пользователя
+                    db.session.delete(user)
+                    deleted_users += 1
+                deleted_tokens += 1
+
+            db.session.commit()
+            logging.info(f"Cleaned {deleted_users} inactive users and {deleted_tokens} expired tokens")
+            return {"users_deleted": deleted_users, "tokens_deleted": deleted_tokens}
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error cleaning inactive users: {str(e)}")
+        return {"error": str(e)}
+
 
 #-----------------------------------------------------------------------------------------------------------------
 
@@ -733,5 +771,18 @@ def toggle_favorite(game_id):
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()  # Создание таблиц при запуске
-    app.run(port=5001)
-    # app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+        # Очистка неактивированных пользователей при запуске
+        result = clean_inactive_users()
+        logging.info(f"Initial cleanup: {result}")
+
+    # Настройка планировщика для автоматической очистки
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(clean_inactive_users, 'interval', days=1, id='clean_inactive_users')
+    scheduler.start()
+
+    try:
+        app.run(port=5001)
+        # app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
+

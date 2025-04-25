@@ -1,10 +1,10 @@
 import shutil
 import zipfile
 import base64
-from flask import Blueprint, render_template, url_for, redirect, session, request, flash, g
+from flask import Blueprint, render_template, url_for, redirect, session, request, flash
 from werkzeug.utils import secure_filename
 import os
-from db import db, Posts, Users, Games, MainMenu, Comments, CommentLikes
+from db import db, Posts, Users, Games, MainMenu, Comments, CommentLikes, Favorites, GameStats
 from datetime import datetime, timedelta
 from sqlalchemy import func, asc, desc
 from git import Repo
@@ -228,7 +228,7 @@ def add_post():
                     try:
                         mail.send(msg)
                     except Exception as e:
-                        print(f"Ошибка отправки письма пользователю {user.email}: {str(e)}")
+                        flash(f"Ошибка отправки письма пользователю {user.email}: {str(e)}", 'error')
 
                 flash('Пост успешно добавлен', 'success')
                 return redirect(url_for('.list_pubs'))
@@ -436,6 +436,7 @@ def add_game():
                         return render_template('admin/add_game.html', menu=menu, title='Добавить игру', genres=GENRES)
 
                     game_folder = secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
+                    # game_path = os.path.join('static/games', game_folder)
                     game_path = os.path.join('flask_game_portal/static/games', game_folder)
                     os.makedirs(game_path, exist_ok=True)
 
@@ -468,6 +469,7 @@ def add_game():
                         flash('Необходимо загрузить архив с Unity WebGL игрой', 'error')
                         return render_template('admin/add_game.html', menu=menu, title='Добавить игру')
                     game_folder = secure_filename(unity_zip.filename).rsplit('.', 1)[0]
+                    # game_path = os.path.join('static/games', game_folder)
                     game_path = os.path.join('flask_game_portal/static/games', game_folder)
                     os.makedirs(game_path, exist_ok=True)
                     game_zip_path = os.path.join(game_path, 'unity.zip')
@@ -514,7 +516,7 @@ def add_game():
                     try:
                         mail.send(msg)
                     except Exception as e:
-                        print(f"Ошибка отправки письма пользователю {user.email}: {str(e)}")
+                        flash(f"Ошибка отправки письма пользователю {user.email}: {str(e)}", 'error')
 
                 flash('Игра успешно добавлена', 'success')
                 return redirect(url_for('.list_games'))
@@ -576,10 +578,13 @@ def edit_game(game_id):
                         pygame_screenshots_zip = request.files.get('pygame_screenshots_zip')
                         if pygame_zip:
                             old_game_folder = game.link
+                            # if old_game_folder and os.path.exists(os.path.join('static/games', old_game_folder)):
+                            #     shutil.rmtree(os.path.join('static/games', old_game_folder))
                             if old_game_folder and os.path.exists(os.path.join('flask_game_portal/static/games', old_game_folder)):
                                 shutil.rmtree(os.path.join('flask_game_portal/static/games', old_game_folder))
 
                             game_folder = secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
+                            # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
 
@@ -600,6 +605,7 @@ def edit_game(game_id):
                             game.link = game_folder
                         if pygame_installer:
                             game_folder = game.link if game.link else secure_filename(pygame_zip.filename).rsplit('.', 1)[0]
+                            # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
                             installer_path = os.path.join(game_path, f"{game_folder}.exe")
@@ -615,10 +621,13 @@ def edit_game(game_id):
                         unity_screenshots_zip = request.files.get('unity_screenshots_zip')
                         if unity_zip:
                             old_game_folder = game.link
+                            # if old_game_folder and os.path.exists(os.path.join('static/games', old_game_folder)):
+                            #     shutil.rmtree(os.path.join('static/games', old_game_folder))
                             if old_game_folder and os.path.exists(os.path.join('flask_game_portal/static/games', old_game_folder)):
                                 shutil.rmtree(os.path.join('flask_game_portal/static/games', old_game_folder))
 
                             game_folder = secure_filename(unity_zip.filename).rsplit('.', 1)[0]
+                            # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
 
@@ -639,6 +648,7 @@ def edit_game(game_id):
                             game.link = game_folder
                         if unity_installer:
                             game_folder = game.link if game.link else secure_filename(unity_zip.filename).rsplit('.', 1)[0]
+                            # game_path = os.path.join('static/games', game_folder)
                             game_path = os.path.join('flask_game_portal/static/games', game_folder)
                             os.makedirs(game_path, exist_ok=True)
                             installer_path = os.path.join(game_path, f"{game_folder}.exe")
@@ -666,13 +676,16 @@ def delete_user(user_id):
     try:
         user = Users.query.get(user_id)
         if user:
+            # Явное удаление связанных записей
             Comments.query.filter_by(user_id=user.id).delete()
             CommentLikes.query.filter_by(user_id=user.id).delete()
+            Favorites.query.filter_by(user_id=user.id).delete()
+            GameStats.query.filter_by(user_id=user.id).delete()
             db.session.delete(user)
             db.session.commit()
             flash('Пользователь успешно удален', 'success')
         else:
-            flash('Ошибка удаления пользователя', 'error')
+            flash('Пользователь не найден', 'error')
     except Exception as e:
         db.session.rollback()
         flash(f'Ошибка удаления пользователя: {str(e)}', 'error')
@@ -686,6 +699,8 @@ def delete_game(game_id):
         game = Games.query.get(game_id)
         if game:
             if game.link and game.type != 'link':
+                # game_folder = game.link.replace('static/games/', '')
+                # game_path = os.path.join('static/games', game_folder)
                 game_folder = game.link.replace('flask_game_portal/static/games/', '')
                 game_path = os.path.join('flask_game_portal/static/games', game_folder)
                 if os.path.exists(game_path):
@@ -694,6 +709,10 @@ def delete_game(game_id):
                 else:
                     flash(f'Папка игры {game_folder} не найдена', 'error')
 
+            # Явное удаление связанных записей
+            Favorites.query.filter_by(game_id=game_id).delete()
+            GameStats.query.filter_by(game_id=game_id).delete()
+            Comments.query.filter_by(game_id=game_id).delete()
             db.session.delete(game)
             db.session.commit()
             flash('Игра успешно удалена', 'success')

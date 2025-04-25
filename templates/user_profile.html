@@ -17,7 +17,7 @@
             {% if user.avatar %}
                 <img src="data:image/png;base64,{{ user.avatar|b64encode }}" alt="Аватар" class="profile-avatar">
             {% else %}
-                <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Аватар" class="profile-avatar">
+                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Аватар" class="profile-avatar">
             {% endif %}
         </div>
         <div class="user-details">
