@@ -86,11 +86,11 @@ def update_site():
     print(f"Request received: {request.method} {request.headers.get('User-Agent')}")
     try:
         print("Pulling from Git")
-        repo = Repo('/home/Dimasickc/flask_game_portal')
+        repo = Repo('/home/flaskgameportal/flask_game_portal')
         repo.git.fetch('origin')
         repo.git.reset('--hard', 'origin/main')
         print("Git pull successful")
-        os.system('touch /var/www/dimasickc_pythonanywhere_com_wsgi.py')
+        os.system('touch /var/www/flaskgameportal_pythonanywhere_com_wsgi.py')
         print("WSGI file touched")
         flash("Сайт успешно обновлен", "success")
     except Exception as e:
@@ -118,11 +118,11 @@ def webhook():
 
     try:
         print("Pulling from Git")
-        repo = Repo('/home/Dimasickc/flask_game_portal')
+        repo = Repo('/home/flaskgameportal/flask_game_portal')
         repo.git.fetch('origin')
         repo.git.reset('--hard', 'origin/main')
         print("Git pull successful")
-        os.system('touch /var/www/dimasickc_pythonanywhere_com_wsgi.py')
+        os.system('touch /var/www/flaskgameportal_pythonanywhere_com_wsgi.py')
         print("WSGI file touched")
         return 'Updated successfully', 200
     except Exception as e:
@@ -135,7 +135,7 @@ def login():
         return redirect(url_for('.index'))
 
     if request.method == "POST":
-        if request.form['user'] == "admin" and request.form['psw'] == "12345":
+        if request.form['user'] == "admin" and hashlib.sha256(request.form['psw'].encode('utf-8')).hexdigest() == "4d8e10cb286552d72ef1869e186afed3e62e60a2fd4fa062006b780730760704":
             login_admin()
             return redirect(url_for('.index'))
         else:

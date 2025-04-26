@@ -3,9 +3,9 @@ MAIL_CONFIG = {
     'MAIL_SERVER': 'smtp.gmail.com',
     'MAIL_PORT': 587,
     'MAIL_USE_TLS': True,
-    'MAIL_USERNAME': 'tmei.institute@gmail.com',
-    'MAIL_PASSWORD': 'jgayqxajjloiganv',
-    'MAIL_DEFAULT_SENDER': 'tmei.institute@gmail.com'
+    'MAIL_USERNAME': 'flaskgameportal@gmail.com',
+    'MAIL_PASSWORD': 'nbqamuxckhvjygwr',
+    'MAIL_DEFAULT_SENDER': 'flaskgameportal@gmail.com'
 }
 
 # Список жанров

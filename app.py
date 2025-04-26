@@ -31,8 +31,8 @@ app.config['SECRET_KEY'] = SECRET_KEY
 # Применение конфигурации Flask-Mail
 app.config.update(MAIL_CONFIG)
 
-app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdFw-MqAAAAAGIjhuO3UTNYU6gArOpYEbpF3Xb4'
-app.config['RECAPTCHA_PRIVATE_KEY'] = '6LdFw-MqAAAAAIQvr_MjNveev2woBtY-uUkDTDjv'
+app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdDuyUrAAAAALDFJcsWCXcaK4ceL6Do31H2r50N'
+app.config['RECAPTCHA_PRIVATE_KEY'] = '6LdDuyUrAAAAADuocsxQSu6dvo22oMgEshfzzJvQ'
 app.config['RECAPTCHA_OPTIONS'] = {'theme': 'light'}
 
 # Инициализация Flask-Mail
@@ -785,4 +785,3 @@ if __name__ == "__main__":
         # app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
-
