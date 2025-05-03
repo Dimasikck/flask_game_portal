@@ -1216,6 +1216,7 @@ footer {
     font-size: 14px;
     width: 100%;
     flex-shrink: 0; /* Футер не сжимается */
+    margin-top: 50px;
 }
 
 footer a {
