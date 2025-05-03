@@ -3,130 +3,88 @@
 {% block content %}
 {{ super() }}
 
-{% for cat, msg in get_flashed_messages(True) %}
-<div class="flash {{cat}}">{{msg}}</div>
-{% endfor %}
-
 <div class="profile-container">
-    <h1>Профиль {{ user.name }}</h1>
-</div>
+    <h1 class="profile-title">{{ title }}</h1>
 
-<div class="profile-layout">
-    <div class="profile-info">
-        <div class="avatar-container">
+    {% for cat, msg in get_flashed_messages(True) %}
+        <div class="flash {{cat}}">{{msg}}</div>
+    {% endfor %}
+
+    <div class="profile-grid">
+        <!-- Аватар -->
+        <div class="profile-avatar">
             {% if user.avatar %}
-                <img src="data:image/png;base64,{{ user.avatar|b64encode }}" alt="Аватар" class="profile-avatar">
+                <img src="data:image/png;base64,{{ user.avatar|b64encode }}" alt="Аватар {{ user.name }}" class="avatar-image">
             {% else %}
-                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Аватар" class="profile-avatar">
+                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Аватар {{ user.name }}" class="avatar-image">
             {% endif %}
         </div>
-        <div class="user-details">
-            <p><strong>Имя:</strong> {{ user.name }}</p>
-            <p><strong>Логин:</strong> {{ user.login }}</p>
-            <p><strong>Дата регистрации:</strong> {{ user.time|datetimeformat }}</p>
+
+        <!-- Информация -->
+        <div class="profile-details">
+            <ul class="info-list">
+                <li><span class="label">Логин:</span> {{ user.login }}</li>
+                <li><span class="label">Имя:</span> {{ user.name }}</li>
+                <li><span class="label">Email:</span> {{ user.email }}</li>
+                <li><span class="label">Дата регистрации:</span> {{ user.time|datetimeformat }}</li>
+            </ul>
         </div>
     </div>
 
-    <div class="profile-stats">
-        <h2>Статистика игр</h2>
+    <!-- Статистика игр -->
+    <div class="stats-container">
+        <h2 class="stats-title">Статистика игр</h2>
         {% if stats %}
-            <table class="stats-table">
-                <thead>
-                    <tr>
-                        <th>Игра</th>
-                        <th>Время игры</th>
-                        <th>Последний раз играл</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for stat in stats %}
-                        <tr>
-                            <td>{{ stat.game.title }}</td>
-                            <td>{{ stat.time_spent|format_time }}</td>
-                            <td>{{ stat.last_played.strftime('%Y-%m-%d %H:%M') }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Нет статистики игр.</p>
-        {% endif %}
-    </div>
-
-    <div class="profile-favorites">
-        <h2>Избранные игры</h2>
-        {% if favorites %}
-            <ul class="favorites-list">
-                {% for favorite in favorites %}
-                    <li><a href="{{ url_for('game', game_id=favorite.game_id) }}">{{ favorite.game.title }}</a></li>
+            <ul class="stats-list">
+                {% for stat in stats %}
+                    <li>
+                        <span class="game-name">{{ stat.game.title }}</span>
+                        <span class="time-spent">Время: {{ stat.time_spent | format_time }}</span>
+                        <span class="last-played">Последний раз: {{ stat.last_played.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>Нет избранных игр.</p>
+            <p class="no-stats">Нет статистики игр.</p>
+        {% endif %}
+    </div>
+
+    <!-- Избранные игры -->
+    <div class="favorites-container">
+        <h2 class="favorites-title">Избранные игры</h2>
+        {% if favorites %}
+            <div class="cards-container">
+                {% for favorite in favorites %}
+                    <a href="{{ url_for('game', game_id=favorite.game.id) }}" class="game-card">
+                        {% if favorite.game.cover %}
+                            <div class="game-cover">
+                                <img src="data:image/jpeg;base64,{{ favorite.game.cover|b64encode }}" alt="{{ favorite.game.title }}">
+                            </div>
+                        {% endif %}
+                        <div class="game-title">
+                            <div class="game-name">{{ favorite.game.title }}</div>
+                            <div class="game-type">
+                                {% if favorite.game.type == 'link' %}
+                                    <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
+                                    <span>Web</span>
+                                {% elif favorite.game.type == 'pygame' %}
+                                    <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
+                                    <span>Pygame</span>
+                                {% elif favorite.game.type == 'unity' %}
+                                    <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
+                                    <span>Unity</span>
+                                {% endif %}
+                            </div>
+                            {% if favorite.game.genre %}
+                                <div class="game-genre">{{ favorite.game.genre }}</div>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-favorites">Нет избранных игр.</p>
         {% endif %}
     </div>
 </div>
-
-<style>
-    .profile-container {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .profile-layout {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-    }
-    .profile-info, .profile-stats, .profile-favorites {
-        background: rgba(30, 30, 40, 0.9);
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-        width: 100%;
-        max-width: 400px;
-    }
-    .avatar-container {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .profile-avatar {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #00cee7;
-    }
-    .user-details p {
-        margin: 10px 0;
-        font-size: 16px;
-    }
-    .stats-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-    .stats-table th, .stats-table td {
-        padding: 10px;
-        border: 1px solid #444;
-        text-align: left;
-    }
-    .stats-table th {
-        background: #1196d7;
-    }
-    .favorites-list {
-        list-style: none;
-        padding: 0;
-    }
-    .favorites-list li {
-        margin: 10px 0;
-    }
-    .favorites-list a {
-        color: #00cee7;
-        text-decoration: none;
-    }
-    .favorites-list a:hover {
-        text-decoration: underline;
-    }
-</style>
 {% endblock %}

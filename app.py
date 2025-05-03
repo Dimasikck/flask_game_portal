@@ -125,7 +125,14 @@ def check_user_in_db():
             logout_user()
             flash("Ваша учетная запись была удалена.", "error")
             return redirect(url_for('login'))
-
+@app.before_request
+def check_user_is_action():
+    if current_user.is_active:
+        user = Users.query.get(current_user.get_id())
+        if user is None:
+            logout_user()
+            flash("Ваша учетная запись не активирована. Пожалуйста, войдите в свою электронную почту и активируйте учетную запись.", "error")
+            return redirect(url_for('login'))
 @app.template_filter('b64encode')
 def b64encode(data):
     if data is None:
@@ -227,7 +234,44 @@ def listgames():
     return render_template('listgames.html', title="Игры", menu=menu, games=games,
                           search=search, sort=sort, filter_type=filter_type, filter_genre=filter_genre,
                           filter_favorite=filter_favorite, genres=GENRES, favorite_game_ids=favorite_game_ids)
+#-----------------------------------------------------------------------------------------------------------------
 
+"""
+                                      Маршрут страницы СПИСКА ПОСТОВ на сайте
+"""
+#-----------------------------------------------------------------------------------------------------------------
+@app.route('/listposts', methods=['GET'])
+@login_required
+def listposts():
+    menu = MainMenu.query.all()
+    try:
+        search = request.args.get('search', '').strip()
+        sort = request.args.get('sort_name', 'time_desc')
+
+        query = Posts.query
+        if search:
+            query = query.filter(
+                (Posts.title.ilike(f'%{search}%')) |
+                (Posts.annonce.ilike(f'%{search}%'))
+            )
+
+        if sort == 'title_asc':
+            query = query.order_by(asc(Posts.title))
+        elif sort == 'title_desc':
+            query = query.order_by(desc(Posts.title))
+        elif sort == 'time_asc':
+            query = query.order_by(asc(Posts.time))
+        elif sort == 'time_desc':
+            query = query.order_by(desc(Posts.time))
+        else:
+            query = query.order_by(desc(Posts.time))
+
+        posts = query.all()
+    except Exception as e:
+        flash(f'Ошибка получения списка постов: {str(e)}', 'error')
+        posts = []
+    return render_template('listposts.html', title="Посты", menu=menu, posts=posts,
+                          search=search, sort=sort)
 #-----------------------------------------------------------------------------------------------------------------
 
 """

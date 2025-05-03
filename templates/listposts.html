@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ super() }}
+
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{msg}}</div>
+{% endfor %}
+
+<div class="search-container">
+    <h1 class="page-title">{{title}}</h1>
+    <form method="get" action="{{ url_for('listposts') }}">
+        <div class="search-controls">
+            <div class="search-container">
+                <input type="text" name="search" id="search" placeholder="Поиск по заголовку или содержимому..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" id="search-btn">🔍</button>
+            </div>
+            <div class="sort-container">
+                <label for="sort-select">Сортировать:</label>
+                <select id="sort-select" name="sort_name">
+                    <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Заголовок (А-Я)</option>
+                    <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Заголовок (Я-А)</option>
+                    <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
+                    <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
+                </select>
+            </div>
+            <button type="submit" id="apply-filters-btn" class="btn">Применить</button>
+        </div>
+    </form>
+</div>
+
+<div class="cards-container">
+    {% for post in posts %}
+    <a href="{{ url_for('showPost', post_id=post.id) }}" class="post-card">
+        {% if post.cover %}
+        <div class="post-cover">
+            <img src="data:image/jpeg;base64,{{ post.cover|b64encode }}" alt="{{ post.title }}">
+        </div>
+        {% endif %}
+        <div class="post-title">{{ post.title }}</div>
+    </a>
+    {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='js/favorites.js') }}"></script>
+{% endblock %}

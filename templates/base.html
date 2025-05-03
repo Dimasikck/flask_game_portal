@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <!-- Ссылка на манифест -->
-<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <!-- Ссылка на манифест -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="mobile-web-app-capable" content="yes">
-<!-- Поддержка PWA для iOS -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Game Portal">
+    <!-- Поддержка PWA для iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Game Portal">
     <link rel="preload" href="{{ url_for('static', filename='css/styles.css') }}" as="style" onload="this.rel='stylesheet'" />
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon" />
     <link href="https://fonts.googleapis.com/css2?family=Minecraft+Ten+Cyrillic&display=swap" rel="stylesheet">
@@ -38,11 +38,9 @@
         }
 
         .logo img {
-    max-height: 80px; /* Устанавливаем максимальную высоту для логотипа */
-    /*margin-top: 20px;*/
-    margin-right: 20px; /* Отступ между логотипом и меню */
-}
-
+            max-height: 80px; /* Устанавливаем максимальную высоту для логотипа */
+            margin-right: 20px; /* Отступ между логотипом и меню */
+        }
 
         #toggle {
             display: none;
@@ -53,7 +51,6 @@
             top: 20px;
             right: 20px;
             cursor: pointer;
-
         }
 
         .button-toggle {
@@ -88,7 +85,6 @@
         }
 
         #toggle:checked + .toggle-container .button-toggle {
-
         }
 
         #toggle:checked + .toggle-container .button-toggle::before {
@@ -103,7 +99,7 @@
             display: none;
             position: absolute;
             top: 100%;
-            left:   0;
+            left: 0;
             width: 100%;
             flex-direction: column;
             padding-top: 60px;
@@ -114,7 +110,6 @@
             top: 120%;
             border-radius: 15px;
             background: rgb(39, 41, 59);
-
         }
 
         .mainmenu li {
@@ -142,54 +137,57 @@
                 margin: 0 15px;
             }
             .logo img {
-            max-height: 80px;
-            margin-top: 20px;
-        }
+                max-height: 80px;
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
 <body>
-<video id="background-video" autoplay muted loop playsinline preload="auto">
-    <source src="{{ url_for('static', filename='videos/background_11.mp4') }}" type="video/mp4">
-    Ваш браузер не поддерживает воспроизведение видео.
-</video>
+    <video id="background-video" autoplay muted loop playsinline preload="auto">
+        <source src="{{ url_for('static', filename='videos/background_11.mp4') }}" type="video/mp4">
+        Ваш браузер не поддерживает воспроизведение видео.
+    </video>
 
-<div class="container">
-    {% block content %}
-        {% block mainmenu %}
-        <header class="header">
-            <div class="logo">
-                <a href="/"><img src="{{ url_for('static', filename='images/favicon.png') }}" alt="Логотип"></a>
-            </div>
-            <input type="checkbox" id="toggle">
-            <label for="toggle" class="toggle-container">
-                <span class="button button-toggle"></span>
-            </label>
-            <ul class="mainmenu">
-                {% for m in menu %}
-                    {% if current_user.is_authenticated %}
-                        {% if m.title != 'Авторизация' %}
-                            <li><a href="{{ m.url }}">{{ m.title }}</a></li>
+    <div class="container">
+        {% block content %}
+            {% block mainmenu %}
+            <header class="header">
+                <div class="logo">
+                    <a href="/"><img src="{{ url_for('static', filename='images/favicon.png') }}" alt="Логотип"></a>
+                </div>
+                <input type="checkbox" id="toggle">
+                <label for="toggle" class="toggle-container">
+                    <span class="button button-toggle"></span>
+                </label>
+                <ul class="mainmenu">
+                    {% for m in menu %}
+                        {% if current_user.is_authenticated %}
+                            {% if m.title != 'Авторизация' %}
+                                <li><a href="{{ m.url }}">{{ m.title }}</a></li>
+                            {% endif %}
+                        {% else %}
+                            {% if m.title != 'Профиль' %}
+                                <li><a href="{{ m.url }}">{{ m.title }}</a></li>
+                            {% endif %}
                         {% endif %}
-                    {% else %}
-                        {% if m.title != 'Профиль' %}
-                            <li><a href="{{ m.url }}">{{ m.title }}</a></li>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </header>
-        {% endblock mainmenu %}
+                    {% endfor %}
+                </ul>
+            </header>
+            {% endblock mainmenu %}
 
-        <main class="main-content">
-            <div class="content-body">
-                {% block body %}{% endblock body %}
-            </div>
-        </main>
-    {% endblock %}
-</div>
-<button id="scrollTopBtn" class="scroll-top-btn" title="Наверх">↑</button>
-<script>
+            <main class="main-content">
+                <div class="content-body">
+                    {% block body %}{% endblock body %}
+                </div>
+            </main>
+        {% endblock %}
+    </div>
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Наверх">↑</button>
+    <footer>
+        <p>&copy; 2025 Игровой портал Flask. Все права защищены. <a href="/">Главная</a></p>
+    </footer>
+    <script>
         // Показ/скрытие кнопки при прокрутке
         window.onscroll = function() {
             const scrollTopBtn = document.getElementById('scrollTopBtn');
@@ -208,18 +206,19 @@
             });
         });
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93a1b59b5c8cb0b2',t:'MTc0NjI5NTc2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/js/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/static/js/sw.js')
-        .then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(error => {
-          console.log('Service Worker registration failed:', error);
-        });
-    });
-  }
-</script>
 </html>
