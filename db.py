@@ -54,7 +54,7 @@ class Users(db.Model):
     game_stats = db.relationship('GameStats', back_populates='user', cascade="all, delete-orphan", passive_deletes=True)
     favorites = db.relationship('Favorites', back_populates='user', cascade="all, delete-orphan", passive_deletes=True)
     tokens = db.relationship('Token', back_populates='user', cascade="all, delete-orphan", passive_deletes=True)
-
+    receive_notifications = db.Column(db.Boolean, default=True)
     def __repr__(self):
         return f"<Users {self.id}, {self.login},{self.name}, {self.email}, {self.avatar}>"
 

@@ -60,7 +60,12 @@
                         <span class="text_error">{{ error }}</span>
                     {% endfor %}
                 </div>
-
+                 <div class="form-group">
+            {{ form.receive_notifications(class="form_input") }} {{ form.receive_notifications.label }}
+            {% for error in form.receive_notifications.errors %}
+                <span class="text_error">{{ error }}</span>
+            {% endfor %}
+        </div>
                 <div class="form-actions"  style="display:flex; flex-direction: column">
                     {{ form.submit(class="btn btn-success") }}
                     <a href="{{ url_for('profile') }}" class="btn btn-logout">Отмена</a>

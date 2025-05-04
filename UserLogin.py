@@ -44,3 +44,23 @@ class UserLogin(UserMixin):
         return False
     def is_active(self):
         return self.__user.is_active if self.__user else False
+
+    def getReceiveNotifications(self):
+        return self.__user.receive_notifications if self.__user else False
+
+    @staticmethod
+    def updateUser(user_id, **kwargs):
+        user = Users.query.get(user_id)
+        if not user:
+            return False
+        for key, value in kwargs.items():
+            if key == 'psw':
+                user.psw = value
+            elif key == 'name':
+                user.name = value
+            elif key == 'email':
+                user.email = value
+            elif key == 'receive_notifications':
+                user.receive_notifications = value
+        db.session.commit()
+        return True

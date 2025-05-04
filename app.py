@@ -367,7 +367,8 @@ def register():
             email=form.email.data.lower(),
             psw=hash_psw,
             time=int(datetime.now(timezone.utc).timestamp()),
-            is_active=False
+            is_active=False,
+            receive_notifications = True
         )
         db.session.add(new_user)
         db.session.flush()
@@ -589,6 +590,7 @@ def user_profile(user_id):
 @login_required
 def edit_profile():
     form = EditProfileForm()
+    form.user_id = current_user.get_id()
     if request.method == 'POST' and form.validate_on_submit():
         try:
             updates = {}
@@ -598,6 +600,7 @@ def edit_profile():
                 updates['email'] = form.email.data
             if form.password.data:
                 updates['psw'] = generate_password_hash(form.password.data)
+            updates['receive_notifications'] = form.receive_notifications.data
             if updates:
                 Users.updateUser(current_user.get_id(), **updates)
             if form.avatar.data:
@@ -616,6 +619,7 @@ def edit_profile():
             flash(f'Ошибка при обновлении профиля: {str(e)}', 'error')
     form.name.data = current_user.getName()
     form.email.data = current_user.getEmail()
+    form.receive_notifications.data = current_user.getReceiveNotifications()
     menu = MainMenu.query.all()
     return render_template("edit_profile.html", menu=menu, title="Редактирование профиля", form=form)
 

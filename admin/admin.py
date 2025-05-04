@@ -210,7 +210,7 @@ def add_post():
                 db.session.commit()
 
                 # Отправка уведомлений всем зарегистрированным пользователям
-                users = Users.query.filter_by(is_active=True).all()
+                users = Users.query.filter_by(is_active=True, receive_notifications=True).all()
                 post_url = url_for('showPost', post_id=new_post.id, _external=True)
                 cover_b64 = base64.b64encode(cover_data).decode('utf-8')
                 for user in users:
@@ -497,7 +497,7 @@ def add_game():
                 db.session.commit()
 
                 # Отправка уведомлений всем зарегистрированным пользователям
-                users = Users.query.filter_by(is_active=True).all()
+                users = Users.query.filter_by(is_active=True, receive_notifications=True).all()
                 game_url = url_for('game', game_id=new_game.id, _external=True)
                 cover_b64 = base64.b64encode(cover_data).decode('utf-8')
                 for user in users:

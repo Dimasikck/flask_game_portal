@@ -6,14 +6,15 @@
 }
 
 html, body {
-    width: 100%;
+    max-width: 100%; /* Предотвращаем превышение ширины viewport */
     min-height: 100vh;
+    overflow-x: hidden; /* Запрещаем горизонтальную прокрутку */
     background: linear-gradient(135deg, #0A0C1BCC, rgba(18, 19, 33, 0.71));
     color: #fff;
     font-family: 'Monocraft', sans-serif;
     scroll-behavior: smooth;
-    display: flex; /* Используем Flexbox для body */
-    flex-direction: column; /* Вертикальное расположение */
+    display: flex; /* Сохраняем Flexbox для вертикального выравнивания */
+    flex-direction: column;
 }
 
 body {
@@ -74,9 +75,10 @@ a:hover {
 /* Макет и контейнеры */
 .container {
     max-width: 1140px;
+    max-width: 100%; /* Гарантируем, что контейнер не превышает ширину viewport */
     margin: 0 auto;
     padding: 0 15px;
-    flex: 1 0 auto; /* Контейнер растягивается, чтобы заполнить пространство */
+    flex: 1 0 auto;
     display: flex;
     flex-direction: column;
 }
@@ -242,6 +244,7 @@ div.login .title {
 
 .search-container {
     max-width: 900px;
+    /*max-width: 80%; !* Гарантируем, что контейнер не превышает ширину viewport *!*/
     margin: 2rem auto;
     padding: 2rem;
     background: rgba(20, 20, 30, 0.9);
@@ -259,6 +262,7 @@ div.login .title {
 
 .profile-container {
     max-width: 900px;
+    /*max-width: 100%; !* Гарантируем, что контейнер не превышает ширину viewport *!*/
     margin: 2rem auto;
     padding: 2rem;
     background: rgba(20, 20, 30, 0.9);
@@ -704,6 +708,7 @@ ul.mainmenu li a:hover {
     justify-content: center;
     gap: 20px;
     padding: 20px;
+    max-width: 100%; /* Гарантируем, что контейнер не превышает ширину viewport */
 }
 
 .game-card {
@@ -792,7 +797,7 @@ ul.mainmenu li a:hover {
 }
 
 .post-card {
-    width: 420px;
+    width: 300px; /* Уменьшаем ширину для лучшей адаптации */
     height: 300px;
     background: #1B1D2B;
     color: #fff;
@@ -881,13 +886,13 @@ ul.mainmenu li a:hover {
     flex-direction: column;
     align-items: center;
     max-width: 1140px;
-    /*margin: 30px auto;*/
+    /*max-width: 100%; !* Гарантируем, что не превышает viewport *!*/
 }
 
 .game-frame-container {
     position: relative;
     width: 100%;
-    /* Удаляем max-width: 1100px, чтобы соответствовать .game-info-container */
+    max-width: 100%; /* Предотвращаем переполнение */
 }
 
 .game-frame-container .game-frame {
@@ -926,7 +931,8 @@ ul.mainmenu li a:hover {
 }
 
 .game-meta {
-    max-width: 1140px; /* Увеличиваем до ширины .container */
+    max-width: 1140px;
+    /*max-width: 100%; !* Гарантируем, что не превышает viewport *!*/
     margin: 10px auto;
     display: flex;
     justify-content: space-between;
@@ -960,9 +966,12 @@ ul.mainmenu li a:hover {
 }
 
 .game-info-container {
-    margin-top: 20px;
-    justify-content: center;
     width: 100%;
+    max-width: 910px;
+    /*max-width: 100%; !* Гарантируем, что не превышает viewport *!*/
+    border-radius: 10px;
+    padding: 20px;
+
 }
 
 .game-info {
@@ -997,6 +1006,7 @@ ul.mainmenu li a:hover {
 .post-content-container {
     width: 100%;
     max-width: 910px;
+    /*max-width: 100%; !* Гарантируем, что не превышает viewport *!*/
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 20px;
@@ -1215,7 +1225,7 @@ footer {
     text-align: center;
     font-size: 14px;
     width: 100%;
-    flex-shrink: 0; /* Футер не сжимается */
+    flex-shrink: 0;
     margin-top: 50px;
 }
 
@@ -1336,7 +1346,9 @@ footer a {
     }
 
     .header {
-        flex-wrap: wrap;
+        width: 100%; /* Полная ширина на мобильных */
+        max-width: 100%; /* Предотвращаем превышение viewport */
+        padding: 10px;
     }
 
     .menu-button {
@@ -1387,7 +1399,14 @@ footer a {
     }
 
     .cards-container {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        flex-direction: column; /* Карточки в столбец для мобильных */
+        align-items: center;
+    }
+
+    .game-card,
+    .post-card {
+        width: 100%; /* Карточки занимают всю ширину контейнера */
+        max-width: 300px; /* Ограничиваем максимальную ширину */
     }
 
     .game-frame-container .game-frame {
@@ -1468,5 +1487,10 @@ footer a {
     .favorite-btn {
         font-size: 0.8rem;
         padding: 6px 12px;
+    }
+
+    .game-card,
+    .post-card {
+        max-width: 250px; /* Уменьшаем ширину для очень узких экранов */
     }
 }
