@@ -498,26 +498,26 @@ def add_game():
                 db.session.commit()
 
                 # Отправка уведомлений всем зарегистрированным пользователям
-                # users = Users.query.filter_by(is_active=True, receive_notifications=True).all()
-                # game_url = url_for('game', game_id=new_game.id, _external=True)
-                # cover_b64 = base64.b64encode(cover_data).decode('utf-8')
-                # for user in users:
-                #     msg = Message(
-                #         subject=f"Новая игра: {title}",
-                #         recipients=[user.email]
-                #     )
-                #     msg.html = render_template(
-                #         'email/game_notification.html',
-                #         game_title=title,
-                #         game_description=description[:200] + ('...' if len(description) > 200 else ''),
-                #         game_url=game_url,
-                #         cover_b64=cover_b64,
-                #         genre=genre
-                #     )
-                #     try:
-                #         mail.send(msg)
-                #     except Exception as e:
-                #         flash(f"Ошибка отправки письма пользователю {user.email}: {str(e)}", 'error')
+                users = Users.query.filter_by(is_active=True, receive_notifications=True).all()
+                game_url = url_for('game', game_id=new_game.id, _external=True)
+                cover_b64 = base64.b64encode(cover_data).decode('utf-8')
+                for user in users:
+                    msg = Message(
+                        subject=f"Новая игра: {title}",
+                        recipients=[user.email]
+                    )
+                    msg.html = render_template(
+                        'email/game_notification.html',
+                        game_title=title,
+                        game_description=description[:200] + ('...' if len(description) > 200 else ''),
+                        game_url=game_url,
+                        cover_b64=cover_b64,
+                        genre=genre
+                    )
+                    try:
+                        mail.send(msg)
+                    except Exception as e:
+                        flash(f"Ошибка отправки письма пользователю {user.email}: {str(e)}", 'error')
 
                 flash('Игра успешно добавлена', 'success')
                 return redirect(url_for('.list_games'))
