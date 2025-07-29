@@ -1,39 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ super() }}
-
-<div class="profile-container">
-    <h1 class="profile-title">{{ title }}</h1>
-
-    {% for cat, msg in get_flashed_messages(True) %}
-        <div class="flash {{cat}}">{{msg}}</div>
-    {% endfor %}
-
-    <div class="profile-grid">
-        <!-- Аватар -->
-        <div class="profile-avatar">
-            {% if user.avatar %}
-                <img src="data:image/png;base64,{{ user.avatar|b64encode }}" alt="Аватар {{ user.name }}" class="avatar-image">
-            {% else %}
-                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Аватар {{ user.name }}" class="avatar-image">
-            {% endif %}
-        </div>
-
-        <!-- Информация -->
-        <div class="profile-details">
-            <ul class="info-list">
-                <li><span class="label">Логин:</span> {{ user.login }}</li>
-                <li><span class="label">Имя:</span> {{ user.name }}</li>
-                <li><span class="label">Email:</span> {{ user.email }}</li>
-                <li><span class="label">Дата регистрации:</span> {{ user.time|datetimeformat }}</li>
-            </ul>
+<section class="profile-hero-section">
+    <div class="profile-hero-block">
+        <h1 class="neon-title" style="text-align:center;">{{ title }}</h1>
+        {% for cat, msg in get_flashed_messages(True) %}
+            <div class="flash {{cat}}">{{msg}}</div>
+        {% endfor %}
+        <div class="profile-grid">
+            <!-- Аватар -->
+            <div class="profile-avatar">
+                {% if user.avatar %}
+                    <img src="data:image/png;base64,{{ user.avatar|b64encode }}" alt="Аватар {{ user.name }}" class="avatar-image">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default.png') }}" alt="Аватар {{ user.name }}" class="avatar-image">
+                {% endif %}
+            </div>
+            <!-- Информация -->
+            <div class="profile-details neon-block">
+                <ul class="info-list">
+                    <li><span class="label">Логин:</span> {{ user.login }}</li>
+                    <li><span class="label">Имя:</span> {{ user.name }}</li>
+                    <li><span class="label">Email:</span> {{ user.email }}</li>
+                    <li><span class="label">Дата регистрации:</span> {{ user.time|datetimeformat }}</li>
+                </ul>
+            </div>
         </div>
     </div>
+</section>
 
-    <!-- Статистика игр -->
-    <div class="stats-container">
-        <h2 class="stats-title">Статистика игр</h2>
+<section class="stats-section">
+    <div class="stats-container neon-block">
+        <h2 class="stats-title neon-title" style="font-size:2rem;">Статистика игр</h2>
         {% if stats %}
             <ul class="stats-list">
                 {% for stat in stats %}
@@ -48,10 +46,11 @@
             <p class="no-stats">Нет статистики игр.</p>
         {% endif %}
     </div>
+</section>
 
-    <!-- Избранные игры -->
-    <div class="favorites-container">
-        <h2 class="favorites-title">Избранные игры</h2>
+<section class="favorites-section">
+    <div class="favorites-container neon-block">
+        <h2 class="favorites-title neon-title" style="font-size:2rem;">Избранные игры</h2>
         {% if favorites %}
             <div class="cards-container">
                 {% for favorite in favorites %}
@@ -86,5 +85,5 @@
             <p class="no-favorites">Нет избранных игр.</p>
         {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

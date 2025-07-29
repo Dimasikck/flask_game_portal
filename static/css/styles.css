@@ -1494,3 +1494,370 @@ footer a {
         max-width: 250px; /* Уменьшаем ширину для очень узких экранов */
     }
 }
+
+/* Неоновый ретро-гейминг стиль */
+body.retro-bg {
+    background: #1a1440;
+    font-family: 'Press Start 2P', 'Monocraft', 'Minecraft Ten Cyrillic', monospace;
+    color: #fff;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.neon-grid {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background-image: linear-gradient(0deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.retro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 48px 0 48px;
+    background: none;
+    z-index: 2;
+    position: relative;
+}
+.logo-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.logo-img {
+    width: 56px;
+    height: 56px;
+    filter: drop-shadow(0 0 8px #22dcf1);
+}
+.logo-text {
+    font-size: 2.2rem;
+    color: #22dcf1;
+    text-shadow: 0 0 8px #22dcf1, 0 0 16px #0ff;
+    font-family: 'Press Start 2P', monospace;
+    letter-spacing: 2px;
+}
+.retro-nav ul {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+}
+.retro-nav a {
+    color: #fff;
+    font-size: 1.1rem;
+    text-decoration: none;
+    padding: 10px 24px;
+    border-radius: 12px;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 0 #22dcf1;
+}
+.retro-nav a:hover, .retro-nav .neon-btn {
+    background: #22dcf1;
+    color: #1a1440;
+    box-shadow: 0 0 16px #22dcf1, 0 0 32px #0ff;
+    font-weight: bold;
+}
+.neon-btn {
+    background: #ff2fd6;
+    color: #fff;
+    border: none;
+    font-size: 1.1rem;
+    padding: 10px 32px;
+    border-radius: 16px;
+    box-shadow: 0 0 16px #ff2fd6, 0 0 32px #ff2fd6;
+    text-shadow: 0 0 8px #fff;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.neon-btn:hover {
+    background: #fff;
+    color: #ff2fd6;
+    box-shadow: 0 0 24px #ff2fd6, 0 0 48px #ff2fd6;
+}
+.retro-main {
+    margin: 80px auto 0 auto;
+    max-width: 1200px;
+    min-height: 70vh;
+    z-index: 1;
+    position: relative;
+}
+.retro-footer {
+    text-align: center;
+    padding: 32px 0 16px 0;
+    color: #22dcf1;
+    font-size: 1.1rem;
+    text-shadow: 0 0 8px #22dcf1;
+    background: none;
+}
+/* Крупные неоновые заголовки */
+h1, .neon-title {
+    font-size: 3.5rem;
+    color: #22dcf1;
+    text-shadow: 0 0 16px #22dcf1, 0 0 32px #0ff;
+    font-family: 'Press Start 2P', monospace;
+    margin-bottom: 32px;
+    margin-top: 32px;
+    text-align: left;
+}
+/* Неоновые кнопки */
+.neon-btn, .retro-nav a.neon-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin: 8px 0;
+}
+/* Адаптивность */
+@media (max-width: 900px) {
+    .retro-header { flex-direction: column; gap: 16px; padding: 24px 8px 0 8px; }
+    .retro-nav ul { gap: 12px; }
+    .logo-text { font-size: 1.2rem; }
+}
+@media (max-width: 600px) {
+    .retro-header { flex-direction: column; gap: 8px; padding: 12px 2px 0 2px; }
+    .retro-main { margin: 40px 0 0 0; padding: 0 4px; }
+    h1, .neon-title { font-size: 2rem; }
+}
+
+/* --- HERO SECTION --- */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 48px 0 64px 0;
+    padding: 48px 32px;
+    background: rgba(26, 20, 64, 0.85);
+    border-radius: 32px;
+    box-shadow: 0 0 32px #22dcf1, 0 0 64px #0ff;
+    position: relative;
+    z-index: 1;
+    min-height: 340px;
+}
+.hero-text-block {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+    z-index: 2;
+}
+.hero-desc {
+    font-size: 1.3rem;
+    color: #fff;
+    text-shadow: 0 0 8px #22dcf1;
+    margin-bottom: 16px;
+    font-family: 'Press Start 2P', monospace;
+}
+.hero-image-block {
+    flex: 1 1 40%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    z-index: 2;
+}
+.hero-gamepad {
+    max-width: 320px;
+    width: 100%;
+    filter: drop-shadow(0 0 24px #ff2fd6) drop-shadow(0 0 32px #22dcf1);
+    animation: neon-float 2.5s ease-in-out infinite alternate;
+}
+@keyframes neon-float {
+    0% { transform: translateY(0) scale(1.02); }
+    100% { transform: translateY(-18px) scale(1.07); }
+}
+@media (max-width: 900px) {
+    .hero-section {
+        flex-direction: column;
+        padding: 24px 8px;
+        min-height: 220px;
+    }
+    .hero-image-block {
+        justify-content: center;
+        margin-top: 24px;
+    }
+    .hero-gamepad {
+        max-width: 180px;
+    }
+}
+
+/* --- AUTH HERO SECTION --- */
+.auth-hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    margin: 0 auto;
+    z-index: 1;
+}
+.auth-hero-block {
+    background: rgba(26, 20, 64, 0.95);
+    border-radius: 32px;
+    box-shadow: 0 0 32px #22dcf1, 0 0 64px #0ff;
+    padding: 48px 32px 32px 32px;
+    min-width: 340px;
+    max-width: 400px;
+    width: 100%;
+    margin: 32px 0;
+    z-index: 2;
+}
+.neon-form .form-group {
+    margin-bottom: 24px;
+}
+.neon-form .login_input {
+    width: 100%;
+    padding: 16px 14px;
+    border-radius: 12px;
+    border: 2px solid #22dcf1;
+    background: #18123a;
+    color: #fff;
+    font-size: 1.1rem;
+    font-family: 'Press Start 2P', monospace;
+    box-shadow: 0 0 8px #22dcf1;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+.neon-form .login_input:focus {
+    border: 2px solid #ff2fd6;
+    box-shadow: 0 0 16px #ff2fd6;
+    background: #221a4a;
+}
+.neon-form .invalid-feedback {
+    color: #ff2fd6;
+    font-size: 0.9em;
+    margin-top: 6px;
+    text-shadow: 0 0 4px #ff2fd6;
+}
+.neon-form .neon-btn {
+    width: 100%;
+    margin-top: 8px;
+}
+.neon-link {
+    color: #22dcf1;
+    text-shadow: 0 0 8px #22dcf1;
+    transition: color 0.2s, text-shadow 0.2s;
+}
+.neon-link:hover {
+    color: #ff2fd6;
+    text-shadow: 0 0 12px #ff2fd6;
+}
+.remember-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95em;
+    color: #fff;
+}
+
+/* --- PROFILE HERO SECTION --- */
+.profile-hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0 auto 32px auto;
+    z-index: 1;
+}
+.profile-hero-block {
+    background: rgba(26, 20, 64, 0.95);
+    border-radius: 32px;
+    box-shadow: 0 0 32px #22dcf1, 0 0 64px #0ff;
+    padding: 48px 32px 32px 32px;
+    min-width: 340px;
+    max-width: 900px;
+    width: 100%;
+    margin: 32px 0;
+    z-index: 2;
+}
+.neon-block {
+    background: rgba(26, 20, 64, 0.92);
+    border-radius: 24px;
+    box-shadow: 0 0 24px #22dcf1, 0 0 48px #0ff;
+    padding: 32px 24px;
+    margin-bottom: 32px;
+}
+@media (max-width: 900px) {
+    .profile-hero-block {
+        padding: 24px 8px 16px 8px;
+        min-width: unset;
+        max-width: 100%;
+    }
+    .neon-block {
+        padding: 16px 4px;
+    }
+}
+.auth-hero-block .neon-title {
+    font-size: 2rem;
+    margin-bottom: 24px;
+    margin-top: 0;
+}
+.neon-form .neon-btn {
+    font-size: 1rem;
+    padding: 10px 0;
+    letter-spacing: 0.5px;
+}
+
+/* --- GAMES LIST HERO SECTION --- */
+.games-list-hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0 auto 32px auto;
+    z-index: 1;
+}
+.games-list-hero-block {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 16px 24px;
+    box-sizing: border-box;
+}
+@media (max-width: 900px) {
+    .games-list-hero-block {
+        padding: 16px 4px 8px 4px;
+    }
+}
+
+/* --- POSTS LIST HERO SECTION --- */
+.posts-list-hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0 auto 32px auto;
+    z-index: 1;
+}
+.posts-list-hero-block {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 16px 24px;
+    box-sizing: border-box;
+}
+@media (max-width: 900px) {
+    .posts-list-hero-block {
+        padding: 16px 4px 8px 4px;
+    }
+}
+
+/* --- ERROR HERO SECTION --- */
+.error-hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    margin: 0 auto;
+    z-index: 1;
+}
+.error-hero-block {
+    background: rgba(26, 20, 64, 0.95);
+    border-radius: 32px;
+    box-shadow: 0 0 32px #22dcf1, 0 0 64px #0ff;
+    padding: 48px 32px 32px 32px;
+    min-width: 340px;
+    max-width: 400px;
+    width: 100%;
+    margin: 32px 0;
+    z-index: 2;
+}

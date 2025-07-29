@@ -1,16 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ super() }}
-
+<section class="auth-hero-section">
+    <div class="auth-hero-block">
+        <h1 class="neon-title" style="text-align:center;">Вход</h1>
         {% for cat, msg in get_flashed_messages(True) %}
             <div class="flash {{cat}}">{{msg}}</div>
         {% endfor %}
-
-<div class="wnd_dlg_back login_wnd">
-    <div class="login">
-        <p class="title">Вход</p>
-        <form method="POST" action="">
+        <form method="POST" action="" class="neon-form">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.login(class="login_input", placeholder="Введите логин") }}
@@ -30,22 +27,20 @@
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
-
                 {% endif %}
-                <a href="{{ url_for('forgot_password') }}">Забыл пароль?</a>
+                <a href="{{ url_for('forgot_password') }}" class="neon-link">Забыл пароль?</a>
             </div>
-
-            <div class="form-group">
+            <div class="form-group remember-group">
                 {{ form.remember() }} {{ form.remember.label }}
             </div>
             <div class="form-group">
                 {{ form.recaptcha() }}
             </div>
             <div class="form-group">
-                {{ form.submit(class="login_button") }}
+                {{ form.submit(class="neon-btn", value="Войти") }}
             </div>
         </form>
-        <p>Нет аккаунта? <a href="{{ url_for('register') }}"> Регистрация</a> </p>
+        <p style="text-align:center; margin-top:16px;">Нет аккаунта? <a href="{{ url_for('register') }}" class="neon-link">Регистрация</a></p>
     </div>
-</div>
+</section>
 {% endblock %}

@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ super() }}
-Страница не найдена, вернуться на <a href="/">главную</a> страницу.
+<section class="error-hero-section">
+    <div class="error-hero-block neon-block" style="text-align:center;">
+        <h1 class="neon-title" style="font-size:3.5rem;">404</h1>
+        <p style="font-size:1.3rem; margin-bottom:32px;">Страница не найдена</p>
+        <a href="/" class="neon-btn">На главную</a>
+    </div>
+</section>
 {% endblock %}

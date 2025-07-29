@@ -1,43 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ super() }}
-
-{% for cat, msg in get_flashed_messages(True) %}
-<div class="flash {{cat}}">{{msg}}</div>
-{% endfor %}
-
-<div class="profile-container">
-    <h1 class="page-title">{{ post.title }}</h1>
-</div>
-
-<div class="post-layout">
-    <div class="post-content-container">
-        {% if post.cover %}
-        <div class="post-cover">
-            <img src="data:image/jpeg;base64,{{ post.cover|b64encode }}" alt="{{ post.title }}" class="post-image">
-        </div>
-        {% endif %}
-        <div class="post-text">
-            <p>{{ post.text | safe }}</p>
+<section class="post-hero-section">
+    <div class="post-hero-block neon-block">
+        <h1 class="neon-title" style="text-align:center;">{{ post.title }}</h1>
+        {% for cat, msg in get_flashed_messages(True) %}
+        <div class="flash {{cat}}">{{msg}}</div>
+        {% endfor %}
+        <div class="post-layout">
+            <div class="post-content-container">
+                {% if post.cover %}
+                <div class="post-cover">
+                    <img src="data:image/jpeg;base64,{{ post.cover|b64encode }}" alt="{{ post.title }}" class="post-image">
+                </div>
+                {% endif %}
+                <div class="post-text">
+                    <p>{{ post.text | safe }}</p>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Блок комментариев -->
-<div id="comments-section">
-    <h3>Комментарии</h3>
-    <form id="comment-form">
-        <textarea id="comment-text" placeholder="Оставьте комментарий..." required></textarea>
-        <button type="submit">Отправить</button>
-    </form>
-    <div id="comments-container"></div>
-</div>
+<section class="comments-section">
+    <div class="neon-block">
+        <h3 class="neon-title" style="font-size:1.3rem;">Комментарии</h3>
+        <form id="comment-form">
+            <textarea id="comment-text" placeholder="Оставьте комментарий..." required></textarea>
+            <button type="submit" class="neon-btn" style="width:180px;">Отправить</button>
+        </form>
+        <div id="comments-container"></div>
+    </div>
+</section>
 
 <script>
-    window.entityId = {{ post.id }};
+    window.entityId = {{ post.id|tojson }};
     window.entityType = "post";
 </script>
 <script src="{{ url_for('static', filename='js/coments.js') }}" rel="javascript"></script>
-
 {% endblock %}

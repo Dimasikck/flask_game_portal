@@ -1,93 +1,94 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ super() }}
+<section class="games-list-hero-section">
+    <div class="games-list-hero-block neon-block">
+        <h1 class="neon-title" style="text-align:center;">{{title}}</h1>
+        {% for cat, msg in get_flashed_messages(True) %}
+        <div class="flash {{cat}}">{{msg}}</div>
+        {% endfor %}
+        <form method="get" action="{{ url_for('listgames') }}">
+            <div class="search-controls">
+                <div class="search-container">
+                    <input type="text" name="search" id="search" placeholder="Поиск по названию или описанию..." value="{{ request.args.get('search', '') }}">
+                    <button type="submit" id="search-btn">🔍</button>
+                </div>
+                <div class="sort-container">
+                    <label for="sort-select">Сортировать по названию:</label>
+                    <select id="sort-select" name="sort_name">
+                        <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Название (А-Я)</option>
+                        <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Название (Я-А)</option>
+                        <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
+                        <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
+                    </select>
+                </div>
+                <div class="filter-container">
+                    <label>Фильтр по типу:</label>
+                    <select id="type-filter" name="type_filter">
+                        <option value="" {% if not filter_type %}selected{% endif %}>Все</option>
+                        <option value="link" {% if filter_type == 'link' %}selected{% endif %}>Внешняя ссылка</option>
+                        <option value="pygame" {% if filter_type == 'pygame' %}selected{% endif %}>Pygame</option>
+                        <option value="unity" {% if filter_type == 'unity' %}selected{% endif %}>Unity</option>
+                    </select>
+                    <label>Фильтр по жанру:</label>
+                    <select id="genre-filter" name="genre_filter">
+                        <option value="" {% if not filter_genre %}selected{% endif %}>Все</option>
+                        {% for genre in genres %}
+                            <option value="{{ genre }}" {% if filter_genre == genre %}selected{% endif %}>{{ genre }}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Фильтр по избранному:</label>
+                    <select id="favorite-filter" name="favorite_filter">
+                        <option value="" {% if not filter_favorite %}selected{% endif %}>Все</option>
+                        <option value="favorite" {% if filter_favorite == 'favorite' %}selected{% endif %}>Избранные</option>
+                    </select>
+                </div>
+                <button type="submit" id="apply-filters-btn" class="neon-btn">Применить</button>
+            </div>
+        </form>
+    </div>
+</section>
 
-{% for cat, msg in get_flashed_messages(True) %}
-<div class="flash {{cat}}">{{msg}}</div>
-{% endfor %}
-
-<div class="search-container">
-    <h1 class="page-title">{{title}}</h1>
-    <form method="get" action="{{ url_for('listgames') }}">
-        <div class="search-controls">
-            <div class="search-container">
-                <input type="text" name="search" id="search" placeholder="Поиск по названию или описанию..." value="{{ request.args.get('search', '') }}">
-                <button type="submit" id="search-btn">🔍</button>
-            </div>
-            <div class="sort-container">
-                <label for="sort-select">Сортировать по названию:</label>
-                <select id="sort-select" name="sort_name">
-                    <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Название (А-Я)</option>
-                    <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Название (Я-А)</option>
-                    <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
-                    <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
-                </select>
-            </div>
-            <div class="filter-container">
-                <label>Фильтр по типу:</label>
-                <select id="type-filter" name="type_filter">
-                    <option value="" {% if not filter_type %}selected{% endif %}>Все</option>
-                    <option value="link" {% if filter_type == 'link' %}selected{% endif %}>Внешняя ссылка</option>
-                    <option value="pygame" {% if filter_type == 'pygame' %}selected{% endif %}>Pygame</option>
-                    <option value="unity" {% if filter_type == 'unity' %}selected{% endif %}>Unity</option>
-                </select>
-                <label>Фильтр по жанру:</label>
-                <select id="genre-filter" name="genre_filter">
-                    <option value="" {% if not filter_genre %}selected{% endif %}>Все</option>
-                    {% for genre in genres %}
-                        <option value="{{ genre }}" {% if filter_genre == genre %}selected{% endif %}>{{ genre }}</option>
-                    {% endfor %}
-                </select>
-                <label>Фильтр по избранному:</label>
-                <select id="favorite-filter" name="favorite_filter">
-                    <option value="" {% if not filter_favorite %}selected{% endif %}>Все</option>
-                    <option value="favorite" {% if filter_favorite == 'favorite' %}selected{% endif %}>Избранные</option>
-                </select>
-            </div>
-            <button type="submit" id="apply-filters-btn" class="btn">Применить</button>
-        </div>
-    </form>
-</div>
-
-<div class="cards-container">
-    {% for game in games %}
-    <div class="game-card-container">
-        <a href="{{ url_for('game', game_id=game.id) }}" class="game-card">
-            {% if game.cover %}
-            <div class="game-cover">
-                <img src="data:image/jpeg;base64,{{ game.cover|b64encode }}" alt="{{ game.title }}">
-            </div>
-            {% endif %}
-            <div class="game-title">
-                <div class="game-name">{{ game.title }}</div>
-                <div class="game-type">
-                    {% if game.type == 'link' %}
-                        <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
-                        <span>Web</span>
-                    {% elif game.type == 'pygame' %}
-                        <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
-                        <span>Pygame</span>
-                    {% elif game.type == 'unity' %}
-                        <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
-                        <span>Unity</span>
+<section class="games-list-section">
+    <div class="cards-container">
+        {% for game in games %}
+        <div class="game-card-container">
+            <a href="{{ url_for('game', game_id=game.id) }}" class="game-card">
+                {% if game.cover %}
+                <div class="game-cover">
+                    <img src="data:image/jpeg;base64,{{ game.cover|b64encode }}" alt="{{ game.title }}">
+                </div>
+                {% endif %}
+                <div class="game-title">
+                    <div class="game-name">{{ game.title }}</div>
+                    <div class="game-type">
+                        {% if game.type == 'link' %}
+                            <img src="{{ url_for('static', filename='images/type/web.png') }}" alt="Web" class="type-icon">
+                            <span>Web</span>
+                        {% elif game.type == 'pygame' %}
+                            <img src="{{ url_for('static', filename='images/type/pygame.png') }}" alt="Pygame" class="type-icon">
+                            <span>Pygame</span>
+                        {% elif game.type == 'unity' %}
+                            <img src="{{ url_for('static', filename='images/type/unity.png') }}" alt="Unity" class="type-icon">
+                            <span>Unity</span>
+                        {% endif %}
+                    </div>
+                    {% if game.genre %}
+                    <div class="game-genre">{{ game.genre }}</div>
                     {% endif %}
                 </div>
-                {% if game.genre %}
-                <div class="game-genre">{{ game.genre }}</div>
+            </a>
+            <button class="favorite-btn" data-game-id="{{ game.id }}" data-is-favorite="{{ 'true' if game.id in favorite_game_ids else 'false' }}">
+                {% if game.id in favorite_game_ids %}
+                    <span class="favorite-icon">★</span> Удалить из избранного
+                {% else %}
+                    <span class="favorite-icon">☆</span> Добавить в избранное
                 {% endif %}
-            </div>
-        </a>
-        <button class="favorite-btn" data-game-id="{{ game.id }}" data-is-favorite="{{ 'true' if game.id in favorite_game_ids else 'false' }}">
-            {% if game.id in favorite_game_ids %}
-                <span class="favorite-icon">★</span> Удалить из избранного
-            {% else %}
-                <span class="favorite-icon">☆</span> Добавить в избранное
-            {% endif %}
-        </button>
+            </button>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
+</section>
 
 <script src="{{ url_for('static', filename='js/favorites.js') }}"></script>
 {% endblock %}

@@ -5,79 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Новая игра на портале</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #1B1D2B;
+            background-color: #18123a;
             color: #fff;
         }
         .container {
             max-width: 600px;
             margin: 20px auto;
-            background: rgba(30, 30, 40, 0.9);
-            border-radius: 15px;
+            background: rgba(26, 20, 64, 0.98);
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 32px #22dcf1, 0 0 64px #0ff;
+            border: 2px solid #22dcf1;
         }
         .header {
-            background: linear-gradient(135deg, #1196d7, #00cee7);
-            padding: 20px;
+            background: #18123a;
+            padding: 32px 20px 16px 20px;
             text-align: center;
         }
         .header h1 {
             margin: 0;
-            font-size: 24px;
-            color: #fff;
+            font-size: 2rem;
+            color: #22dcf1;
+            text-shadow: 0 0 8px #22dcf1, 0 0 16px #0ff;
+            font-family: 'Press Start 2P', Arial, sans-serif;
+            letter-spacing: 2px;
         }
         .content {
-            padding: 20px;
+            padding: 24px 20px 20px 20px;
         }
         .game-title {
-            font-size: 20px;
-            color: #00cee7;
+            font-size: 1.3rem;
+            color: #ff2fd6;
             margin-bottom: 10px;
+            font-family: 'Press Start 2P', Arial, sans-serif;
+            text-shadow: 0 0 8px #ff2fd6;
         }
         .game-genre {
-            font-size: 16px;
-            color: #888;
+            font-size: 1rem;
+            color: #22dcf1;
             margin-bottom: 10px;
         }
         .game-description {
-            font-size: 16px;
+            font-size: 1.1rem;
             color: #ddd;
             line-height: 1.5;
             margin-bottom: 20px;
         }
         .game-cover {
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             height: auto;
-            border-radius: 10px;
+            border-radius: 12px;
             display: block;
             margin: 0 auto 20px;
-            border: 2px solid #00cee7;
+            border: 2px solid #ff2fd6;
+            box-shadow: 0 0 16px #ff2fd6, 0 0 32px #22dcf1;
         }
         .btn {
             display: inline-block;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #1196d7, #00cee7);
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #ff2fd6, #22dcf1);
             color: #fff;
             text-decoration: none;
-            border-radius: 30px;
-            font-size: 16px;
-            text-align: center;
-            transition: background 0.3s ease;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-family: 'Press Start 2P', Arial, sans-serif;
+            text-shadow: 0 0 8px #fff;
+            box-shadow: 0 0 16px #ff2fd6, 0 0 32px #22dcf1;
+            margin-top: 16px;
+            margin-bottom: 8px;
         }
         .btn:hover {
-            background: linear-gradient(135deg, #29abee, #22dcf1);
+            background: linear-gradient(135deg, #22dcf1, #ff2fd6);
+            color: #ff2fd6;
         }
         .footer {
-            background: #1B1D2B;
-            padding: 10px;
+            background: #18123a;
+            padding: 16px 10px;
             text-align: center;
             font-size: 12px;
-            color: #888;
+            color: #22dcf1;
+            border-top: 1px solid #22dcf1;
         }
     </style>
 </head>
