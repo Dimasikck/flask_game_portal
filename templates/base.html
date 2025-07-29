@@ -3,222 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Ссылка на манифест -->
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="mobile-web-app-capable" content="yes">
-    <!-- Поддержка PWA для iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Game Portal">
-    <link rel="preload" href="{{ url_for('static', filename='css/styles.css') }}" as="style" onload="this.rel='stylesheet'" />
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon" />
-    <link href="https://fonts.googleapis.com/css2?family=Minecraft+Ten+Cyrillic&display=swap" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script src="{{ url_for('static', filename='js/mobile.js') }}" async></script>
-    {% block title %}
-        {% if title %}
-            <title>Игровой портал Flask - {{title}}</title>
-        {% else %}
-            <title>Игровой портал Flask</title>
-        {% endif %}
-    {% endblock %}
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        .container {
-            padding-top: 80px;
-        }
-
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .logo img {
-            max-height: 80px; /* Устанавливаем максимальную высоту для логотипа */
-            margin-right: 20px; /* Отступ между логотипом и меню */
-        }
-
-        #toggle {
-            display: none;
-        }
-
-        .toggle-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-        }
-
-        .button-toggle {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 2px solid #22dcf1;
-            border-radius: 50%;
-            position: relative;
-            transition: 0.5s;
-        }
-
-        .button-toggle::before,
-        .button-toggle::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 3px;
-            width: 20px;
-            height: 2px;
-            background: #22dcf1;
-            transform-origin: center;
-            transition: 0.5s;
-        }
-
-        .button-toggle::before {
-            transform: translateY(-5px);
-        }
-
-        .button-toggle::after {
-            transform: translateY(5px);
-        }
-
-        #toggle:checked + .toggle-container .button-toggle {
-        }
-
-        #toggle:checked + .toggle-container .button-toggle::before {
-            transform: rotate(45deg);
-        }
-
-        #toggle:checked + .toggle-container .button-toggle::after {
-            transform: rotate(-45deg);
-        }
-
-        .mainmenu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            flex-direction: column;
-            padding-top: 60px;
-        }
-
-        #toggle:checked ~ .mainmenu {
-            display: flex;
-            top: 120%;
-            border-radius: 15px;
-            background: rgb(39, 41, 59);
-        }
-
-        .mainmenu li {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .mainmenu a {
-            color: white;
-        }
-
-        @media (min-width: 769px) {
-            .toggle-container {
-                display: none;
-            }
-
-            .mainmenu {
-                display: flex;
-                position: static;
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .mainmenu li {
-                margin: 0 15px;
-            }
-            .logo img {
-                max-height: 80px;
-                margin-top: 20px;
-            }
-        }
-    </style>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>{% block title %}Game Portal{% endblock %}</title>
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <video id="background-video" autoplay muted loop playsinline preload="auto">
-        <source src="{{ url_for('static', filename='videos/background_11.mp4') }}" type="video/mp4">
-        Ваш браузер не поддерживает воспроизведение видео.
-    </video>
-
-    <div class="container">
-        {% block content %}
-            {% block mainmenu %}
-            <header class="header">
-                <div class="logo">
-                    <a href="/"><img src="{{ url_for('static', filename='images/favicon.png') }}" alt="Логотип"></a>
-                </div>
-                <input type="checkbox" id="toggle">
-                <label for="toggle" class="toggle-container">
-                    <span class="button button-toggle"></span>
-                </label>
-                <ul class="mainmenu">
-                    {% for m in menu %}
+<body class="retro-bg">
+    <div class="neon-grid"></div>
+    <header class="retro-header">
+        <div class="logo-block">
+            <img src="{{ url_for('static', filename='images/favicon.png') }}" alt="Логотип" class="logo-img">
+            <span class="logo-text">GAME PORTAL</span>
+        </div>
+        <nav class="retro-nav">
+            <ul>
+                 {% for m in menu %}
                         {% if current_user.is_authenticated %}
                             {% if m.title != 'Авторизация' %}
-                                <li><a href="{{ m.url }}">{{ m.title }}</a></li>
+                                <li><a href="{{ m.url }}" >{{ m.title }}</a></li>
                             {% endif %}
                         {% else %}
                             {% if m.title != 'Профиль' %}
-                                <li><a href="{{ m.url }}">{{ m.title }}</a></li>
+                                <li><a href="{{ m.url }}" >{{ m.title }}</a></li>
                             {% endif %}
                         {% endif %}
                     {% endfor %}
-                </ul>
-            </header>
-            {% endblock mainmenu %}
-
-            <main class="main-content">
-                <div class="content-body">
-                    {% block body %}{% endblock body %}
-                </div>
-            </main>
-        {% endblock %}
-    </div>
-    <button id="scrollTopBtn" class="scroll-top-btn" title="Наверх">↑</button>
-    <footer>
-        <p>&copy; 2025 Игровой портал Flask. Все права защищены. <a href="/">Главная</a></p>
+            </ul>
+        </nav>
+    </header>
+    <main class="retro-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="retro-footer">
+        <p>&copy; 2025 Game Portal. Все права защищены.</p>
     </footer>
-    <script>
-        // Показ/скрытие кнопки при прокрутке
-        window.onscroll = function() {
-            const scrollTopBtn = document.getElementById('scrollTopBtn');
-            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-                scrollTopBtn.style.display = 'block';
-            } else {
-                scrollTopBtn.style.display = 'none';
-            }
-        };
-
-        // Плавная прокрутка наверх
-        document.getElementById('scrollTopBtn').addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    </script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93a1b59b5c8cb0b2',t:'MTc0NjI5NTc2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/js/sw.js')
-                    .then(registration => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
-    </script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>
