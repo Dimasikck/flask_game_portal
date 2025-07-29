@@ -280,6 +280,7 @@ def delete_post(post_id):
         return redirect(url_for('.login'))
     try:
         post = Posts.query.get_or_404(post_id)
+        Comments.query.filter_by(poste_id=post_id).delete()
         db.session.delete(post)
         db.session.commit()
         flash('Пост успешно удален', 'success')
