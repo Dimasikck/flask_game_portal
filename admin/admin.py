@@ -152,8 +152,8 @@ def logout():
 
     return redirect(url_for('.login'))
 
-@admin.route('/list_pubs')
-def list_pubs():
+@admin.route('/list_posts')
+def list_posts():
     if not isLogged():
         return redirect(url_for('.login'))
     try:
@@ -179,7 +179,7 @@ def list_pubs():
     except Exception as e:
         flash(f'Ошибка получения списка постов: {str(e)}', 'error')
         posts = []
-    return render_template('admin/list_pubs.html', title='Список постов', menu=menu, posts=posts,
+    return render_template('admin/list_posts.html', title='Список постов', menu=menu, posts=posts,
                           search=search, sort=sort)
 
 @admin.route('/add_post', methods=['POST', 'GET'])

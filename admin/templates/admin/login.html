@@ -5,18 +5,71 @@
     <link rel="icon" href="{{ url_for('.static', filename='images/favicon.ico') }}" type="image/x-icon" />
     <title>{{ title }}</title>
 </head>
-<body>
-<div id="login" class="wnd_dlg_back login_wnd">
-<div class="login">
-	<p class="title">Админ-панель</p>
-{% for cat, msg in get_flashed_messages(True) %}
-<div class="flash {{cat}}">{{msg}}</div>
-{% endfor %}
-	<form action="" method="post">
-		<p><label class="form-label">Логин: </label><input type="text" name="user" />
-		<p><label class="form-label">Пароль: </label><input type="password" name="psw" />
-		<p align="center"><input class="login_button" type="submit" value="Войти">
-	</form>
-</div>
-</div>
+<body class="admin-retro-bg">
+    <div class="admin-login-container">
+        <div class="admin-login-card">
+            <div class="admin-login-header">
+                <div class="admin-login-logo">
+                    <div class="admin-login-icon">🎮</div>
+                    <h1 class="admin-login-title">ADMIN PORTAL</h1>
+                </div>
+                <p class="admin-login-subtitle">Game Portal Management System</p>
+            </div>
+            
+            {% for cat, msg in get_flashed_messages(True) %}
+            <div class="flash {{cat}}">{{msg}}</div>
+            {% endfor %}
+            
+            <form action="" method="post" class="admin-login-form">
+                <div class="form-group">
+                    <label for="user" class="form-label">Логин</label>
+                    <input type="text" name="user" id="user" class="admin-login-input" required />
+                </div>
+                
+                <div class="form-group">
+                    <label for="psw" class="form-label">Пароль</label>
+                    <input type="password" name="psw" id="psw" class="admin-login-input" required />
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="admin-login-btn neon-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Войти в систему
+                    </button>
+                </div>
+            </form>
+            
+            <div class="admin-login-footer">
+                <a href="{{ url_for('index') }}" class="admin-back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Вернуться на сайт
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add neon glow effect to inputs
+            const inputs = document.querySelectorAll('.admin-login-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.boxShadow = '0 0 20px rgba(120, 219, 255, 0.5)';
+                });
+                input.addEventListener('blur', function() {
+                    this.style.boxShadow = '';
+                });
+            });
+            
+            // Add retro grid background animation
+            const body = document.body;
+            body.style.backgroundImage = `
+                linear-gradient(135deg, #0A0C1B, #121321),
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%)
+            `;
+        });
+    </script>
 </body>
+</html>

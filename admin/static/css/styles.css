@@ -1,3 +1,673 @@
+/* Admin Panel Retro-Futuristic Design */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+/* Admin Background */
+.admin-retro-bg {
+    background: linear-gradient(135deg, #0A0C1B, #121321);
+    background-image: 
+        linear-gradient(135deg, #0A0C1B, #121321),
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.admin-retro-bg::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(90deg, transparent 98%, rgba(120, 219, 255, 0.1) 100%),
+        linear-gradient(0deg, transparent 98%, rgba(120, 219, 255, 0.1) 100%);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Admin Header */
+.admin-retro-header {
+    background: rgba(26, 28, 43, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(120, 219, 255, 0.3);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.admin-logo-block {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-logo-img {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px rgba(120, 219, 255, 0.8));
+}
+
+.admin-logo-text {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #78DBFF, #FF77C6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(120, 219, 255, 0.5);
+}
+
+/* Admin Navigation */
+.admin-retro-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.admin-retro-nav li {
+    position: relative;
+}
+
+.admin-retro-nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    height: 44px;
+    background: rgba(120, 219, 255, 0.08);
+    border: 1px solid rgba(120, 219, 255, 0.15);
+    overflow: hidden;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+.admin-retro-nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(120, 219, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+    z-index: 1;
+}
+
+.admin-retro-nav a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(120, 219, 255, 0.1), rgba(120, 219, 255, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.admin-retro-nav a:hover::before {
+    left: 100%;
+}
+
+.admin-retro-nav a:hover::after {
+    opacity: 1;
+}
+
+.admin-retro-nav a:hover {
+    color: #78DBFF;
+    text-shadow: 0 0 12px rgba(120, 219, 255, 0.8);
+    background: rgba(120, 219, 255, 0.12);
+    border-color: rgba(120, 219, 255, 0.35);
+    box-shadow: 
+        0 0 18px rgba(120, 219, 255, 0.3),
+        inset 0 0 15px rgba(120, 219, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.admin-retro-nav a.active {
+    color: #78DBFF;
+    text-shadow: 0 0 15px rgba(120, 219, 255, 0.9);
+    background: rgba(120, 219, 255, 0.18);
+    border-color: rgba(120, 219, 255, 0.5);
+    box-shadow: 
+        0 0 22px rgba(120, 219, 255, 0.4),
+        inset 0 0 20px rgba(120, 219, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+.admin-retro-nav a.active::after {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(120, 219, 255, 0.15), rgba(120, 219, 255, 0.08));
+}
+
+.admin-retro-nav a:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(120, 219, 255, 0.5);
+}
+
+.admin-retro-nav a:focus:not(:focus-visible) {
+    box-shadow: none;
+}
+
+/* Admin User Section */
+.admin-user-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-user-name {
+    color: #78DBFF;
+    font-weight: 700;
+}
+
+.admin-logout-btn {
+    background: linear-gradient(45deg, #FF4C4C, #FF6F6F);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 76, 76, 0.3);
+}
+
+.admin-logout-btn:hover {
+    background: linear-gradient(45deg, #FF6F6F, #FF8A8A);
+    box-shadow: 0 0 20px rgba(255, 76, 76, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Admin Main Content */
+.admin-retro-main {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    min-height: calc(100vh - 140px);
+}
+
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Admin Footer */
+.admin-retro-footer {
+    background: rgba(26, 28, 43, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid rgba(120, 219, 255, 0.3);
+    padding: 1rem 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.admin-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-footer-links a {
+    color: #78DBFF;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.admin-footer-links a:hover {
+    color: #FF77C6;
+    text-shadow: 0 0 10px rgba(255, 119, 198, 0.8);
+}
+
+/* Enhanced Neon Buttons */
+.neon-btn {
+    background: linear-gradient(45deg, #1196d7, #00cee7);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(120, 219, 255, 0.3);
+}
+
+.neon-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.neon-btn:hover::before {
+    left: 100%;
+}
+
+.neon-btn:hover {
+    background: linear-gradient(45deg, #29abee, #22dcf1);
+    box-shadow: 0 0 30px rgba(120, 219, 255, 0.6);
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Enhanced Form Styling */
+.form-container {
+    background: rgba(26, 28, 43, 0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #78DBFF, #FF77C6, #78DBFF);
+    animation: neon-border 3s linear infinite;
+}
+
+@keyframes neon-border {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.form-container h1 {
+    color: #78DBFF;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px rgba(120, 219, 255, 0.5);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #78DBFF;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(18, 19, 33, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #78DBFF;
+    box-shadow: 0 0 20px rgba(120, 219, 255, 0.3);
+    background: rgba(18, 19, 33, 0.9);
+}
+
+/* Enhanced Dashboard */
+.dashboard {
+    background: rgba(26, 28, 43, 0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #78DBFF, #FF77C6, #78DBFF);
+    animation: neon-border 3s linear infinite;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(120, 219, 255, 0.2);
+}
+
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #78DBFF, #FF77C6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(120, 219, 255, 0.5);
+    margin-bottom: 0.5rem;
+    letter-spacing: 3px;
+}
+
+.dashboard-subtitle {
+    color: #ccc;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.dashboard-actions {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(120, 219, 255, 0.2);
+}
+
+.update-site-btn {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.update-site-btn:hover {
+    background: linear-gradient(45deg, #66BB6A, #81C784);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.6);
+}
+
+.update-site-btn i {
+    font-size: 1.1rem;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    background: rgba(18, 19, 33, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #78DBFF, #FF77C6);
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(120, 219, 255, 0.2);
+    border-color: #78DBFF;
+}
+
+.stat-item i {
+    font-size: 2.5rem;
+    color: #78DBFF;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(120, 219, 255, 0.5));
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.stat-label {
+    color: #78DBFF;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Enhanced Lists */
+ul.list-posts {
+    list-style: none;
+    padding: 0;
+}
+
+ul.list-posts li {
+    background: rgba(26, 28, 43, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+ul.list-posts li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #78DBFF, #FF77C6);
+}
+
+ul.list-posts li:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(120, 219, 255, 0.2);
+    border-color: #78DBFF;
+}
+
+ul.list-posts .title {
+    color: #78DBFF;
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 10px rgba(120, 219, 255, 0.3);
+}
+
+ul.list-posts .annonce {
+    color: #ccc;
+    line-height: 1.6;
+}
+
+/* Enhanced Buttons */
+.add_button, .styled-button {
+    background: linear-gradient(45deg, #1196d7, #00cee7);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    border: 1px solid rgba(120, 219, 255, 0.3);
+}
+
+.add_button:hover, .styled-button:hover {
+    background: linear-gradient(45deg, #29abee, #22dcf1);
+    box-shadow: 0 0 30px rgba(120, 219, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.delete-button {
+    background: linear-gradient(45deg, #FF4C4C, #FF6F6F);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 76, 76, 0.3);
+}
+
+.delete-button:hover {
+    background: linear-gradient(45deg, #FF6F6F, #FF8A8A);
+    box-shadow: 0 0 20px rgba(255, 76, 76, 0.5);
+    transform: translateY(-2px);
+}
+
+.edit-button {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.edit-button:hover {
+    background: linear-gradient(45deg, #66BB6A, #81C784);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Enhanced Flash Messages */
+.flash {
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-family: 'Orbitron', monospace;
+    position: relative;
+    overflow: hidden;
+}
+
+.flash::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #78DBFF, #FF77C6);
+    animation: neon-border 3s linear infinite;
+}
+
+.flash.success {
+    background: rgba(30, 110, 61, 0.8);
+    border: 2px solid rgba(33, 219, 86, 0.5);
+    color: #21DB56;
+}
+
+.flash.error {
+    background: rgba(255, 76, 76, 0.8);
+    border: 2px solid rgba(255, 67, 67, 0.5);
+    color: #FF4343;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-retro-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .admin-retro-nav ul {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+    
+    .admin-retro-nav a {
+        min-width: 90px;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+        height: 38px;
+    }
+    
+    .admin-user-section {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-footer-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
 html, body {
     width: 100%;
     height: 100%;
@@ -613,4 +1283,825 @@ footer a {
 }
 .open-btn:hover {
     background: #2A2C3F;
+}
+
+/* Admin Page Header */
+.admin-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(26, 28, 43, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.admin-page-title h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #78DBFF, #FF77C6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.admin-page-title p {
+    color: #ccc;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.admin-page-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.add-game-btn {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-game-btn:hover {
+    background: linear-gradient(45deg, #66BB6A, #81C784);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.6);
+}
+
+/* Search and Filter Container */
+.search-filter-container {
+    margin-bottom: 2rem;
+}
+
+.form-section-title {
+    color: #78DBFF;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.search-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.filter-btn {
+    background: linear-gradient(45deg, #1196d7, #00cee7);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.filter-btn:hover {
+    background: linear-gradient(45deg, #29abee, #22dcf1);
+    box-shadow: 0 0 30px rgba(120, 219, 255, 0.6);
+}
+
+/* Games List Container */
+.games-list-container {
+    background: rgba(26, 28, 43, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.games-list-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(120, 219, 255, 0.2);
+}
+
+.games-list-header h3 {
+    color: #78DBFF;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.game-item {
+    background: rgba(18, 19, 33, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #78DBFF, #FF77C6);
+}
+
+.game-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(120, 219, 255, 0.2);
+    border-color: #78DBFF;
+}
+
+.game-content {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.game-info {
+    flex: 1;
+    min-width: 0; /* Prevents flex item from overflowing */
+}
+
+.game-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    font-weight: 900;
+}
+
+.game-title a {
+    color: #78DBFF;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.game-title a:hover {
+    color: #FF77C6;
+    text-shadow: 0 0 10px rgba(255, 119, 198, 0.5);
+}
+
+.game-description {
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.game-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.game-type, .game-genre {
+    background: rgba(120, 219, 255, 0.2);
+    color: #78DBFF;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid rgba(120, 219, 255, 0.3);
+}
+
+.game-genre {
+    background: rgba(255, 119, 198, 0.2);
+    color: #FF77C6;
+    border-color: rgba(255, 119, 198, 0.3);
+}
+
+.game-cover {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    position: relative;
+    z-index: 1;
+}
+
+.game-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.game-image:hover {
+    border-color: #78DBFF;
+    transform: scale(1.05);
+}
+
+.game-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid rgba(120, 219, 255, 0.3);
+    background: rgba(120, 219, 255, 0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.game-actions .edit-button,
+.game-actions .delete-button {
+    display: inline-block;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Убеждаемся, что формы внутри game-actions не ломают layout */
+.game-actions form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+
+/* Дополнительные стили для кнопок в game-actions */
+.game-actions .edit-button {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.game-actions .edit-button:hover {
+    background: linear-gradient(45deg, #66BB6A, #81C784);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+    transform: translateY(-2px);
+}
+
+.game-actions .delete-button {
+    background: linear-gradient(45deg, #f44336, #e53935);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.game-actions .delete-button:hover {
+    background: linear-gradient(45deg, #e53935, #d32f2f);
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Стили для иконок в кнопках */
+.game-actions .edit-button i,
+.game-actions .delete-button i {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #ccc;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #78DBFF;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(120, 219, 255, 0.5));
+}
+
+.empty-state h3 {
+    color: #78DBFF;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.empty-state p {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.empty-state .neon-btn {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+.empty-state .neon-btn:hover {
+    background: linear-gradient(45deg, #66BB6A, #81C784);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.6);
+}
+
+/* Responsive Design for Games List */
+@media (max-width: 768px) {
+    .admin-page-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .game-content {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .game-info {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .game-cover {
+        align-self: center;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .game-actions {
+        justify-content: center;
+        flex-wrap: nowrap;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .game-meta {
+        justify-content: center;
+    }
+}
+
+/* Admin Login Page */
+.admin-login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.admin-login-card {
+    background: rgba(26, 28, 43, 0.95);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #78DBFF, #FF77C6, #78DBFF);
+    animation: neon-border 3s linear infinite;
+}
+
+.admin-login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.admin-login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.admin-login-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 15px rgba(120, 219, 255, 0.8));
+}
+
+.admin-login-title {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #78DBFF, #FF77C6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(120, 219, 255, 0.5);
+    letter-spacing: 3px;
+    margin: 0;
+}
+
+.admin-login-subtitle {
+    color: #ccc;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.admin-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.admin-login-form .form-group {
+    margin-bottom: 0;
+}
+
+.admin-login-form .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #78DBFF;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.admin-login-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: rgba(18, 19, 33, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.admin-login-input:focus {
+    border-color: #78DBFF;
+    box-shadow: 0 0 25px rgba(120, 219, 255, 0.4);
+    background: rgba(18, 19, 33, 0.9);
+}
+
+.admin-login-form .form-actions {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.admin-login-btn {
+    background: linear-gradient(45deg, #1196d7, #00cee7);
+    border: 1px solid rgba(120, 219, 255, 0.3);
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.admin-login-btn:hover {
+    background: linear-gradient(45deg, #29abee, #22dcf1);
+    box-shadow: 0 0 30px rgba(120, 219, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.admin-login-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid rgba(120, 219, 255, 0.2);
+}
+
+.admin-back-link {
+    color: #78DBFF;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.admin-back-link:hover {
+    color: #FF77C6;
+    text-shadow: 0 0 10px rgba(255, 119, 198, 0.8);
+    transform: translateX(-5px);
+}
+
+/* Responsive Design for Login */
+@media (max-width: 480px) {
+    .admin-login-container {
+        padding: 1rem;
+    }
+    
+    .admin-login-card {
+        padding: 2rem;
+    }
+    
+    .admin-login-title {
+        font-size: 1.5rem;
+    }
+    
+    .admin-login-icon {
+        font-size: 2rem;
+    }
+}
+
+/* Game Form Container */
+.game-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.game-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-section {
+    background: rgba(18, 19, 33, 0.6);
+    border: 1px solid rgba(120, 219, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #78DBFF, #FF77C6);
+}
+
+.form-section-title {
+    color: #78DBFF;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-section-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, #78DBFF, #FF77C6);
+    border-radius: 2px;
+}
+
+/* Game Type Selector */
+.game-type-selector {
+    margin: 1rem 0;
+}
+
+.game-type-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.game-type-option {
+    background: rgba(18, 19, 33, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-type-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(120, 219, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.game-type-option:hover::before {
+    left: 100%;
+}
+
+.game-type-option:hover {
+    border-color: #78DBFF;
+    box-shadow: 0 0 20px rgba(120, 219, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.game-type-option i {
+    font-size: 2rem;
+    color: #78DBFF;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 0 5px rgba(120, 219, 255, 0.5));
+}
+
+.game-type-option span {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Radio button styling for game type */
+.game-type-options input[type="radio"]:checked + .game-type-option {
+    border-color: #FF77C6;
+    background: rgba(255, 119, 198, 0.1);
+    box-shadow: 0 0 25px rgba(255, 119, 198, 0.3);
+}
+
+.game-type-options input[type="radio"]:checked + .game-type-option i {
+    color: #FF77C6;
+    filter: drop-shadow(0 0 8px rgba(255, 119, 198, 0.8));
+}
+
+.game-type-options input[type="radio"]:checked + .game-type-option span {
+    color: #FF77C6;
+}
+
+/* File Input Styling */
+.file-input {
+    position: relative;
+    cursor: pointer;
+}
+
+.file-input::-webkit-file-upload-button {
+    background: linear-gradient(45deg, #1196d7, #00cee7);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+}
+
+.file-input::-webkit-file-upload-button:hover {
+    background: linear-gradient(45deg, #29abee, #22dcf1);
+    box-shadow: 0 0 15px rgba(120, 219, 255, 0.5);
+}
+
+/* Form Help Text */
+.form-help {
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Submit Button */
+.submit-btn {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(45deg, #66BB6A, #81C784);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Back Button */
+.back-btn {
+    background: linear-gradient(45deg, #6c757d, #868e96);
+    border: 1px solid rgba(108, 117, 125, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.back-btn:hover {
+    background: linear-gradient(45deg, #868e96, #adb5bd);
+    box-shadow: 0 0 20px rgba(108, 117, 125, 0.5);
+}
+
+/* Enhanced Form Inputs for Game Form */
+.game-form .form-input {
+    background: rgba(18, 19, 33, 0.8);
+    border: 2px solid rgba(120, 219, 255, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.game-form .form-input:focus {
+    border-color: #78DBFF;
+    box-shadow: 0 0 20px rgba(120, 219, 255, 0.3);
+    background: rgba(18, 19, 33, 0.9);
+}
+
+.game-form .form-input::placeholder {
+    color: #666;
+    font-style: italic;
+}
+
+/* Textarea specific styling */
+.game-form textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+    font-family: 'Orbitron', monospace;
+    line-height: 1.6;
+}
+
+/* Responsive Design for Game Form */
+@media (max-width: 768px) {
+    .game-form-container {
+        margin: 0 1rem;
+    }
+    
+    .game-type-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-section {
+        padding: 1rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 }

@@ -3,36 +3,122 @@
 <head>
     <link type="text/css" href="{{ url_for('.static', filename='css/styles.css')}}" rel="stylesheet" />
     <link rel="icon" href="{{ url_for('.static', filename='images/favicon.ico') }}" type="image/x-icon" />
-
     <title>{{ title }}</title>
 </head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <button class="close-btn" id="toggleBtn" onclick="toggleSidebar()">&#x25C0;</button>
-        {% if menu -%}
-        <ul class="menu-list">
-            {% for p in menu %}
-            <li><a href="{{ url_for(p.url) }}">{{ p.title }}</a></li>
-            {% endfor %}
-        </ul>
-        {% endif -%}
-    </div>
-    <div class="container">
-        {% block content -%}
-        {% endblock %}
-    </div>
+<body class="admin-retro-bg">
+    <!-- Retro Header -->
+    <header class="admin-retro-header">
+        <div class="admin-logo-block">
+            <div class="admin-logo-img">🎮</div>
+            <div class="admin-logo-text">ADMIN PORTAL</div>
+        </div>
+        <nav class="admin-retro-nav">
+            <ul>
+                <li><a href="{{ url_for('admin.index') }}" {% if request.endpoint == 'admin.index' %}class="active"{% endif %}>DASHBOARD</a></li>
+                <li><a href="{{ url_for('admin.list_games') }}" {% if request.endpoint == 'admin.list_games' %}class="active"{% endif %}>GAMES</a></li>
+                <li><a href="{{ url_for('admin.list_posts') }}" {% if request.endpoint == 'admin.list_posts' %}class="active"{% endif %}>POSTS</a></li>
+                <li><a href="{{ url_for('admin.list_users') }}" {% if request.endpoint == 'admin.list_users' %}class="active"{% endif %}>USERS</a></li>
+                <li><a href="{{ url_for('admin.list_menu') }}" {% if request.endpoint == 'admin.list_menu' %}class="active"{% endif %}>MENU</a></li>
+            </ul>
+        </nav>
+        <div class="admin-user-section">
+            <span class="admin-user-name">Admin</span>
+            <a href="{{ url_for('logout') }}" class="admin-logout-btn neon-btn">LOGOUT</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-retro-main">
+        <div class="admin-container">
+            {% block content -%}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Retro Footer -->
+    <footer class="admin-retro-footer">
+        <div class="admin-footer-content">
+            <p>&copy; 2025 Game Portal Admin Panel</p>
+            <div class="admin-footer-links">
+                <a href="{{ url_for('index') }}">Back to Site</a>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const toggleBtn = document.getElementById('toggleBtn');
+        // Add retro effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add neon glow effect to buttons
+            const buttons = document.querySelectorAll('.neon-btn, .styled-button, .add_button');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 0 20px rgba(93, 231, 252, 0.8)';
+                });
+                btn.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                });
+            });
 
-            // Переключаем класс панели
-            const isSidebarActive = sidebar.classList.toggle('active');
+            // Enhanced navigation effects
+            const navLinks = document.querySelectorAll('.admin-retro-nav a');
+            navLinks.forEach(link => {
+                // Add click feedback with ripple effect
+                link.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(120, 219, 255, 0.4)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s ease-out';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.width = size + 'px';
+                    ripple.style.height = size + 'px';
+                    ripple.style.pointerEvents = 'none';
+                    ripple.style.zIndex = '10';
+                    
+                    this.style.position = 'relative';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        if (ripple.parentNode) {
+                            ripple.remove();
+                        }
+                    }, 600);
+                });
+            });
 
-            // Меняем направление стрелки
-            toggleBtn.innerHTML = isSidebarActive ? '&#x25B6;' : '&#x25C0;';
-        }
+            // Add retro grid background animation
+            const body = document.body;
+            body.style.backgroundImage = `
+                linear-gradient(135deg, #0A0C1B, #121321),
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%)
+            `;
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                0% {
+                    transform: scale(0);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
-
 </body>
 </html>

@@ -13,7 +13,7 @@
 
 <!-- Форма поиска и сортировки -->
 <div class="form-container" style="margin-bottom: 20px;">
-    <form method="get" action="{{ url_for('admin.list_pubs') }}">
+    <form method="get" action="{{ url_for('admin.list_posts') }}">
         <div class="form-group">
             <label for="search">Поиск:</label>
             <input type="text" name="search" id="search" class="form-input" value="{{ search }}" placeholder="Поиск по названию или тексту">

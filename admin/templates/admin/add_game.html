@@ -1,84 +1,163 @@
 {% extends "admin/base_admin.html" %}
 
 {% block content %}
-{{ super() }}
+<!-- Flash-сообщения -->
 {% for cat, msg in get_flashed_messages(True) %}
 <div class="flash {{ cat }}">{{ msg }}</div>
 {% endfor %}
-<div style="position: relative;">
-    <a href="javascript:history.back()" class="add_btn">
-        Вернутся к списку
-    </a>
+
+<div class="admin-page-header">
+    <div class="admin-page-title">
+        <h1>ДОБАВЛЕНИЕ ИГРЫ</h1>
+        <p>Создание новой игры в системе</p>
+    </div>
+    <div class="admin-page-actions">
+        <a href="javascript:history.back()" class="neon-btn back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Вернуться к списку
+        </a>
+    </div>
 </div>
-<div class="form-container">
-    <h1>Добавить игру</h1>
-    <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="title">Название:</label>
-            <input type="text" name="title" id="title" class="form-input" required>
-        </div>
-        <div class="form-group">
-            <label for="description">Описание:</label>
-            <textarea name="description" id="description" class="form-input" rows="4" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="genre">Жанр:</label>
-            <select name="genre" id="genre" class="form-input">
-                <option value="">Выберите жанр</option>
-                {% for genre in genres %}
-                <option value="{{ genre }}">{{ genre }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="cover">Обложка (файл):</label>
-            <input type="file" name="cover" id="cover" class="form-input" accept="image/*" required>
-        </div>
-        <div class="form-group">
-            <label>Тип игры:</label>
-            <div class="radio-group">
-                <input type="radio" name="type" value="link" id="game_link" checked>
-                <label for="game_link">Внешняя ссылка на игру</label>
-                <input type="radio" name="type" value="pygame" id="game_pygame">
-                <label for="game_pygame">Pygame игра</label>
-                <input type="radio" name="type" value="unity" id="game_unity">
-                 <label for="game_unity">Unity игра</label>
+
+<div class="form-container game-form-container">
+    <form method="post" enctype="multipart/form-data" class="game-form">
+        <div class="form-section">
+            <h3 class="form-section-title">Основная информация</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title">Название игры</label>
+                    <input type="text" name="title" id="title" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Жанр</label>
+                    <select name="genre" id="genre" class="form-input">
+                        <option value="">Выберите жанр</option>
+                        {% for genre in genres %}
+                        <option value="{{ genre }}">{{ genre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="description">Описание игры</label>
+                <textarea name="description" id="description" class="form-input" rows="4" required placeholder="Опишите игру, её особенности и геймплей..."></textarea>
             </div>
         </div>
 
-        <div class="form-group" id="link_field">
-            <label for="link">Cсылка на игру:</label>
-            <input type="text" name="link" id="link" class="form-input">
+        <div class="form-section">
+            <h3 class="form-section-title">Медиа файлы</h3>
+            <div class="form-group">
+                <label for="cover">Обложка игры</label>
+                <input type="file" name="cover" id="cover" class="form-input file-input" accept="image/*" required>
+                <small class="form-help">Рекомендуемый размер: 400x300 пикселей</small>
+            </div>
         </div>
 
-        <div class="form-group" id="pygame_fields" style="display: none;">
-            <label for="pygame_zip">Архив с игрой:</label>
-            <input type="file" name="pygame_zip" id="pygame_zip" class="form-input" accept=".zip">
-            <label for="pygame_installer">Установщик (.exe, необязательно):</label>
-            <input type="file" name="pygame_installer" id="pygame_installer" class="form-input" accept=".exe">
-            <label for="pygame_screenshots_zip">Архив со скриншотами:</label>
-            <input type="file" name="pygame_screenshots_zip" id="pygame_screenshots_zip" class="form-input" accept=".zip">
+        <div class="form-section">
+            <h3 class="form-section-title">Тип игры</h3>
+            <div class="game-type-selector">
+                <div class="radio-group game-type-options">
+                    <input type="radio" name="type" value="link" id="game_link" checked>
+                    <label for="game_link" class="game-type-option">
+                        <i class="fas fa-link"></i>
+                        <span>Внешняя ссылка</span>
+                    </label>
+                    <input type="radio" name="type" value="pygame" id="game_pygame">
+                    <label for="game_pygame" class="game-type-option">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Pygame игра</span>
+                    </label>
+                    <input type="radio" name="type" value="unity" id="game_unity">
+                    <label for="game_unity" class="game-type-option">
+                        <i class="fas fa-cube"></i>
+                        <span>Unity игра</span>
+                    </label>
+                </div>
+            </div>
         </div>
-        <div class="form-group" id="unity_fields" style="display: none;">
-            <label for="unity_zip">Архив с Unity WebGL игрой:</label>
-            <input type="file" name="unity_zip" id="unity_zip" class="form-input" accept=".zip">
-            <label for="unity_installer">Установщик (.exe, необязательно):</label>
-            <input type="file" name="unity_installer" id="unity_installer" class="form-input" accept=".exe">
-            <label for="unity_screenshots_zip">Архив со скриншотами:</label>
-            <input type="file" name="pygame_screenshots_zip" id="unity_screenshots_zip" class="form-input" accept=".zip">
+
+        <div class="form-section" id="link_field">
+            <h3 class="form-section-title">Ссылка на игру</h3>
+            <div class="form-group">
+                <label for="link">URL игры</label>
+                <input type="url" name="link" id="link" class="form-input" placeholder="https://example.com/game">
+            </div>
         </div>
-        <button type="submit" class="styled-button">Добавить игру</button>
+
+        <div class="form-section" id="pygame_fields" style="display: none;">
+            <h3 class="form-section-title">Файлы Pygame игры</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pygame_zip">Архив с игрой (.zip)</label>
+                    <input type="file" name="pygame_zip" id="pygame_zip" class="form-input file-input" accept=".zip">
+                </div>
+                <div class="form-group">
+                    <label for="pygame_installer">Установщик (.exe)</label>
+                    <input type="file" name="pygame_installer" id="pygame_installer" class="form-input file-input" accept=".exe">
+                    <small class="form-help">Необязательно</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="pygame_screenshots_zip">Архив со скриншотами (.zip)</label>
+                <input type="file" name="pygame_screenshots_zip" id="pygame_screenshots_zip" class="form-input file-input" accept=".zip">
+            </div>
+        </div>
+
+        <div class="form-section" id="unity_fields" style="display: none;">
+            <h3 class="form-section-title">Файлы Unity игры</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="unity_zip">Архив с Unity WebGL игрой (.zip)</label>
+                    <input type="file" name="unity_zip" id="unity_zip" class="form-input file-input" accept=".zip">
+                </div>
+                <div class="form-group">
+                    <label for="unity_installer">Установщик (.exe)</label>
+                    <input type="file" name="unity_installer" id="unity_installer" class="form-input file-input" accept=".exe">
+                    <small class="form-help">Необязательно</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="unity_screenshots_zip">Архив со скриншотами (.zip)</label>
+                <input type="file" name="unity_screenshots_zip" id="unity_screenshots_zip" class="form-input file-input" accept=".zip">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="neon-btn submit-btn">
+                <i class="fas fa-plus"></i>
+                Добавить игру
+            </button>
+        </div>
     </form>
 </div>
+
 <script>
     document.querySelectorAll('input[name="type"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            document.getElementById('link_field').style.display =
-                this.value === 'link' ? 'block' : 'none';
-            document.getElementById('pygame_fields').style.display =
-                this.value === 'pygame' ? 'block' : 'none';
-            document.getElementById('unity_fields').style.display =
-                this.value === 'unity' ? 'block' : 'none';
+            // Скрываем все поля
+            document.getElementById('link_field').style.display = 'none';
+            document.getElementById('pygame_fields').style.display = 'none';
+            document.getElementById('unity_fields').style.display = 'none';
+            
+            // Показываем нужные поля
+            if (this.value === 'link') {
+                document.getElementById('link_field').style.display = 'block';
+            } else if (this.value === 'pygame') {
+                document.getElementById('pygame_fields').style.display = 'block';
+            } else if (this.value === 'unity') {
+                document.getElementById('unity_fields').style.display = 'block';
+            }
+        });
+    });
+
+    // Добавляем эффекты для файловых инпутов
+    document.querySelectorAll('.file-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0]?.name;
+            if (fileName) {
+                this.style.borderColor = '#4CAF50';
+                this.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.3)';
+            }
         });
     });
 </script>

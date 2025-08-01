@@ -1,74 +1,128 @@
 {% extends "admin/base_admin.html" %}
 
 {% block content %}
-{{ super() }}
+<!-- Flash-сообщения -->
 {% for cat, msg in get_flashed_messages(True) %}
 <div class="flash {{ cat }}">{{ msg }}</div>
 {% endfor %}
-<div style="position: relative;">
-    <a href="{{ url_for('admin.add_game') }}" class="add_btn">Добавить игру</a>
+
+<div class="admin-page-header">
+    <div class="admin-page-title">
+        <h1>УПРАВЛЕНИЕ ИГРАМИ</h1>
+        <p>Список всех игр в системе</p>
+    </div>
+    <div class="admin-page-actions">
+        <a href="{{ url_for('admin.add_game') }}" class="neon-btn add-game-btn">
+            <i class="fas fa-plus"></i>
+            Добавить игру
+        </a>
+    </div>
 </div>
 
-<h1>Список игр</h1>
-
 <!-- Форма поиска, сортировки и фильтрации -->
-<div class="form-container" style="margin-bottom: 20px;">
-    <form method="get" action="{{ url_for('admin.list_games') }}">
-        <div class="form-group">
-            <label for="search">Поиск:</label>
-            <input type="text" name="search" id="search" class="form-input" value="{{ search }}" placeholder="Поиск по названию или описанию">
+<div class="form-container search-filter-container">
+    <h3 class="form-section-title">Поиск и фильтрация</h3>
+    <form method="get" action="{{ url_for('admin.list_games') }}" class="search-filter-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="search">Поиск:</label>
+                <input type="text" name="search" id="search" class="form-input" value="{{ search }}" placeholder="Поиск по названию или описанию">
+            </div>
+            <div class="form-group">
+                <label for="sort">Сортировка:</label>
+                <select name="sort" id="sort" class="form-input">
+                    <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Название (А-Я)</option>
+                    <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Название (Я-А)</option>
+                    <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
+                    <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
+                </select>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="sort">Сортировка:</label>
-            <select name="sort" id="sort" class="form-input">
-                <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Название (А-Я)</option>
-                <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Название (Я-А)</option>
-                <option value="time_asc" {% if sort == 'time_asc' %}selected{% endif %}>Дата (старые сначала)</option>
-                <option value="time_desc" {% if sort == 'time_desc' %}selected{% endif %}>Дата (новые сначала)</option>
-            </select>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="genre">Жанр:</label>
+                <select name="genre" id="genre" class="form-input">
+                    <option value="" {% if not filter_genre %}selected{% endif %}>Все жанры</option>
+                    {% for genre in genres %}
+                    <option value="{{ genre }}" {% if filter_genre == genre %}selected{% endif %}>{{ genre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="type">Тип игры:</label>
+                <select name="type" id="type" class="form-input">
+                    <option value="" {% if not filter_type %}selected{% endif %}>Все типы</option>
+                    <option value="link" {% if filter_type == 'link' %}selected{% endif %}>Внешняя ссылка</option>
+                    <option value="pygame" {% if filter_type == 'pygame' %}selected{% endif %}>Pygame</option>
+                    <option value="unity" {% if filter_type == 'unity' %}selected{% endif %}>Unity</option>
+                </select>
+            </div>
         </div>
-       <div class="form-group">
-            <label for="genre">Жанр:</label>
-            <select name="genre" id="genre" class="form-input">
-                <option value="" {% if not filter_genre %}selected{% endif %}>Все</option>
-                {% for genre in genres %}
-                <option value="{{ genre }}" {% if filter_genre == genre %}selected{% endif %}>{{ genre }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-actions">
+            <button type="submit" class="neon-btn filter-btn">
+                <i class="fas fa-search"></i>
+                Применить фильтры
+            </button>
         </div>
-        <div class="form-group">
-            <label for="type">Тип игры:</label>
-            <select name="type" id="type" class="form-input">
-                <option value="" {% if not filter_type %}selected{% endif %}>Все</option>
-                <option value="link" {% if filter_type == 'link' %}selected{% endif %}>Внешняя ссылка</option>
-                <option value="pygame" {% if filter_type == 'pygame' %}selected{% endif %}>Pygame</option>
-                <option value="unity" {% if filter_type == 'unity' %}selected{% endif %}>Unity</option>
-            </select>
-        </div>
-        <button type="submit" class="styled-button">Применить</button>
     </form>
 </div>
 
-<ul class="list-posts">
-    {% for game in games %}
-    <li>
-        <p class="title"><a href="{{ game.link }}" target="_blank">{{ game.title }}</a></p>
-        {% if game.cover %}
-        <img src="data:image/jpeg;base64,{{ game.cover|b64encode }}" alt="{{ game.title }}"
-             style="max-width: 150px; max-height: 150px; display: block; margin: 10px 0;">
-        {% endif %}
-        <p class="annonce">{{ game.description[:50] | striptags }}</p>
-        <form action="{{ url_for('admin.edit_game', game_id=game.id) }}" method="get" style="display:inline;">
-            <button type="submit" class="edit-button">Редактировать</button>
-        </form>
-        <form action="{{ url_for('admin.delete_game', game_id=game.id) }}" method="post" style="display:inline;">
-            <button type="submit" class="delete-button">Удалить</button>
-        </form>
-    </li>
-    {% endfor %}
-</ul>
-
-{% if not games %}
-<p>Игры пока не добавлены или не найдены по заданным критериям.</p>
-{% endif %}
+<!-- Список игр -->
+<div class="games-list-container">
+    <div class="games-list-header">
+        <h3>Найдено игр: {{ games|length }}</h3>
+    </div>
+    
+    <ul class="list-posts games-list">
+        {% for game in games %}
+        <li class="game-item">
+            <div class="game-content">
+                <div class="game-info">
+                    <h4 class="game-title">
+                        <a href="{{ game.link }}" target="_blank">{{ game.title }}</a>
+                    </h4>
+                    <p class="game-description">{{ game.description[:100] | striptags }}{% if game.description|length > 100 %}...{% endif %}</p>
+                    <div class="game-meta">
+                        <span class="game-type">{{ game.type|upper }}</span>
+                        {% if game.genre %}
+                        <span class="game-genre">{{ game.genre }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if game.cover %}
+                <div class="game-cover">
+                    <img src="data:image/jpeg;base64,{{ game.cover|b64encode }}" alt="{{ game.title }}" class="game-image">
+                </div>
+                {% endif %}
+            </div>
+            <div class="game-actions">
+                <form action="{{ url_for('admin.edit_game', game_id=game.id) }}" method="get" style="display:inline;">
+                    <button type="submit" class="edit-button">
+                        <i class="fas fa-edit"></i>
+                        Редактировать
+                    </button>
+                </form>
+                <form action="{{ url_for('admin.delete_game', game_id=game.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="delete-button" onclick="return confirm('Вы уверены, что хотите удалить эту игру?')">
+                        <i class="fas fa-trash"></i>
+                        Удалить
+                    </button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    {% if not games %}
+    <div class="empty-state">
+        <i class="fas fa-gamepad empty-icon"></i>
+        <h3>Игры не найдены</h3>
+        <p>Игры пока не добавлены или не найдены по заданным критериям.</p>
+        <a href="{{ url_for('admin.add_game') }}" class="neon-btn">
+            <i class="fas fa-plus"></i>
+            Добавить первую игру
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

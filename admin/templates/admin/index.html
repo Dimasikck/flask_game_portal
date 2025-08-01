@@ -5,11 +5,17 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
-            <div class="flash {{ cat }}">{{ message }}</div>
+            <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %}
     {% endif %}
 {% endwith %}
+
 <div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">ADMIN DASHBOARD</h1>
+        <p class="dashboard-subtitle">Game Portal Management System</p>
+    </div>
+    
     <div class="stats">
         <div class="stat-item">
             <i class="fas fa-users"></i>
@@ -25,28 +31,47 @@
                 <span class="stat-label">Игры</span>
             </div>
         </div>
+        <div class="stat-item">
+            <i class="fas fa-newspaper"></i>
+            <div class="stat-content">
+                <span class="stat-value">{{ total_posts if total_posts else 0 }}</span>
+                <span class="stat-label">Посты</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-chart-line"></i>
+            <div class="stat-content">
+                <span class="stat-value">{{ total_views if total_views else 0 }}</span>
+                <span class="stat-label">Просмотры</span>
+            </div>
+        </div>
     </div>
+    
     <div class="charts">
         <div class="chart-container">
             <h3 class="chart-title">Регистрация пользователей</h3>
-            <canvas id="usersChart"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="usersChart"></canvas>
+            </div>
         </div>
         <div class="chart-container">
             <h3 class="chart-title">Добавление игр</h3>
-            <canvas id="gamesChart"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="gamesChart"></canvas>
+            </div>
         </div>
     </div>
+    
     <!-- Кнопка обновления сайта -->
-    <div style="position: absolute; top: 10px; right: 10px;">
+    <div class="dashboard-actions">
         <form method="POST" action="{{ url_for('admin.update_site') }}">
-            <button type="submit" class="btn" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+            <button type="submit" class="neon-btn update-site-btn">
+                <i class="fas fa-sync-alt"></i>
                 Обновить сайт
             </button>
         </form>
     </div>
 </div>
-
-
 
 <!-- Подключение Chart.js и адаптера -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -76,10 +101,16 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Новые пользователи',
                 data: userCounts,
-                borderColor: '#6D5DFC',
-                backgroundColor: 'rgba(109, 93, 252, 0.2)',
+                borderColor: '#78DBFF',
+                backgroundColor: 'rgba(120, 219, 255, 0.2)',
+                borderWidth: 3,
                 tension: 0.4,
-                fill: true
+                fill: true,
+                pointBackgroundColor: '#78DBFF',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
             }]
         },
         options: {
@@ -88,7 +119,13 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: {
                 legend: {
                     display: true,
-                    labels: { color: '#fff' }
+                    labels: { 
+                        color: '#78DBFF',
+                        font: {
+                            family: 'Orbitron',
+                            weight: 'bold'
+                        }
+                    }
                 }
             },
             scales: {
@@ -98,23 +135,45 @@ document.addEventListener('DOMContentLoaded', function() {
                         unit: 'day',
                         displayFormats: { day: 'MMM d' }
                     },
-                    ticks: { color: '#fff' },
+                    ticks: { 
+                        color: '#fff',
+                        font: {
+                            family: 'Orbitron'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(120, 219, 255, 0.1)'
+                    },
                     title: {
                         display: true,
                         text: 'Дата',
-                        color: '#fff'
+                        color: '#78DBFF',
+                        font: {
+                            family: 'Orbitron',
+                            weight: 'bold'
+                        }
                     }
                 },
                 y: {
                     beginAtZero: true,
                     ticks: {
                         color: '#fff',
+                        font: {
+                            family: 'Orbitron'
+                        },
                         stepSize: 2
+                    },
+                    grid: {
+                        color: 'rgba(120, 219, 255, 0.1)'
                     },
                     title: {
                         display: true,
                         text: 'Количество',
-                        color: '#fff'
+                        color: '#78DBFF',
+                        font: {
+                            family: 'Orbitron',
+                            weight: 'bold'
+                        }
                     }
                 }
             }
@@ -129,7 +188,11 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Добавленные игры',
                 data: gameCounts,
-                backgroundColor: '#FF6F6F',
+                backgroundColor: 'rgba(255, 119, 198, 0.8)',
+                borderColor: '#FF77C6',
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false
             }]
         },
         options: {
@@ -138,7 +201,13 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: {
                 legend: {
                     display: true,
-                    labels: { color: '#fff' }
+                    labels: { 
+                        color: '#FF77C6',
+                        font: {
+                            family: 'Orbitron',
+                            weight: 'bold'
+                        }
+                    }
                 }
             },
             scales: {
@@ -148,23 +217,45 @@ document.addEventListener('DOMContentLoaded', function() {
                         unit: 'day',
                         displayFormats: { day: 'MMM d' }
                     },
-                    ticks: { color: '#fff' },
+                    ticks: { 
+                        color: '#fff',
+                        font: {
+                            family: 'Orbitron'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 119, 198, 0.1)'
+                    },
                     title: {
                         display: true,
                         text: 'Дата',
-                        color: '#fff'
+                        color: '#FF77C6',
+                        font: {
+                            family: 'Orbitron',
+                            weight: 'bold'
+                        }
                     }
                 },
                 y: {
                     beginAtZero: true,
                     ticks: {
                         color: '#fff',
+                        font: {
+                            family: 'Orbitron'
+                        },
                         stepSize: 2
+                    },
+                    grid: {
+                        color: 'rgba(255, 119, 198, 0.1)'
                     },
                     title: {
                         display: true,
                         text: 'Количество',
-                        color: '#fff'
+                        color: '#FF77C6',
+                        font: {
+                            family: 'Orbitron',
+                            weight: 'bold'
+                        }
                     }
                 }
             }
