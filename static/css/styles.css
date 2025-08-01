@@ -1530,8 +1530,8 @@ body.retro-bg {
     gap: 16px;
 }
 .logo-img {
-    width: 56px;
-    height: 56px;
+    width: 140px;
+    height: 140px;
     filter: drop-shadow(0 0 8px #22dcf1);
 }
 .logo-text {
